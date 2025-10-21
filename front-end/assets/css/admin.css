@@ -92,73 +92,88 @@ input:focus {
 /* ===============================
    PANEL ADMIN - ENCUESTAS
 =============================== */
-.admin-main {
-  background-color: #f9f6e9;
+.admin-encuestas {
   text-align: center;
-  padding: 2rem 0;
-  font-family: "Open Sans", sans-serif;
+  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
 }
 
-.titulo-principal {
-  font-size: 2rem;
+.titulo-admin {
+  font-size: 2.8rem;
   color: #6b2e2e;
   margin-bottom: 0.5rem;
+  font-weight: 700;
 }
 
-.subtitulo {
+.subtitulo-admin {
   color: #6b2e2e;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  opacity: 0.85;
+  font-size: 1.4rem;
+  margin-bottom: 2.5rem;
+  opacity: 0.9;
 }
 
-/* CONTENEDOR DE TARJETAS */
+.encuestas-section {
+  background-color: #f9f6e9;
+  padding: 4rem 3rem;
+  border-top: 0.1rem solid #d6c58b;
+  border-bottom: 0.1rem solid #d6c58b;
+}
+
 .cards-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 2rem;
-  padding: 0 2rem;
+  gap: 6rem;
+  margin-top: 1rem;
 }
 
-/* TARJETAS DE ENCUESTAS */
-.card-encuesta {
+.card-admin {
   background-color: #fffef9;
-  border: 0.15rem solid transparent;
+  border: 0.15rem solid #d8c98b;
   border-radius: 0.6rem;
   box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.1);
-  width: 15rem;
-  padding: 1.5rem 1rem;
+  width: 20rem;
+  padding: 4rem 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card-encuesta img {
-  width: 6rem;
+.card-admin:hover {
+  transform: translateY(-0.3rem);
+  box-shadow: 0 0.6rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+.card-admin img {
+  width: 8rem;
   height: auto;
   margin-bottom: 1rem;
 }
 
-.card-encuesta h2 {
+.card-admin h2 {
   color: #4a1c1c;
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
+  font-size: 2rem;
+  margin-bottom: 1.2rem;
+  font-weight: 600;
 }
 
-.card-encuesta:hover {
-  transform: translateY(-0.4rem);
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
-}
-
-/* COLORES POR NIVEL */
-.card-encuesta.preescolar { border-color: #7acb55; }
-.card-encuesta.primaria { border-color: #4385f4; }
-.card-encuesta.secundaria { border-color: #e04e4e; }
-.card-encuesta.preparatoria { border-color: #c7479c; }
-
-/* BOTON */
 .btn-ver {
   background-color: #6b2e2e;
+  color: #fff;
+  border: none;
+  border-radius: 0.3rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.3rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
 }
+
+.btn-ver:hover {
+  background-color: #a25454;
+  color:white;
+}
+
+.card-admin.preescolar { border-color: #7acb55; }
+.card-admin.primaria { border-color: #4385f4; }
+.card-admin.secundaria { border-color: #e04e4e; }
+.card-admin.preparatoria { border-color: #c7479c; }
