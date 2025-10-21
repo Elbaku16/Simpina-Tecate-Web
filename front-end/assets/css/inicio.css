@@ -3,13 +3,17 @@
 
 /* HEADER */
 
-html, body {
+html {
     height: 100%;
+}
+
+body {
+    min-height: 100vh;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-}
+}   
 
 main {
     flex: 1;
@@ -82,7 +86,11 @@ main {
 .header-nav a:hover {
     color: #a25454;   
 }
-
+.header-nav a.active {
+    border-bottom: 0.2rem solid #6b2e2e;
+    color: #6b2e2e;
+    padding-bottom: 0.3rem;
+}
 .header-der {
     display: flex;
     align-items: center;

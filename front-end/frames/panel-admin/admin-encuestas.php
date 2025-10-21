@@ -8,23 +8,53 @@ if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encuestas registradas | Panel Admin</title>
+  <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin.css">
-  <title>Panel Admin</title>
 </head>
 <body>
-  <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header-admin.php'); ?>
+  <header>
+    <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/header-admin.php'; ?>
+  </header>
 
-  <main style="padding: 2rem;">
-    <h1>Panel administrativo</h1>
-    <p>Bienvenido, <?php echo htmlspecialchars($_SESSION['user']); ?>.</p>
+  <main class="admin-encuestas">
+    <h1 class="titulo-admin">Encuestas registradas</h1>
+    <p class="subtitulo-admin">Consulta los resultados de las encuestas aplicadas.</p>
 
-    <p><a href="/SIMPINNA/back-end/logout.php" class="btn btn-secondary">Cerrar sesión</a></p>
+    <section class="encuestas-section">
+      <div class="cards-container">
+        <div class="card-admin preescolar">
+          <img src="/SIMPINNA/front-end/assets/img/escolaridad/preescolar.png" alt="Preescolar">
+          <h2>Preescolar</h2>
+          <a href="#" class="btn-ver">Ver resultados</a>
+        </div>
 
+        <div class="card-admin primaria">
+          <img src="/SIMPINNA/front-end/assets/img/escolaridad/primaria.png" alt="Primaria">
+          <h2>Primaria</h2>
+          <a href="#" class="btn-ver">Ver resultados</a>
+        </div>
+
+        <div class="card-admin secundaria">
+          <img src="/SIMPINNA/front-end/assets/img/escolaridad/secundaria.png" alt="Secundaria">
+          <h2>Secundaria</h2>
+          <a href="#" class="btn-ver">Ver resultados</a>
+        </div>
+
+        <div class="card-admin preparatoria">
+          <img src="/SIMPINNA/front-end/assets/img/escolaridad/preparatoria.png" alt="Preparatoria">
+          <h2>Preparatoria</h2>
+          <a href="#" class="btn-ver">Ver resultados</a>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'); ?>
+  <footer>
+    <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer.php'; ?>
+  </footer>
 </body>
 </html>
