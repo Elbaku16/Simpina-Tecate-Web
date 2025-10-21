@@ -1,0 +1,117 @@
+/* Hero Section */
+.hero-section {
+    background-color: #fdfcf7;
+    padding: 60px 40px;
+    min-height: calc(100vh - 200px);
+}
+
+.hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 60px;
+}
+
+.hero-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.hero-image {
+    max-width: 400px;
+    width: 100%;
+    height: auto;
+}
+
+.hero-text {
+    font-size: 1.1rem;
+    color: #4b1e1e;
+    line-height: 1.6;
+    text-align: center;
+    margin: 0;
+}
+
+.hero-right {
+    flex: 0 0 400px;
+}
+
+.encuesta-card {
+    background-color: #fffef8;
+    border: 3px solid #d4b952;
+    border-radius: 8px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.encuesta-card h2 {
+    color: #4b1e1e;
+    font-size: 1.5rem;
+    margin: 0 0 15px 0;
+}
+
+.encuesta-card p {
+    color: #4b1e1e;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0 0 30px 0;
+}
+
+.encuesta-icon {
+    max-width: 150px;
+    height: auto;
+    margin: 20px 0 30px 0;
+}
+
+.btn-encuesta {
+    display: inline-block;
+    background-color: #7b2930;
+    color: white;
+    padding: 12px 40px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.btn-encuesta:hover {
+    background-color: #5c1d23;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+    .hero-content {
+        flex-direction: column;
+        gap: 40px;
+    }
+    
+    .hero-right {
+        flex: 1;
+        width: 100%;
+        max-width: 500px;
+    }
+    
+    .hero-image {
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-section {
+        padding: 30px 20px;
+    }
+    
+    .encuesta-card {
+        padding: 30px 20px;
+    }
+    
+    .hero-text {
+        font-size: 1rem;
+    }
+}
