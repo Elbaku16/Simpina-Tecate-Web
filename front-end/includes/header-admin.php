@@ -3,9 +3,10 @@
       <img src="/SIMPINNA/front-end/assets/img/global/logo-simpinna.png" 
            alt="Logo SIMPINNA" class="logo-simpinna">
 
-    <span class="titulo-header">
-        <a href="/SIMPINNA/front-end/frames/inicio/inicio.php">Panel Administrativo</a>
-    </span>
+    <div class="titulo-header">
+      <span class="titulo-header">Panel Administrativo</span>
+      <a href="/SIMPINNA/front-end/frames/login/logout.php" class="btn-logout">Cerrar sesión</a>
+    </div>
   </div>
 
 

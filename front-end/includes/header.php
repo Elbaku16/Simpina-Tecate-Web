@@ -11,9 +11,9 @@
   <nav class="header-nav">
     <ul>    
         <li>
-          <a href="/SIMPINNA/front-end/frames/inicio/inicio.php"
-             class="<?php echo (strpos($currentPage, 'inicio.php') !== false) ? 'active' : ''; ?>">
-             Inicio
+          <a href="/SIMPINNA/front-end/frames/global/global.php"
+             class="<?php echo (strpos($currentPage, 'global.php') !== false) ? 'active' : ''; ?>">
+             global
           </a>
         </li>
         <li>
