@@ -89,3 +89,76 @@ input:focus {
   color: #4f4f4f;
   opacity: 0.9;
 }
+/* ===============================
+   PANEL ADMIN - ENCUESTAS
+=============================== */
+.admin-main {
+  background-color: #f9f6e9;
+  text-align: center;
+  padding: 2rem 0;
+  font-family: "Open Sans", sans-serif;
+}
+
+.titulo-principal {
+  font-size: 2rem;
+  color: #6b2e2e;
+  margin-bottom: 0.5rem;
+}
+
+.subtitulo {
+  color: #6b2e2e;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  opacity: 0.85;
+}
+
+/* CONTENEDOR DE TARJETAS */
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  padding: 0 2rem;
+}
+
+/* TARJETAS DE ENCUESTAS */
+.card-encuesta {
+  background-color: #fffef9;
+  border: 0.15rem solid transparent;
+  border-radius: 0.6rem;
+  box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.1);
+  width: 15rem;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-encuesta img {
+  width: 6rem;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.card-encuesta h2 {
+  color: #4a1c1c;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.card-encuesta:hover {
+  transform: translateY(-0.4rem);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+/* COLORES POR NIVEL */
+.card-encuesta.preescolar { border-color: #7acb55; }
+.card-encuesta.primaria { border-color: #4385f4; }
+.card-encuesta.secundaria { border-color: #e04e4e; }
+.card-encuesta.preparatoria { border-color: #c7479c; }
+
+/* BOTON */
+.btn-ver {
+  background-color: #6b2e2e;
+}
