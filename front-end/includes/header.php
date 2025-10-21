@@ -11,13 +11,13 @@
   <nav class="header-nav">
     <ul>    
         <li>
-          <a href="/SIMPINNA/front-end/frames/global/global.php"
-             class="<?php echo (strpos($currentPage, 'global.php') !== false) ? 'active' : ''; ?>">
-             global
+          <a href="/SIMPINNA/front-end/frames/inicio/inicio.php"
+             class="<?php echo (strpos($currentPage, 'inicio.php') !== false) ? 'active' : ''; ?>">
+             Inicio
           </a>
         </li>
         <li>
-          <a href="/SIMPINNA/front-end/frames/encuesta/encuesta.php"
+          <a href="/SIMPINNA/front-end/frames/inicio/encuesta.php"
              class="<?php echo (strpos($currentPage, 'encuesta.php') !== false) ? 'active' : ''; ?>">
              Encuesta
           </a>
