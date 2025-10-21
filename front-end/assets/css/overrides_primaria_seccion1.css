@@ -1,0 +1,53 @@
+h3{
+    color: #611232;
+    text-align: center;
+}
+h6{
+    color: #611232;
+    text-align: center;
+/* Contenedor horizontal y responsivo del grupo */
+
+.q-block{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
+  gap: 1.25rem 2rem;
+  align-items: center;
+}
+
+/* Cada opción clickable: checkbox + icono + texto */
+.q-option{
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;                   /* espacio entre checkbox, icono y texto */
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Asegura que el checkbox conserve el estilo del framework */
+.q-option .q-check{
+  inline-size: 1.2rem;
+  block-size: 1.2rem;
+  margin: 0;
+}
+
+/* Iconito a la derecha del checkbox */
+.q-icon{
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  object-fit: contain;
+}
+
+/* Accesibilidad al navegar con teclado */
+.q-option:has(.q-check:focus-visible){
+  outline: 2px solid #611232;
+  outline-offset: 2px;
+}
+
+/* Ajustes en pantallas pequeñas */
+@media (max-width: 640px){
+  .q-block{ grid-template-columns: 1fr; }
+  .q-option{ justify-content: flex-start; }
+}
+
+}
