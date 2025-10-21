@@ -5,7 +5,9 @@
 
     <div class="titulo-header">
       <span class="titulo-header">Panel Administrativo</span>
-      <a href="/SIMPINNA/front-end/frames/login/logout.php" class="btn-logout">Cerrar sesión</a>
+       <?php if (isset($_SESSION['user'])): ?>
+          <a href="/SIMPINNA/front-end/frames/panel-admin/logout.php" class="btn-logout">Cerrar sesión</a>
+        <?php endif; ?>
     </div>
   </div>
 
