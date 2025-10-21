@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/inicio.css">
 
     <title>SIMPINNA</title>
 </head>
