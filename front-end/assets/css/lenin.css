@@ -1,117 +1,167 @@
+/* === Paleta y ajustes finos === */
+:root{
+  --vino:#6e2230;
+  --vino-osc:#4e1822;
+  --mostaza:#e1cc73;
+  --borde:#e6dcb7;
+  --crema:#fdfcf7;
+  --texto:#6a5746;
+  --texto-osc:#4a3736;
+}
+
 /* Hero Section */
-.hero-section {
-    background-color: #fdfcf7;
-    padding: 60px 40px;
-    min-height: calc(100vh - 200px);
+.hero-section{
+  background-color: var(--crema);
+  padding: 60px 40px 40px;              /* Aumenté el padding superior */
+  min-height: calc(100vh - 200px);
 }
 
-.hero-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 60px;
+/* Layout general */
+.hero-content{
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 60px;
+  margin-top: 30px;                     /* Bajé todo el contenido */
 }
 
-.hero-left {
-    flex: 1;
-    display: flex;
+/* Columna izquierda */
+.hero-left{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;                            /* Aumenté el gap entre imagen y texto */
+}
+
+.hero-image{
+  max-width: 380px;
+  width: 100%;
+  height: auto;
+  display: block;
+  mix-blend-mode: multiply;
+  margin-top: 20px;                     /* Bajé la imagen */
+}
+
+.hero-text{
+  max-width: 450px;
+  font-size: 1.4rem;
+  color: var(--vino);
+  line-height: 1.6;
+  text-align: left;
+  margin: 10px 0 0 0;                   /* Bajé el texto también */
+  font-weight: 500;
+}
+
+/* Columna derecha */
+.hero-right{
+  flex: 0 0 400px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Tarjeta */
+.encuesta-card{
+  width: 100%;
+  background-color: #fffdf8;
+  border: 2px solid var(--mostaza);
+  border-radius: 8px;
+  padding: 32px 36px 36px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(225,204,115,.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.encuesta-card h2{
+  color: var(--vino);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  text-align: center;
+}
+
+.encuesta-card p{
+  color: var(--vino);
+  font-size: 1.5rem;
+  line-height: 1.5;
+  margin: 0 0 28px 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Ícono */
+.encuesta-icon{
+  max-width: 190px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto 28px;
+}
+
+/* Botón */
+.btn-encuesta{
+  display: inline-block;
+  background-color: var(--vino);
+  color: #fff;
+  padding: 12px 48px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 0 rgba(78,24,34,.35);
+  transition: transform .12s ease, box-shadow .12s ease;
+  text-align: center;
+}
+.btn-encuesta:hover{
+  background-color: var(--vino-osc);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(78,24,34,.4);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1100px){
+  .hero-content{ gap: 40px; }
+  .hero-right{ flex-basis: 380px; }
+}
+
+@media (max-width: 980px){
+  .hero-content{
     flex-direction: column;
+    gap: 40px;
     align-items: center;
-    gap: 30px;
-}
-
-.hero-image {
-    max-width: 400px;
-    width: 100%;
-    height: auto;
-}
-
-.hero-text {
-    font-size: 1.1rem;
-    color: #4b1e1e;
-    line-height: 1.6;
+    margin-top: 20px;
+  }
+  .hero-left{
+    align-items: center;
+  }
+  .hero-image{
+    margin-top: 0;
+  }
+  .hero-text{
     text-align: center;
     margin: 0;
+  }
+  .hero-right{ 
+    flex: 1 1 auto; 
+    width: 100%; 
+    max-width: 440px; 
+  }
 }
 
-.hero-right {
-    flex: 0 0 400px;
-}
-
-.encuesta-card {
-    background-color: #fffef8;
-    border: 3px solid #d4b952;
-    border-radius: 8px;
-    padding: 40px 30px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.encuesta-card h2 {
-    color: #4b1e1e;
-    font-size: 1.5rem;
-    margin: 0 0 15px 0;
-}
-
-.encuesta-card p {
-    color: #4b1e1e;
-    font-size: 1rem;
-    line-height: 1.5;
-    margin: 0 0 30px 0;
-}
-
-.encuesta-icon {
-    max-width: 150px;
-    height: auto;
-    margin: 20px 0 30px 0;
-}
-
-.btn-encuesta {
-    display: inline-block;
-    background-color: #7b2930;
-    color: white;
-    padding: 12px 40px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 1.1rem;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-.btn-encuesta:hover {
-    background-color: #5c1d23;
-}
-
-/* Responsive */
-@media (max-width: 968px) {
-    .hero-content {
-        flex-direction: column;
-        gap: 40px;
-    }
-    
-    .hero-right {
-        flex: 1;
-        width: 100%;
-        max-width: 500px;
-    }
-    
-    .hero-image {
-        max-width: 300px;
-    }
-}
-
-@media (max-width: 600px) {
-    .hero-section {
-        padding: 30px 20px;
-    }
-    
-    .encuesta-card {
-        padding: 30px 20px;
-    }
-    
-    .hero-text {
-        font-size: 1rem;
-    }
+@media (max-width: 600px){
+  .hero-section{ padding: 32px 20px; }
+  .hero-content{ margin-top: 10px; }
+  .hero-image{ max-width: 300px; margin-top: 0; }
+  .encuesta-card{ padding: 28px 24px; }
+  .encuesta-icon{ max-width: 160px; }
+  .btn-encuesta{ 
+    width: 100%; 
+    padding: 12px 20px;
+  }
 }
