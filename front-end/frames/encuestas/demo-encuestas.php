@@ -43,6 +43,7 @@ $conn->close();
     <title>Encuesta Demo</title>
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
     <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/inicio.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas.css">
 </head>
 <body>
     <header> 

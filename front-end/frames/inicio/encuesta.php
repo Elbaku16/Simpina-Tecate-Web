@@ -27,7 +27,7 @@
         </li>
         <li class="grade-item">
           <img src="/SIMPINNA/front-end/assets/img/escolaridad/primaria.png" alt="Primaria">
-          <a class="pill pill--blue" href="/SIMPINNA/front-end/frames/primaria/primaria_seccion1.php">Primaria</a>
+          <a class="pill pill--blue" href="/SIMPINNA/front-end/frames/encuestas/demo-encuestas.php">Primaria</a>
         </li>
         <li class="grade-item">
           <img src="/SIMPINNA/front-end/assets/img/escolaridad/secundaria.png" alt="Secundaria">
