@@ -11,17 +11,24 @@ h6{
     padding-bottom: 3.5rem;
 }
 
-.strip{
-  background-color: #f9f5e4;
-  border-top: .15rem solid #cbbf9b;
-  border-bottom: .15rem solid #cbbf9b;
-  padding: 1rem 3.5rem;
-  min-height: 300px;
+.strip {
+  background: linear-gradient(to bottom, #f9f5e4 0%, #fff 90%);
+  border-top: 0.1rem solid #d6c58b;
+  border-bottom: 0.1rem solid #e8ddaf;
+  padding: 2.5rem 3rem;
+  min-height: 220px;
   display: flex;
   align-items: center;
+  justify-content: center;
   color: #611232;
-  margin-bottom: 3.5rem; 
+  margin-bottom: 3rem;
+  text-align: center;
+  font-family: "Georgia", serif;
+  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.05);
+  border-radius: 0.6rem;
 }
+
+
 
 .escolaridad{ padding: 4rem 4.5rem; }
 

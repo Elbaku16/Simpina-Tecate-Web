@@ -1,0 +1,96 @@
+
+/* === ENCUESTA DEMO (diseño base) === */
+
+body {
+  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
+  background-color: #f9f6e9;
+  color: #4a1c1c;
+  margin: 0;
+  padding: 0;
+}
+
+.encuesta-container {
+  max-width: 800px;
+  margin: 3rem auto;
+  background: #ffffff;
+  border: 1px solid #ddd4a8;
+  border-radius: 0.6rem;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.05);
+}
+
+.encuesta-container h1 {
+  text-align: center;
+  font-size: 2.2rem;
+  color: #611232;
+  margin-bottom: 2rem;
+}
+
+.pregunta {
+  margin-bottom: 2.5rem;
+}
+
+.pregunta h2 {
+  font-size: 1.4rem;
+  color: #4a1c1c;
+  margin-bottom: 1rem;
+}
+
+.opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-left: 1rem;
+}
+
+.opciones label {
+  background: #fafafa;
+  border: 1px solid #ddd4a8;
+  border-radius: 0.4rem;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.opciones input[type="radio"],
+.opciones input[type="checkbox"] {
+  margin-right: 0.6rem;
+}
+
+.opciones label:hover {
+  background-color: #f2ede0;
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+}
+
+textarea {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid #ddd4a8;
+  border-radius: 0.4rem;
+  padding: 0.8rem;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+/* === BOTONES === */
+
+button {
+  background-color: #6b2e2e;
+  color: #fff;
+  border: none;
+  border-radius: 0.3rem;
+  padding: 0.8rem 1.6rem;
+  margin: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+button:hover {
+  background-color: #a25454;
+}
+
+button:active {
+  transform: scale(0.97);
+}
