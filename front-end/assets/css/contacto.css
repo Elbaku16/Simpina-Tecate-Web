@@ -1,0 +1,114 @@
+:root{
+  --brand-maroon: #6b2e2e;
+  --gold-brd:     #d6bd55;
+  --ink:          #3a2e2e;
+  --offwhite:     #fff9f2;
+  --shadow:       rgba(0,0,0,.08);
+}
+
+*{ box-sizing: border-box; }
+html, body{ margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: var(--ink); }
+
+.contacto-layout{
+  background: #fff;
+  padding: 28px 16px 48px;
+}
+
+.contacto-wrap{
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.contacto-title{
+  font-size: clamp(1.6rem, 1.1rem + 2.4vw, 2.6rem);
+  color: var(--brand-maroon);
+  margin: 0 0 .25rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+.contacto-subtitle{
+  margin: 0 0 18px;
+}
+
+.card-form{
+  background: #fff;
+  border: 3px solid var(--gold-brd);
+  border-radius: 16px;
+  padding: clamp(18px, 2.5vw, 28px);
+  box-shadow: 0 10px 24px var(--shadow);
+}
+
+.field{
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.field label{
+  font-weight: 700;
+}
+.field input,
+.field textarea{
+  width: 100%;
+  border: 1.5px solid #d7d7d7;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 16px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  outline: none;
+  background: #fff;
+}
+.field input:focus,
+.field textarea:focus{
+  border-color: var(--gold-brd);
+  box-shadow: 0 0 0 3px rgba(214,189,85,.25);
+}
+
+.btn-maroon{
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: var(--brand-maroon);
+  color: #fff;
+  font-weight: 700;
+  border: 2px solid transparent;
+  text-decoration: none;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+  box-shadow: 0 4px 10px rgba(107,46,46,0.25);
+  cursor: pointer;
+}
+.btn-maroon:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(107,46,46,0.28);
+}
+
+.actions{
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.alert{
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  border: 1px solid transparent;
+}
+.alert.success{
+  background: #f0fff5;
+  border-color: #b8f0c2;
+}
+.alert.error{
+  background: #fff6f6;
+  border-color: #f0c0c0;
+}
+.alert ul{ margin: .25rem 0 0 .9rem; }
+
+.hp{ position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+.hint{
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: #6b6b6b;
+}
+

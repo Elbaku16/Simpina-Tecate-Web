@@ -1,0 +1,94 @@
+:root{
+  --gold-bg:   #ffffff; 
+  --gold-brd:  #d6bd55;
+  --ink:       #3a2e2e;
+  --shadow:    rgba(0,0,0,.08);
+}
+
+.ayuda-layout{
+  background: #fff;
+  padding: 24px 16px 40px;
+}
+
+.ayuda-grid{
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+}
+@media (min-width: 840px){
+  .ayuda-grid{
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.card-amarillo{
+  background: var(--gold-bg);
+  border: 3px solid var(--gold-brd);
+  border-radius: 16px;
+  padding: clamp(16px, 2.2vw, 24px);
+  color: var(--ink);
+  box-shadow: 0 10px 24px var(--shadow);
+}
+
+.card-title{
+  font-size: 3rem;
+  margin: 0 0 .6rem;
+  line-height: 1.25;
+  font-weight: 800;
+  color: #7b2d2d
+}
+.card-subtitle{
+  margin: 0 0 .5rem;
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1.25;
+  color: #7b2d2d;
+}
+
+.accent{
+  background: linear-gradient(180deg, #fffefb, #fff8e1);
+  border: 1px dashed var(--gold-brd);
+  border-radius: 10px;
+  padding: .75rem .9rem;
+  font-weight: 600;
+}
+
+.emergency-cta{
+  max-width: 1100px;
+  margin: 26px auto 0;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.emergency-text{
+  margin: 0 0 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.emergency-images{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+}
+
+.emg-img{
+  display: block;
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px;
+  border: 1px solid rgba(0,0,0,.06);
+}
+
+@media (max-width: 420px){
+  .emg-img{ max-width: 280px; }
+}

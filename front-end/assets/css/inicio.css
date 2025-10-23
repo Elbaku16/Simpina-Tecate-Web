@@ -1,0 +1,133 @@
+/* inicio.css */
+
+
+/* HEADER */
+
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}   
+
+main {
+    flex: 1;
+}
+
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f9f5e4;      
+    color: #6b2e2e;               
+    padding: 1rem 3.5rem;        
+    border-bottom: 0.15rem solid #cbbf9b;
+    font-family: "Georgia", serif;
+    
+}
+
+
+.header-izq {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; 
+}
+
+
+.logo-simpinna {
+    height: 10rem;  
+    width: auto;
+}
+
+.titulo-header {
+    text-decoration: none;
+    font-size: 2rem;     
+    font-weight: bold;
+    color: #6b2e2e;
+    line-height: 1.2;
+}
+
+.titulo-header a,
+.titulo-header a:visited,
+.titulo-header a:active {
+    color: #6b2e2e;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.titulo-header a:hover {
+    color: #a25454;
+    text-decoration: none;
+}
+
+
+.header-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 3rem;       
+    margin: 0;
+    padding: 0;
+}
+
+.header-nav a {
+    text-decoration: none;
+    color: #6b2e2e;
+    font-size: 2rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.header-nav a:hover {
+    color: #a25454;   
+}
+.header-nav a.active {
+    border-bottom: 0.2rem solid #6b2e2e;
+    color: #6b2e2e;
+    padding-bottom: 0.3rem;
+}
+.header-der {
+    display: flex;
+    align-items: center;
+}
+
+.logo-gobierno {
+    height: 10rem;  
+    width: auto;
+}
+
+
+
+/* FOOTER  */
+.footer-simpinna {
+    background-color: #dcc655;       
+    color: #000;                      
+    font-family: "Georgia", serif;
+    padding: 1.2rem 2rem;           
+    border-top: 0.2rem solid #c1ad3b;
+}
+
+.footer-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2rem;  
+}
+
+
+.logo-tecate {
+    height: 8rem;    
+    width: auto;
+}
+
+/* Texto */
+.footer-text p {
+    margin: 0;
+    font-size: 1.3rem;
+    line-height: 1.4;
+}

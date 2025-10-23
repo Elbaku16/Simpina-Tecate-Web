@@ -1,0 +1,179 @@
+/* admin.css */
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  color: #4a1c1c;
+  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
+  background-color: transparent;
+  padding-top: 6vh;
+}
+
+.login-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: #6b2e2e;
+  letter-spacing: 0.05rem;
+}
+
+.login-form {
+  background-color: #f9f6e9;
+  border: 0.15rem solid #d6c58b;
+  border-radius: 0.6rem;
+  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.15);
+  width: 45%;
+  min-width: 25rem;
+  padding: 3rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.form-group {
+  margin-bottom: 1.8rem;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+input {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 0.1rem solid #b6b6b6;
+  border-radius: 0.3rem;
+  font-size: 1.2rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #6b2e2e;
+  box-shadow: 0 0 0.4rem rgba(107, 46, 46, 0.5);
+}
+
+.btn-login {
+  align-self: center;
+  background-color: #6b2e2e;
+  color: #fff;
+  border: none;
+  border-radius: 0.3rem;
+  padding: 1rem 2rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.03rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.btn-login:hover {
+  background-color: #a25454;
+}
+
+.btn-login:active {
+  transform: scale(0.97);
+}
+
+.login-note {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-top: 1.8rem;
+  color: #4f4f4f;
+  opacity: 0.9;
+}
+/* ===============================
+   PANEL ADMIN - ENCUESTAS
+=============================== */
+.admin-encuestas {
+  text-align: center;
+  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+.titulo-admin {
+  font-size: 2.8rem;
+  color: #6b2e2e;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.subtitulo-admin {
+  color: #6b2e2e;
+  font-size: 1.4rem;
+  margin-bottom: 2.5rem;
+  opacity: 0.9;
+}
+
+.encuestas-section {
+  background-color: #f9f6e9;
+  padding: 4rem 3rem;
+  border-top: 0.1rem solid #d6c58b;
+  border-bottom: 0.1rem solid #d6c58b;
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6rem;
+  margin-top: 1rem;
+}
+
+.card-admin {
+  background-color: #fffef9;
+  border: 0.15rem solid #d8c98b;
+  border-radius: 0.6rem;
+  box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.1);
+  width: 20rem;
+  padding: 4rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-admin:hover {
+  transform: translateY(-0.3rem);
+  box-shadow: 0 0.6rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+.card-admin img {
+  width: 8rem;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.card-admin h2 {
+  color: #4a1c1c;
+  font-size: 2rem;
+  margin-bottom: 1.2rem;
+  font-weight: 600;
+}
+
+.btn-ver {
+  background-color: #6b2e2e;
+  color: #fff;
+  border: none;
+  border-radius: 0.3rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.3rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-ver:hover {
+  background-color: #a25454;
+  color:white;
+}
+
+.card-admin.preescolar { border-color: #7acb55; }
+.card-admin.primaria { border-color: #4385f4; }
+.card-admin.secundaria { border-color: #e04e4e; }
+.card-admin.preparatoria { border-color: #c7479c; }
