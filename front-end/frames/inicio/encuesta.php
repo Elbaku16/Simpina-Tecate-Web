@@ -14,35 +14,41 @@
   <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/header.php'; ?>
 </header>
 
-<main class="subtitle">
-  <h3>Elige tu escolaridad:</h3>
-  <h6>Toca el botón correcto o pídele ayuda a tu maestro.</h6>
+<section class="container escolaridad">
 
   <div class="strip">
-    <div class="container escolaridad">
-      <ul class="grade-grid">
-        <li class="grade-item">
-          <img src="/SIMPINNA/front-end/assets/img/escolaridad/preescolar.png" alt="Preescolar">
-          <a class="pill pill--green" href="/SIMPINNA/front-end/frames/preescolar/preescolar_seccion1.php">Preescolar</a>
-        </li>
-        <li class="grade-item">
-          <img src="/SIMPINNA/front-end/assets/img/escolaridad/primaria.png" alt="Primaria">
-          <a class="pill pill--blue" href="/SIMPINNA/front-end/frames/encuestas/demo-encuestas.php">Primaria</a>
-        </li>
-        <li class="grade-item">
-          <img src="/SIMPINNA/front-end/assets/img/escolaridad/secundaria.png" alt="Secundaria">
-          <a class="pill pill--red" href="/SIMPINNA/front-end/frames/secunaria/secundaria_seccion1.php">Secundaria</a>
-        </li>
-        <li class="grade-item">
-          <img src="/SIMPINNA/front-end/assets/img/escolaridad/preparatoria.png" alt="Preparatoria">
-          <a class="pill pill--magenta" href="/SIMPINNA/front-end/frames/preaparatoria/preparatoria_seccion1.php">Preparatoria</a>
-        </li>
-      </ul>
+    <div>
+      <h3 class="title">Elige tu escolaridad:</h3>
+      <h6 class="subtitle">Toca el botón correcto o pídele ayuda a tu maestro.</h6>
     </div>
   </div>
-  <h6>¡Tu voz importa!</h6>
-</main>
 
+  <ul class="grade-grid">
+    <li class="grade-item preescolar">
+      <img src="/SIMPINNA/front-end/assets/img/escolaridad/preescolar.png" alt="Preescolar">
+      <h3>Preescolar</h3>
+      <a href="#" class="btn-nivel nivel--green">Comenzar</a>
+    </li>
+
+    <li class="grade-item primaria">
+      <img src="/SIMPINNA/front-end/assets/img/escolaridad/primaria.png" alt="Primaria">
+      <h3>Primaria</h3>
+      <a href="/SIMPINNA/front-end/frames/encuestas/demo-encuestas.php" class="btn-nivel nivel--blue">Comenzar</a>
+    </li>
+
+    <li class="grade-item secundaria">
+      <img src="/SIMPINNA/front-end/assets/img/escolaridad/secundaria.png" alt="Secundaria">
+      <h3>Secundaria</h3>
+      <a href="#" class="btn-nivel nivel--red">Comenzar</a>
+    </li>
+
+    <li class="grade-item preparatoria">
+      <img src="/SIMPINNA/front-end/assets/img/escolaridad/preparatoria.png" alt="Preparatoria">
+      <h3>Preparatoria</h3>
+      <a href="#" class="btn-nivel nivel--magenta">Comenzar</a>
+    </li>
+  </ul>
+</section>
 
 <footer>
   <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer.php'; ?>

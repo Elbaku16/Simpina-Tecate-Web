@@ -9,6 +9,8 @@
   font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
   background-color: transparent;
   padding-top: 6vh;
+  padding-bottom: 15vh;
+
 }
 
 .login-title {
@@ -34,7 +36,7 @@
 }
 
 .form-group {
-  margin-bottom: 1.8rem;
+  margin-bottom: 2rem;
 }
 
 label {
@@ -100,6 +102,7 @@ input:focus {
 .titulo-admin {
   font-size: 2.8rem;
   color: #6b2e2e;
+  margin-top: 5rem;
   margin-bottom: 0.5rem;
   font-weight: 700;
 }
@@ -107,17 +110,16 @@ input:focus {
 .subtitulo-admin {
   color: #6b2e2e;
   font-size: 1.4rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1;
   opacity: 0.9;
 }
 
 .encuestas-section {
-  background: linear-gradient(to bottom, #f9f5e4 0%, #fff 90%);
-  border-top: 0.1rem solid #d6c58b;
-  border-bottom: 0.1rem solid #e8ddaf;  padding: 4rem 3rem;
-  border-top: 0.1rem solid #d6c58b;
-  border-bottom: 0.1rem solid #e8ddaf;
-  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.05);
+  background: none;
+  border: none;
+  padding: 2rem 5rem;
+  box-shadow: none;
+  padding-bottom: 10vh;
 }
 
 .cards-container {
@@ -179,8 +181,3 @@ input:focus {
   background-color: #a25454;
   color:white;
 }
-
-.card-admin.preescolar { border-color: #7acb55; }
-.card-admin.primaria { border-color: #4385f4; }
-.card-admin.secundaria { border-color: #e04e4e; }
-.card-admin.preparatoria { border-color: #c7479c; }
