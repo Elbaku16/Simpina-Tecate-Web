@@ -95,8 +95,8 @@ $palette = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#84cc16
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Resultados | Panel Admin</title>
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/global.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
   <style>
     .toolbar{display:flex;gap:8px;align-items:center;padding:8px 16px;border-bottom:1px solid #e5e7eb;background:#fff}
     .toolbar .btn{padding:6px 10px;border:1px solid #cfd8e3;border-radius:8px;background:#fff;cursor:pointer}
@@ -123,7 +123,6 @@ $palette = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#84cc16
 
   <header class="res-header">
     <h1>Resultados de la encuesta</h1>
-    <p class="res-meta">Bajo cada pregunta: espacio para <strong>gráfica de pastel</strong>; después, la <strong>leyenda</strong> con todas las opciones. Si la pregunta es abierta (tipo <code>texto</code>), solo aparece “Ver respuestas”.</p>
   </header>
 
   <?php if (empty($preguntas)): ?>
