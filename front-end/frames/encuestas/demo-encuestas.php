@@ -12,7 +12,7 @@ $niveles = [
     'preparatoria' => 6
 ];
 
-$id_encuesta = $niveles[$nivel] ?? 2; // valor por defecto: primaria
+$id_encuesta = $niveles[$nivel] ?? 4; // valor por defecto: primaria
 $sql = "
 SELECT p.id_pregunta, p.texto_pregunta, p.tipo_pregunta, o.id_opcion, o.texto_opcion
 FROM preguntas p
@@ -53,7 +53,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Encuesta Demo</title>
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/inicio.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
     <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/encuestas.css">
 </head>
 <body>
