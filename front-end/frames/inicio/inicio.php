@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/inicio.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/lenin.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/inicio.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/lenin.css">
     <title>SIMPINNA</title>
 </head>
 <body>
@@ -29,7 +29,7 @@
                         <h2>¿Conoces tus derechos?</h2>
                         <p>¡Pongamoslo a prueba contestando las siguientes preguntas!</p>
                         <img src="/SIMPINNA/front-end/assets/img/inicio/tablas.png?v=1" alt="Encuesta" class="encuesta-icon">
-                        <a href="/SIMPINNA/front-end/frames/inicio/encuesta.php" class="btn-encuesta">Encuesta</a>
+                        <a href="/SIMPINNA/front-end/frames/inicio/seleccion-encuesta.php" class="btn-encuesta">Encuesta</a>
                     </div>
                 </div>
             </div>
