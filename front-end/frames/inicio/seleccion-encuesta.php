@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Encuestas</title>
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/inicio.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/overrides_encuesta.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/inicio.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/overrides_encuesta.css">
 </head>
 <body>
 

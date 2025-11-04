@@ -17,7 +17,7 @@
           </a>
         </li>
         <li>
-          <a href="/SIMPINNA/front-end/frames/inicio/encuesta.php"
+          <a href="/SIMPINNA/front-end/frames/inicio/seleccion-encuesta.php"
              class="<?php echo (strpos($currentPage, 'encuesta.php') !== false || strpos($currentPage, 'demo-encuestas.php') !== false) ? 'active' : ''; ?>">
              Encuesta
           </a>
