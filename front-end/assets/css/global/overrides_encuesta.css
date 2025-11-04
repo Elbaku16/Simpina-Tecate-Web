@@ -1,3 +1,10 @@
+/* ==========================================
+   overrides_encuesta.css
+   Estilos de la página de selección de encuestas
+   Restaurado y compatible con layout.css
+   Proyecto: SIMPINNA Tecate
+   ========================================== */
+
 html, body {
   height: 100%;
   margin: 0;
@@ -16,39 +23,50 @@ footer {
   flex-shrink: 0;
 }
 
-
-h3{
+/* === Títulos y subtítulos === */
+h3 {
   color: #611232;
   text-align: center;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
 }
-h6{
+
+h6 {
   color: #611232;
   text-align: center;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 500;
 }
-.subtitle{ padding-bottom: 3.5rem; }
 
-.strip{
+.subtitle { 
+  padding-bottom: 3.5rem; 
+}
+
+/* === Contenedor superior === */
+.strip {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
   min-height: auto !important;
   color: #611232;
   text-align: center;
-  font-family: "Open Sans","Helvetica Neue",Arial,sans-serif;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
   border-radius: 0.6rem;
 }
 
-.container.escolaridad{
+/* === Contenedor principal de escolaridad === */
+.container.escolaridad {
   padding: 2rem 5rem 10vh !important;
-  font-family: "Open Sans","Helvetica Neue",Arial,sans-serif;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
-.grade-grid{
-  list-style: none;
+/* === Cuadrícula de niveles educativos === */
+.grade-grid {
+  list-style: none !important;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 20rem);
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 6rem;
   justify-content: center;
   align-items: start;
@@ -56,60 +74,69 @@ h6{
   padding-bottom: 5vh;
 }
 
-.grade-item{
+/* === Tarjetas de nivel === */
+.grade-item {
   background-color: #fffef9;
   border: 0.15rem solid #d8c98b;
   border-radius: 0.6rem;
-  box-shadow: 0 0.3rem 0.8rem rgba(0,0,0,0.1);
+  box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.1);
   width: 20rem;
   padding: 4rem 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-align: center;
-}
-.grade-item:hover{
-  transform: translateY(-0.3rem);
-  box-shadow: 0 0.6rem 1rem rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.grade-item:hover {
+  transform: translateY(-0.3rem);
+  box-shadow: 0 0.6rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+/* === Colores de bordes por nivel === */
 .grade-item.preescolar   { border-color: #7acb55; }
 .grade-item.primaria     { border-color: #4385f4; }
 .grade-item.secundaria   { border-color: #e04e4e; }
 .grade-item.preparatoria { border-color: #c7479c; }
 
-.grade-item img{
+/* === Imágenes === */
+.grade-item img {
   width: 8rem;
   height: auto;
   margin-bottom: 1rem;
 }
-.grade-item h3{
+
+/* === Texto del nivel === */
+.grade-item h3 {
   color: #4a1c1c;
   font-size: 2rem;
   margin: 1.2rem 0;
   font-weight: 600;
 }
 
-.btn-nivel{
+/* === Botones de cada nivel === */
+.btn-nivel {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 10rem;
   padding: 0.6rem 1.2rem;
-
-  background: #6b2e2e;
-  color: #fff;
   border: none;
   border-radius: 0.3rem;
   text-decoration: none;
+  font-family: 'Open Sans', sans-serif;
   font-weight: 700;
   font-size: 1.3rem;
+  color: #fff;
   transition: background-color 0.3s ease, transform 0.1s ease;
 }
-.btn-nivel:hover{ background-color: #a25454; }
-.btn-nivel:active{ transform: scale(0.98); }
 
+.btn-nivel:hover {
+  transform: scale(1.03);
+}
+
+/* Colores por nivel */
 .nivel--green   { background-color: #7acb55; }
 .nivel--blue    { background-color: #4385f4; }
 .nivel--red     { background-color: #e04e4e; }
@@ -120,3 +147,28 @@ h6{
 .nivel--red:hover     { background-color: #c03939; }
 .nivel--magenta:hover { background-color: #a5367c; }
 
+/* === Responsive === */
+@media (max-width: 768px) {
+  .grade-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 3rem;
+  }
+
+  .grade-item {
+    width: 100%;
+    padding: 2rem 1.5rem;
+  }
+
+  .grade-item img {
+    width: 6rem;
+  }
+
+  .grade-item h3 {
+    font-size: 1.6rem;
+  }
+
+  .btn-nivel {
+    font-size: 1.1rem;
+    min-width: 8rem;
+  }
+}

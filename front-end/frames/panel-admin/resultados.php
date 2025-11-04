@@ -195,9 +195,9 @@ $nombresBonitos = [
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Resultados <?php echo $nombresBonitos[$nivelNombre]; ?> | Panel Admin</title>
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/global.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/resultados.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/resultados.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
