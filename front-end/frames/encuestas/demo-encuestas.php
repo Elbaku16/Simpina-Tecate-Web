@@ -66,12 +66,14 @@ $conn->close();
         <button id="btnAnterior">Anterior</button>
         <button id="btnSiguiente">Siguiente</button>
     </main>
-<footer>
+    <footer>
         <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'); ?>
     </footer>
     <script>
         // Enviar preguntas PHP → JS
         const preguntas = <?php echo json_encode(array_values($preguntas), JSON_UNESCAPED_UNICODE); ?>;
+        // Pasar id_encuesta al JavaScript para usarlo al enviar respuestas
+        const idEncuesta = <?php echo $id_encuesta; ?>;
     </script>
     <script src="/SIMPINNA/front-end/scripts/encuesta.js"></script>
 </body>
