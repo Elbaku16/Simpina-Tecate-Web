@@ -29,25 +29,25 @@ if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         <div class="card-admin preescolar">
           <img src="/SIMPINNA/front-end/assets/img/escolaridad/preescolar.png" alt="Preescolar">
           <h2>Preescolar</h2>
-          <a href="resultados_preescolar.php"   class="btn-ver">Ver resultados</a>
+          <a href="resultados.php?nivel=preescolar" class="btn-ver">Ver resultados</a>
         </div>
 
         <div class="card-admin primaria">
           <img src="/SIMPINNA/front-end/assets/img/escolaridad/primaria.png" alt="Primaria">
           <h2>Primaria</h2>
-          <a href="resultados_primaria.php"   class="btn-ver">Ver resultados</a>
+          <a href="resultados.php?nivel=primaria" class="btn-ver">Ver resultados</a>
         </div>
 
         <div class="card-admin secundaria">
           <img src="/SIMPINNA/front-end/assets/img/escolaridad/secundaria.png" alt="Secundaria">
           <h2>Secundaria</h2>
-          <a href="resultados_secundaria.php"   class="btn-ver">Ver resultados</a>
+          <a href="resultados.php?nivel=secundaria" class="btn-ver">Ver resultados</a>
         </div>
 
         <div class="card-admin preparatoria">
           <img src="/SIMPINNA/front-end/assets/img/escolaridad/preparatoria.png" alt="Preparatoria">
           <h2>Preparatoria</h2>
-          <a href="resultados_preparatoria.php"   class="btn-ver">Ver resultados</a>
+          <a href="resultados.php?nivel=preparatoria" class="btn-ver">Ver resultados</a>
         </div>
       </div>
     </section>
