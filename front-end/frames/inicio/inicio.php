@@ -157,6 +157,7 @@
 
     <footer>
         <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'); ?>
+  
     </footer>
 </body>
 </html>
