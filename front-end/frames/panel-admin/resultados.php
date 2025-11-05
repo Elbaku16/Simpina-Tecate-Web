@@ -195,8 +195,8 @@ $nombresBonitos = [
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Resultados <?php echo $nombresBonitos[$nivelNombre]; ?> | Panel Admin</title>
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/global.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/resultados.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -247,11 +247,19 @@ $nombresBonitos = [
               Ver respuestas de texto
             </a>
           <?php else: ?>
-            <!-- Pregunta de opción múltiple: mostrar gráfica y leyenda -->
+            <!-- Pregunta de opción múltiple: mostrar gráfica y leyenda colapsable -->
             <div class="pie-slot" id="pie-q<?php echo $pid; ?>" data-pregunta-id="<?php echo $pid; ?>" data-tipo="<?php echo $tipo; ?>">
               <canvas id="chart-<?php echo $pid; ?>"></canvas>
             </div>
-            <div class="legend" id="legend-q<?php echo $pid; ?>">
+            
+            <button class="toggle-legend" onclick="toggleLegend(<?php echo $pid; ?>)" id="toggle-<?php echo $pid; ?>">
+              <span>Ver leyenda</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            <div class="legend collapsed" id="legend-q<?php echo $pid; ?>">
               <?php if (empty($lista)): ?>
                 <div class="legend-item" style="color:#9aa4b2">No hay opciones configuradas.</div>
               <?php else: 
@@ -280,6 +288,25 @@ $nombresBonitos = [
     window.ENCUESTA_ID = <?php echo (int)$encuestaId; ?>;
     window.NIVEL_NOMBRE = '<?php echo htmlspecialchars($nivelNombre); ?>';
     window.ESCUELA_FILTRO = <?php echo (int)$escuelaFiltro; ?>;
+
+    // Función para toggle de leyenda
+    function toggleLegend(preguntaId) {
+      const legend = document.getElementById('legend-q' + preguntaId);
+      const toggleBtn = document.getElementById('toggle-' + preguntaId);
+      const toggleText = toggleBtn.querySelector('span');
+      
+      if (legend.classList.contains('collapsed')) {
+        legend.classList.remove('collapsed');
+        legend.classList.add('expanded');
+        toggleBtn.classList.add('active');
+        toggleText.textContent = 'Ocultar leyenda';
+      } else {
+        legend.classList.remove('expanded');
+        legend.classList.add('collapsed');
+        toggleBtn.classList.remove('active');
+        toggleText.textContent = 'Ver leyenda';
+      }
+    }
 
     // Esperar a que el DOM esté listo
     document.addEventListener('DOMContentLoaded', function() {
