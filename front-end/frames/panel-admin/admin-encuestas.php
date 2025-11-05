@@ -50,6 +50,18 @@ if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
           <a href="resultados.php?nivel=preparatoria" class="btn-ver">Ver resultados</a>
         </div>
       </div>
+
+      <!-- Sección de comentarios/reportes -->
+      <div class="comentarios-access">
+        <h2 class="comentarios-titulo">Reportes y Comentarios</h2>
+        <p class="comentarios-desc">Revisa los reportes enviados desde el formulario de contacto</p>
+        <a href="admin-comentarios.php" class="btn-comentarios">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Ver todos los comentarios
+        </a>
+      </div>
     </section>
   </main>
 
