@@ -1,7 +1,9 @@
 <?php
 session_start();
 
-
+/**
+ * Performs a safe redirect, ensuring headers are sent only once.
+ */
 function redirectTo(string $path): void
 {
     if (!headers_sent()) {
