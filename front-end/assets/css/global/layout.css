@@ -14,31 +14,63 @@ body {
 }
 
 /* Quitar subrayado y color azul por defecto de botones basados en enlaces */
-:where(a.btn,
-       a[class^="btn-"],
-       a[class*=" btn-"])
-{
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+) {
+  color: inherit;
   text-decoration: none;
-  color: inherit;
 }
 
-:where(a.btn,
-       a[class^="btn-"],
-       a[class*=" btn-"]):visited
-{
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+):visited {
   color: inherit;
+  text-decoration: none;
 }
 
-:where(a.btn,
-       a[class^="btn-"],
-       a[class*=" btn-"]):hover,
-:where(a.btn,
-       a[class^="btn-"],
-       a[class*=" btn-"]):focus,
-:where(a.btn,
-       a[class^="btn-"],
-       a[class*=" btn-"]):active
-{
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+):hover,
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+):focus,
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+):focus-visible,
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+):active {
+  color: inherit;
   text-decoration: none;
 }
 
