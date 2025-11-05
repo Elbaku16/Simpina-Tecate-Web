@@ -44,6 +44,12 @@
   box-shadow: 0 2px 4px rgba(107, 46, 46, 0.2);
 }
 
+.toolbar .btn:focus {
+  background: var(--color-primary);
+  color: #fff;
+  text-decoration: none;
+}
+
 .res-header {
   padding: 20px 20px 16px 20px;
   border-bottom: 2px solid var(--color-border-gold);
@@ -226,6 +232,12 @@
   box-shadow: 0 2px 4px rgba(107, 46, 46, 0.2);
 }
 
+.btn-ver-respuestas:focus {
+  background-color: var(--color-primary);
+  color: #fff;
+  text-decoration: none;
+}
+
 @media (max-width: 768px) {
   .res-wrapper {
     grid-template-columns: 1fr;
@@ -263,6 +275,12 @@
 
 .toolbar .btn:hover {
   background: #f3f4f6;
+}
+
+.toolbar .btn:focus {
+  background: #fff;
+  color: #374151;
+  text-decoration: none;
 }
 
 .res-header {
@@ -409,4 +427,10 @@
 
 .btn-ver-respuestas:active {
   transform: scale(0.97);
+}
+
+.btn-ver-respuestas:focus {
+  background-color: #6b2e2e;
+  color: #fff;
+  text-decoration: none;
 }
