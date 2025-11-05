@@ -12,7 +12,7 @@ if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Encuestas registradas | Panel Admin</title>
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/global.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
 </head>
 <body>
