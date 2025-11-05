@@ -136,6 +136,10 @@ h6 {
   transform: scale(1.03);
 }
 
+.btn-nivel:focus {
+  text-decoration: none;
+}
+
 /* Colores por nivel */
 .nivel--green   { background-color: #7acb55; }
 .nivel--blue    { background-color: #4385f4; }

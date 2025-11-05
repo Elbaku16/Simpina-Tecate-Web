@@ -13,6 +13,67 @@ body {
   background-color: #fffef9;
 }
 
+/* Quitar subrayado y color azul por defecto de botones basados en enlaces */
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+) {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+):visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+):hover,
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+):focus,
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+):focus-visible,
+:where(
+  a.btn,
+  a[class^="btn-"],
+  a[class*=" btn-"],
+  .btn > a,
+  [class^="btn-"] > a,
+  [class*=" btn-"] > a
+):active {
+  color: inherit;
+  text-decoration: none;
+}
+
 /* Títulos y encabezados */
 h1, h2, h3, .title {
   font-family: var(--font-title);
@@ -93,6 +154,32 @@ main {
 .btn-logout:hover {
     color: #a25454;
 }
+/* ======== BOTÓN SALIR (solo en login admin) ======== */
+
+.btn-logout:focus {
+    color: #6b2e2e;
+    text-decoration: none;
+}
+
+.btn-exit {
+    display: inline-block;
+    margin-top: 0.3rem;
+    color: #6b2e2e;
+    padding: 0.4rem 1rem;
+    border-radius: 0.3rem;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.btn-exit:hover {
+    color: #a25454;
+}
+
+.btn-exit:focus {
+    color: #6b2e2e;
+    text-decoration: none;
+}
 
 /* ======== NAV ======== */
 
@@ -136,34 +223,113 @@ main {
     width: auto;
 }
 
-/* ======== FOOTER ======== */
+/* ======== FOOTERS SIMPINNA ======== */
 
+/* base visual compartida */
 .footer-simpinna {
-    background-color: #dcc655;
-    color: #000;
-    font-family: "Georgia", serif;
-    padding: 1.2rem 2rem;
-    border-top: 0.2rem solid #c1ad3b;
+  background-color: #dcc655;
+  color: #000;
+  font-family: "Georgia", serif;
+  padding: 1.5rem 2rem;
+  border-top: 0.2rem solid #c1ad3b;
 }
 
-.footer-container {
-    display: flex;
+/* layout: logo a la izquierda, texto centrado */
+/* usamos un spacer a la derecha para equilibrar el centrado */
+.footer-simpinna .footer-container,
+.footer-admin .footer-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* bloque del logo a la izquierda */
+.footer-simpinna .footer-logo,
+.footer-admin .footer-logo {
+  flex: 0 0 90px;           /* ancho fijo para equilibrar el centrado */
+}
+
+/* imagen del logo */
+.footer-simpinna .logo-tecate,
+.footer-admin .logo-tecate {
+  height: 8rem;
+  width: auto;
+  display: block;
+}
+
+/* bloque central de texto */
+.footer-simpinna .footer-text,
+.footer-admin .footer-text {
+  flex: 1 1 auto;
+  text-align: center;       /* centrado real del copy y del enlace */
+}
+
+.footer-simpinna .footer-text p,
+.footer-admin .footer-text p {
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.5;
+  color: #000;
+}
+
+/* enlace solo existe en el footer público; estilos aquí no rompen el admin */
+.footer-simpinna .footer-text a {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 1rem;
+  color: #333;
+  text-decoration: none;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.footer-simpinna .footer-text a:hover {
+  color: #000;
+  text-decoration: underline;
+  transform: scale(1.03);
+}
+
+/* spacer a la derecha para equilibrar el layout (mismo ancho que el logo) */
+.footer-simpinna .footer-spacer,
+.footer-admin .footer-spacer {
+  flex: 0 0 90px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .footer-simpinna,
+  .footer-admin {
+    padding: 1.2rem 1rem;
+  }
+
+  .footer-simpinna .footer-container,
+  .footer-admin .footer-container {
+    flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: 2rem;
-}
+    text-align: center;
+    gap: 0.8rem;
+  }
 
-.logo-tecate {
-    height: 8rem;
-    width: auto;
-}
+  .footer-simpinna .logo-tecate,
+  .footer-admin .logo-tecate {
+    height: 6.5rem;
+  }
 
-.footer-text p {
-    margin: 0;
-    font-size: 1.3rem;
+  .footer-simpinna .footer-text p,
+  .footer-admin .footer-text p {
+    font-size: 1.1rem;
     line-height: 1.4;
-}
+  }
 
+  .footer-simpinna .footer-text a {
+    font-size: 0.95rem;
+  }
+
+  .footer-simpinna .footer-spacer,
+  .footer-admin .footer-spacer {
+    display: none; /* en móvil no hace falta equilibrar */
+  }
+}
 /* ======== RESPONSIVE ======== */
 
 @media (max-width: 768px) {
