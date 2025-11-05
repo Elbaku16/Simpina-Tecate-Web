@@ -97,7 +97,7 @@ main.admin-encuestas {
   background: var(--burgundy);
   color: #fff;
   padding: .65rem 1.4rem;
-  border-radius: 999px;
+  border-radius: 10px;
   text-decoration: none;
   font-weight: 600;
   transition: background .3s ease, transform .2s ease, box-shadow .2s ease;
@@ -175,7 +175,7 @@ main.admin-encuestas {
 }
 .card-admin h2{
   margin:0;
-  font-size:1.25rem;
+  font-size:1.8rem;
   color:var(--burgundy);
   font-weight:700;
   letter-spacing:.01em;
@@ -184,9 +184,10 @@ main.admin-encuestas {
 /* Botón dentro de tarjeta */
 .btn-ver{
   display:inline-flex; align-items:center; justify-content:center;
+  font-size: 1.4rem;
   gap:.4rem;
-  padding:.7rem 1.4rem;
-  border-radius:999px;
+  padding:.9rem 1.6rem;
+  border-radius:10px;
   background:var(--burgundy); color:#fff;
   text-decoration:none; font-weight:600;
   box-shadow:0 12px 24px rgba(122,30,44,.25);
@@ -237,7 +238,7 @@ main.admin-encuestas {
 label{
   display:block;
   font-weight:700;
-  font-size:1rem;
+  font-size:1.5rem;
   margin-bottom:.45rem;
   color: var(--text-dark);
 }
@@ -247,7 +248,7 @@ input{
   padding:.8rem .9rem;
   border:1px solid rgba(0,0,0,.18);
   border-radius:.5rem;
-  font-size:1rem;
+  font-size:1.3rem;
   transition: border-color .25s ease, box-shadow .25s ease;
   background: #fff;
 }
@@ -261,9 +262,9 @@ input:focus{
 .btn-login{
   display:inline-flex; align-items:center; justify-content:center;
   background: var(--burgundy); color:#fff;
-  border:none; border-radius:999px;
+  border:none; border-radius:10px;
   padding:.85rem 1.6rem;
-  font-size:1rem; font-weight:700;
+  font-size:1.4rem; font-weight:700;
   letter-spacing:.02rem; cursor:pointer;
   transition: background .3s, transform .15s, box-shadow .3s;
   box-shadow: 0 10px 20px rgba(122,30,44,.25);
