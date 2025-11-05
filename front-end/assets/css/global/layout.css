@@ -160,6 +160,26 @@ main {
     text-decoration: none;
 }
 
+.btn-exit {
+    display: inline-block;
+    margin-top: 0.3rem;
+    color: #6b2e2e;
+    padding: 0.4rem 1rem;
+    border-radius: 0.3rem;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.btn-exit:hover {
+    color: #a25454;
+}
+
+.btn-exit:focus {
+    color: #6b2e2e;
+    text-decoration: none;
+}
+
 /* ======== NAV ======== */
 
 .header-nav ul {
