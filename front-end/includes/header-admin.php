@@ -1,11 +1,24 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$esAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin';
+$usuarioActivo = $esAdmin && isset($_SESSION['usuario']) ? $_SESSION['usuario'] : null;
+?>
 <header class="header">
   <div class="header-izq">
-      <img src="/SIMPINNA/front-end/assets/img/global/logo-simpinna.png" 
+      <img src="/SIMPINNA/front-end/assets/img/global/logo-simpinna.png"
            alt="Logo SIMPINNA" class="logo-simpinna">
 
     <div class="titulo-header">
       <span class="titulo-header">Panel Administrativo</span>
-       <?php if (isset($_SESSION['user'])): ?>
+        <?php if ($usuarioActivo): ?>
+          <span class="usuario-activo" style="margin-left: 1rem; font-weight: 600;">
+            <?= htmlspecialchars($usuarioActivo, ENT_QUOTES, 'UTF-8'); ?>
+          </span>
+        <?php endif; ?>
+        <?php if ($esAdmin): ?>
           <a href="/SIMPINNA/front-end/frames/panel-admin/logout.php" class="btn-logout">Cerrar sesión</a>
         <?php endif; ?>
     </div>
