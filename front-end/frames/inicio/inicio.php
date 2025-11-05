@@ -38,6 +38,11 @@
 
     <footer>
         <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'); ?>
+        <div style="text-align: center; margin: 0.5rem 0 1.5rem; font-size: 0.75rem; color: #666;">
+            <a href="/SIMPINNA/front-end/frames/admin/login.php" style="color: inherit; text-decoration: none;">
+                © 2025 Ayuntamiento de Tecate — Acceso administrativo
+            </a>
+        </div>
     </footer>
 </body>
 </html>
