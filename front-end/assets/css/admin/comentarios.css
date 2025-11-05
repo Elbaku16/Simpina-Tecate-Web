@@ -1,0 +1,311 @@
+    :root {
+      --burgundy: #6b2e2e;
+      --burgundy-hover: #8b3e3e;
+      --gold: #d4af37;
+      --cream: #f5f1e8;
+    }
+    
+    .comentarios-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+    
+    .header-section {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      border: 2px solid var(--gold);
+      margin-bottom: 2rem;
+    }
+    
+    .btn-back {
+      display: inline-block;
+      padding: 10px 20px;
+      background: var(--burgundy);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-back:hover {
+      background: var(--burgundy-hover);
+      transform: translateX(-4px);
+    }
+    
+    .filtros-bar {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 2px solid var(--gold);
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    
+    .filtro-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .filtro-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--burgundy);
+    }
+    
+    .filtro-group input,
+    .filtro-group select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .filtro-group input:focus,
+    .filtro-group select:focus {
+      outline: none;
+      border-color: var(--burgundy);
+    }
+    
+    .btn-filtrar, .btn-limpiar {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-filtrar {
+      background: var(--burgundy);
+      color: #fff;
+    }
+    
+    .btn-filtrar:hover {
+      background: var(--burgundy-hover);
+    }
+    
+    .btn-limpiar {
+      background: #e0e0e0;
+      color: #333;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .tabla-comentarios {
+      background: #fff;
+      border-radius: 12px;
+      border: 2px solid var(--gold);
+      overflow: hidden;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    thead {
+      background: var(--burgundy);
+      color: #fff;
+    }
+    
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    tbody tr {
+      border-bottom: 1px solid #eee;
+      transition: background 0.2s ease;
+    }
+    
+    tbody tr:hover {
+      background: #fafafa;
+    }
+    
+    td {
+      padding: 1rem;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    
+    .comentario-preview {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .btn-accion {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0 4px;
+    }
+    
+    .btn-ver {
+      background: var(--burgundy);
+      color: #fff;
+    }
+    
+    .btn-ver:hover {
+      background: var(--burgundy-hover);
+    }
+    
+    .btn-eliminar {
+      background: #d32f2f;
+      color: #fff;
+    }
+    
+    .btn-eliminar:hover {
+      background: #b71c1c;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+    }
+    
+    .modal-content {
+      background: #fff;
+      margin: 3% auto;
+      padding: 0;
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .modal-header {
+      background: var(--burgundy);
+      color: #fff;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 14px 14px 0 0;
+    }
+    
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #fff;
+    }
+    
+    .close {
+      color: #fff;
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    
+    .close:hover {
+      transform: scale(1.2);
+    }
+    
+    .modal-body {
+      padding: 2rem;
+    }
+    
+    .detalle-item {
+      margin-bottom: 1.5rem;
+    }
+    
+    .detalle-label {
+      font-weight: 700;
+      color: var(--burgundy);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    
+    .detalle-valor {
+      background: var(--cream);
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid var(--gold);
+    }
+    
+    .btn-cambiar-estado {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+      background: var(--burgundy);
+      color: #fff;
+      font-size: 1rem;
+    }
+    
+    .btn-cambiar-estado:hover {
+      background: var(--burgundy-hover);
+      transform: translateY(-2px);
+    }
+    
+    .estado-selector {
+      margin-top: 1rem;
+      padding: 1.5rem;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+    
+    .estado-selector label {
+      display: block;
+      font-weight: 600;
+      color: var(--burgundy);
+      margin-bottom: 0.5rem;
+    }
+    
+    .estado-selector select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--gold);
+      border-radius: 8px;
+      font-size: 1rem;
+    }
