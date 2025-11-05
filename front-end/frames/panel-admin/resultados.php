@@ -6,8 +6,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Verificar que esté logueado
-if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: /SIMPINNA/front-end/frames/panel-admin/login.php');
+if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+    header('Location: ../admin/login.php');
     exit;
 }
 
@@ -201,12 +201,10 @@ $nombresBonitos = [
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <header>
-    <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/header-admin.php'; ?>
-  </header>
+  <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/header-admin.php'; ?>
 
   <div class="toolbar">
-    <a class="btn" href="/SIMPINNA/front-end/frames/panel-admin/admin-encuestas.php">← Volver</a>
+    <a class="btn" href="../panel/panel-admin.php">← Volver</a>
   </div>
 
   <div class="res-header">
@@ -273,7 +271,7 @@ $nombresBonitos = [
   <?php endif; ?>
 
   <footer>
-    <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer.php'; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer-admin.php'; ?>
   </footer>
 
   <script>
