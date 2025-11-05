@@ -1,10 +1,20 @@
 /* ==========================================
    overrides_encuesta.css
-   Estilos de la página de selección de encuestas
-   Restaurado y compatible con layout.css
+   Selección de encuestas (fusionado con estilo Codex)
+   Compatible con layout.css y estructura actual
    Proyecto: SIMPINNA Tecate
    ========================================== */
 
+/* === Paleta local y sombras (solo para esta vista) === */
+:root {
+  --cream: #FDFCF7;          /* Si prefieres más cálido, usa #F7EEDC */
+  --burgundy: #7A1E2C;
+  --gold: #D4B056;
+  --text-dark: #3A2A25;
+  --card-shadow: 0 12px 28px rgba(122, 30, 44, 0.12);
+}
+
+/* === Estructura base / altura completa === */
 html, body {
   height: 100%;
   margin: 0;
@@ -13,149 +23,252 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  font-family: 'Montserrat', 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--cream);
+  color: var(--text-dark);
 }
 
+footer { flex-shrink: 0; }
+
+/* =================================================================
+   Compatibilidad con tu estructura previa (.container.escolaridad)
+   y con la nueva (.survey-selection / __wrapper)
+   ================================================================= */
+
+/* Contenedor principal (versión nueva) */
+.survey-selection {
+  flex: 1 0 auto;
+  display: flex;
+  align-items: center;
+  padding: clamp(2rem, 5vw, 4rem) 1.5rem;
+}
+
+/* Contenedor principal (versión previa) */
 .container.escolaridad {
   flex: 1 0 auto;
+  padding: 2rem 5rem 10vh !important; /* mantiene tu espaciado original */
 }
 
-footer {
-  flex-shrink: 0;
+/* Wrapper visual (tarjeta grande) */
+.survey-selection__wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 28px;
+  box-shadow: 0 20px 48px rgba(58, 42, 37, 0.1);
+  padding: clamp(2rem, 4vw, 3rem);
+  backdrop-filter: blur(2px);
 }
 
-/* === Títulos y subtítulos === */
-h3 {
-  color: #611232;
+/* Encabezados locales de la vista */
+.survey-selection__header {
   text-align: center;
-  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.survey-selection__header .title {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  color: var(--burgundy);
+  margin: 0;
   font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
-h6 {
-  color: #611232;
+.survey-selection__header .subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--text-dark);
+  margin: 0.75rem 0 0;
+  opacity: 0.85;
+}
+
+/* =================================================================
+   Tipografía y bloques heredados (scoped para no afectar otras vistas)
+   ================================================================= */
+
+.container.escolaridad h3,
+.survey-selection h3 {
+  color: var(--burgundy);
   text-align: center;
-  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+}
+
+.container.escolaridad h6,
+.survey-selection h6 {
+  color: var(--text-dark);
+  text-align: center;
   font-weight: 500;
+  margin: 0;
+  opacity: 0.9;
 }
 
-.subtitle { 
-  padding-bottom: 3.5rem; 
-}
+.subtitle { padding-bottom: 3.5rem; }
 
-/* === Contenedor superior === */
 .strip {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
   min-height: auto !important;
-  color: #611232;
+  color: var(--burgundy);
   text-align: center;
-  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
   border-radius: 0.6rem;
 }
 
-/* === Contenedor principal de escolaridad === */
-.container.escolaridad {
-  padding: 2rem 5rem 10vh !important;
-  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
-}
+/* =================================================================
+   Cuadrícula y tarjetas (fusionado con estilo Codex)
+   ================================================================= */
 
-/* === Cuadrícula de niveles educativos === */
 .grade-grid {
   list-style: none !important;
   margin: 0;
   padding: 0;
   display: grid !important;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 6rem;
+  gap: clamp(1rem, 3vw, 1.75rem);
   justify-content: center;
   align-items: start;
   justify-items: center;
   padding-bottom: 5vh;
 }
 
-/* === Tarjetas de nivel === */
 .grade-item {
-  background-color: #fffef9;
-  border: 0.15rem solid #d8c98b;
-  border-radius: 0.6rem;
-  box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.1);
+  background: #fffaf0; /* conservamos el tono cálido */
+  border-radius: 24px; /* redondeado más amable */
+  border: 1px solid rgba(122, 30, 44, 0.08); /* borde suave */
+  box-shadow: var(--card-shadow);
   width: 20rem;
-  padding: 4rem 2.5rem;
+  padding: 2.25rem 1.5rem 2rem; /* del estilo Codex */
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Halo dorado decorativo (Codex) */
+.grade-item::before {
+  content: "";
+  position: absolute;
+  inset: -60% auto auto -60%;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle at center, rgba(212, 176, 86, 0.4), transparent 70%);
+  transform: rotate(12deg);
+  z-index: 0;
 }
 
 .grade-item:hover {
-  transform: translateY(-0.3rem);
-  box-shadow: 0 0.6rem 1rem rgba(0, 0, 0, 0.2);
+  transform: translateY(-8px);
+  box-shadow: 0 16px 32px rgba(122, 30, 44, 0.18);
 }
 
-/* === Colores de bordes por nivel === */
+/* Bordes por nivel (conservados de tu versión) */
 .grade-item.preescolar   { border-color: #7acb55; }
 .grade-item.primaria     { border-color: #4385f4; }
 .grade-item.secundaria   { border-color: #e04e4e; }
 .grade-item.preparatoria { border-color: #c7479c; }
 
-/* === Imágenes === */
+/* Imágenes y títulos dentro de tarjeta */
 .grade-item img {
-  width: 8rem;
+  width: 110px; /* 8rem aprox */
   height: auto;
-  margin-bottom: 1rem;
+  margin: 0 auto 1.25rem;
+  position: relative;
+  z-index: 1;
 }
 
-/* === Texto del nivel === */
 .grade-item h3 {
-  color: #4a1c1c;
-  font-size: 2rem;
-  margin: 1.2rem 0;
-  font-weight: 600;
+  margin: 0 0 1rem;
+  font-size: 1.35rem; /* ~2rem anterior reducido por equilibrio */
+  font-weight: 700;
+  color: var(--burgundy);
+  position: relative;
+  z-index: 1;
 }
 
-/* === Botones de cada nivel === */
+/* =================================================================
+   Botones (estilo Codex). 
+   Por diseño actual, unificamos todos en burgundy.
+   Si prefieres colores por nivel, ver bloque opcional más abajo.
+   ================================================================= */
+
 .btn-nivel {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   min-width: 10rem;
-  padding: 0.6rem 1.2rem;
+  padding: 0.8rem 1.6rem;
   border: none;
-  border-radius: 0.3rem;
+  border-radius: 999px;
   text-decoration: none;
-  font-family: 'Open Sans', sans-serif;
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: #fff;
-  transition: background-color 0.3s ease, transform 0.1s ease;
+  background: var(--burgundy);
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 18px rgba(122, 30, 44, 0.25);
+  position: relative;
+  z-index: 1;
+}
+
+.btn-nivel::after {
+  content: '\2192';
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
 }
 
 .btn-nivel:hover {
-  transform: scale(1.03);
+  background: var(--gold);
+  color: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(212, 176, 86, 0.3);
 }
 
-.btn-nivel:focus {
-  text-decoration: none;
+.btn-nivel:focus { text-decoration: none; }
+.btn-nivel:hover::after { transform: translateX(6px); }
+
+/* Unificación de color (Codex) */
+.nivel--green,
+.nivel--blue,
+.nivel--red,
+.nivel--magenta {
+  background: var(--burgundy);
 }
 
-/* Colores por nivel */
+/* === OPCIONAL: si quieres volver a colores por nivel, descomenta:
 .nivel--green   { background-color: #7acb55; }
 .nivel--blue    { background-color: #4385f4; }
 .nivel--red     { background-color: #e04e4e; }
 .nivel--magenta { background-color: #c7479c; }
 
-.nivel--green:hover   { background-color: #5fa03f; }
-.nivel--blue:hover    { background-color: #356ad1; }
-.nivel--red:hover     { background-color: #c03939; }
-.nivel--magenta:hover { background-color: #a5367c; }
+.nivel--green:hover   { background-color: #5fa03f; color:#fff; }
+.nivel--blue:hover    { background-color: #356ad1; color:#fff; }
+.nivel--red:hover     { background-color: #c03939; color:#fff; }
+.nivel--magenta:hover { background-color: #a5367c; color:#fff; }
+*/
 
-/* === Responsive === */
+/* =================================================================
+   Responsive
+   ================================================================= */
 @media (max-width: 768px) {
+  .survey-selection { padding: 2rem 1rem; }
+
+  .survey-selection__wrapper {
+    padding: 2rem 1.5rem;
+  }
+
+  .container.escolaridad {
+    padding: 2rem 2rem 8vh !important;
+  }
+
   .grade-grid {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 3rem;
+    gap: 2.5rem;
   }
 
   .grade-item {
@@ -163,16 +276,16 @@ h6 {
     padding: 2rem 1.5rem;
   }
 
-  .grade-item img {
-    width: 6rem;
-  }
-
-  .grade-item h3 {
-    font-size: 1.6rem;
-  }
+  .grade-item img { width: 90px; } /* ~6rem */
+  .grade-item h3 { font-size: 1.5rem; }
 
   .btn-nivel {
-    font-size: 1.1rem;
+    width: 100%;
+    font-size: 1.05rem;
     min-width: 8rem;
   }
+}
+
+@media (max-width: 480px) {
+  .survey-selection__wrapper { background: rgba(255, 255, 255, 0.82); }
 }
