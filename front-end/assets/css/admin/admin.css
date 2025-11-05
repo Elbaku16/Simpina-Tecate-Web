@@ -1,193 +1,296 @@
-/* admin.css */
+/* ==========================================
+   admin.css — Panel Administrativo + Login
+   Estilo coherente con selección de encuestas
+   ========================================== */
 
-.login-container {
+:root {
+  --cream: #FDFCF7;     /* Fondo general */
+  --panel-cream: #FFFAF3; /* Paneles/targetas sutilmente más claros */
+  --burgundy: #7A1E2C;
+  --gold: #D4B056;
+  --text-dark: #2D1B1F;
+  --muted: rgba(212, 176, 86, 0.25);
+  --shadow-soft: 0 20px 40px rgba(45, 27, 31, 0.15);
+  --shadow-card: 0 14px 30px rgba(58, 42, 37, 0.18);
+  --radius-lg: 28px;
+  --radius-md: 22px;
+  --radius-sm: 18px;
+}
+
+/* === Base === */
+body {
+  margin: 0;
+  background: var(--cream);
+  font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--text-dark);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  color: #4a1c1c;
-  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
-  background-color: transparent;
-  padding-top: 6vh;
-  padding-bottom: 15vh;
-
 }
 
-.login-title {
-  font-size: 2.4rem;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 2.5rem;
-  color: #6b2e2e;
-  letter-spacing: 0.05rem;
-}
+footer { flex-shrink: 0; }
 
-.login-form {
-  background-color: #f9f6e9;
-  border: 0.15rem solid #d6c58b;
-  border-radius: 0.6rem;
-  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.15);
-  width: 45%;
-  min-width: 25rem;
-  padding: 3rem 3.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.form-group {
-  margin-bottom: 2rem;
-}
-
-label {
-  display: block;
-  font-weight: 600;
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
-input {
+/* ==========================================
+   PANEL ADMIN — CONTENEDOR
+========================================== */
+main.admin-encuestas {
+  flex: 1;
   width: 100%;
-  padding: 0.8rem 0.9rem;
-  border: 0.1rem solid #b6b6b6;
-  border-radius: 0.3rem;
-  font-size: 1.2rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
 }
 
-input:focus {
-  outline: none;
-  border-color: #6b2e2e;
-  box-shadow: 0 0 0.4rem rgba(107, 46, 46, 0.5);
-}
-
-.btn-login {
-  align-self: center;
-  background-color: #6b2e2e;
-  color: #fff;
-  border: none;
-  border-radius: 0.3rem;
-  padding: 1rem 2rem;
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: 0.03rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.1s ease;
-}
-
-.btn-login:hover {
-  background-color: #a25454;
-}
-
-.btn-login:active {
-  transform: scale(0.97);
-}
-
-.login-note {
+/* Encabezado superior simplificado */
+.admin-summary {
+  background: var(--panel-cream);
+  border: 1px solid var(--muted);
+  border-radius: var(--radius-sm);
+  padding: clamp(1.6rem, 3vw, 2.2rem);
+  box-shadow: 0 10px 24px rgba(58, 42, 37, 0.12);
   text-align: center;
-  font-size: 1.1rem;
-  margin-top: 1.8rem;
-  color: #4f4f4f;
-  opacity: 0.9;
+  position: relative;
 }
-/* ===============================
-   PANEL ADMIN - ENCUESTAS
-=============================== */
-.admin-encuestas {
-  text-align: center;
-  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
+
+.admin-summary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(80%, 760px);
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  border-radius: 2px;
+  opacity: .6;
 }
 
 .titulo-admin {
-  font-size: 2.8rem;
-  color: #6b2e2e;
-  margin-top: 5rem;
-  margin-bottom: 0.5rem;
+  margin: 0;
+  font-size: clamp(2rem, 3.5vw, 2.6rem);
   font-weight: 700;
+  color: var(--burgundy);
+  letter-spacing: .02em;
 }
 
 .subtitulo-admin {
-  color: #6b2e2e;
-  font-size: 1.4rem;
-  margin-bottom: 1;
-  opacity: 0.9;
+  margin: .8rem auto 0;
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  max-width: 600px;
+  line-height: 1.6;
+  color: rgba(45,27,31,.85);
 }
 
-.encuestas-section {
-  background: none;
-  border: none;
-  padding: 2rem 5rem;
-  box-shadow: none;
-  padding-bottom: 10vh;
-}
-
-.cards-container {
-
-  border-radius: 0.8rem;
-  padding: 3rem 2rem;
+/* Acciones rápidas (1 fila, sin duplicar con tarjetas) */
+.admin-quick-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 6rem;
-  transition: transform 0.3s ease;
+  gap: .75rem;
+  margin-top: 1.1rem;
 }
 
+.btn-action {
+  background: var(--burgundy);
+  color: #fff;
+  padding: .65rem 1.4rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background .3s ease, transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 10px 20px rgba(122,30,44,.25);
+}
+.btn-action:hover { background: var(--gold); color: var(--burgundy); transform: translateY(-2px); box-shadow: 0 12px 22px rgba(212,176,86,.25); }
+.btn-action:focus-visible { outline: 3px solid rgba(212,176,86,.6); outline-offset: 2px; }
 
+/* Sección de tarjetas */
+.encuestas-section {
+  background: rgba(255,255,255,.75);
+  backdrop-filter: blur(4px);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--muted);
+}
+
+.encuestas-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+.encuestas-section__header h2 {
+  margin: 0;
+  font-size: clamp(1.3rem, 2.5vw, 1.6rem);
+  color: var(--burgundy);
+  font-weight: 700;
+}
+.encuestas-section__header p {
+  margin: 0;
+  font-size: .95rem;
+  color: rgba(45,27,31,.78);
+  max-width: 420px;
+}
+
+/* Tarjetas de niveles */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(1rem, 3vw, 1.75rem);
+}
 
 .card-admin {
-  background-color: #fffef9;
-  border: 0.15rem solid #d8c98b;
-  border-radius: 0.6rem;
-  box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.1);
-  width: 20rem;
-  padding: 4rem 2.5rem;
+  background: var(--panel-cream);
+  border-radius: var(--radius-md);
+  padding: 1.8rem 1.4rem 1.6rem;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--muted);
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 1.1rem;
+  transition: transform .3s ease, box-shadow .3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.card-admin::before{
+  content:"";
+  position:absolute;
+  inset:auto -60px -60px auto;
+  width:150px;height:150px;
+  background: radial-gradient(circle at center, rgba(212,176,86,.2), transparent 70%);
+  transform: rotate(-15deg);
+}
+.card-admin:hover{ transform: translateY(-6px); box-shadow: 0 22px 44px rgba(122,30,44,.25); }
+
+.card-admin img{
+  width:90px; height:auto;
+  filter: drop-shadow(0 10px 18px rgba(122,30,44,.12));
+}
+.card-admin h2{
+  margin:0;
+  font-size:1.25rem;
+  color:var(--burgundy);
+  font-weight:700;
+  letter-spacing:.01em;
 }
 
-.card-admin:hover {
-  transform: translateY(-0.3rem);
-  box-shadow: 0 0.6rem 1rem rgba(0, 0, 0, 0.2);
+/* Botón dentro de tarjeta */
+.btn-ver{
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:.4rem;
+  padding:.7rem 1.4rem;
+  border-radius:999px;
+  background:var(--burgundy); color:#fff;
+  text-decoration:none; font-weight:600;
+  box-shadow:0 12px 24px rgba(122,30,44,.25);
+  transition: background .3s, transform .3s, box-shadow .3s;
+  position:relative; z-index:1;
+}
+.btn-ver::after{ content:'\203A'; font-size:1.1rem; transition: transform .3s; }
+.btn-ver:hover{ background:var(--gold); color:var(--burgundy); transform:translateY(-2px); box-shadow:0 16px 28px rgba(212,176,86,.28); }
+.btn-ver:hover::after{ transform: translateX(6px); }
+.btn-ver:focus-visible{ outline:3px solid rgba(212,176,86,.6); outline-offset:2px; }
+
+/* ==========================================
+   LOGIN ADMIN — CONTENEDOR Y FORMULARIO
+========================================== */
+.login-container {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* antes flex-start, ahora centrado verticalmente */
+  padding: clamp(3rem, 5vw, 6rem) 1.5rem 8vh; /* más espacio general */
+  gap: 1.5rem;
+  text-align: center;
 }
 
-.card-admin img {
-  width: 8rem;
-  height: auto;
-  margin-bottom: 1rem;
+.login-title {
+  font-size: clamp(2.4rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--burgundy);
+  letter-spacing: 0.02em;
+  margin: 0.5rem 0 1.5rem;
 }
 
-.card-admin h2 {
-  color: #4a1c1c;
-  font-size: 2rem;
-  margin-bottom: 1.2rem;
-  font-weight: 600;
+
+.login-form {
+  width: min(750px, 95%); /* antes 600px → más ancho */
+  background: var(--panel-cream);
+  border: 1px solid var(--muted);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+  padding: clamp(2.5rem, 4vw, 3rem); /* más espacio interno */
+  text-align: left;
 }
 
-.btn-ver {
-  background-color: #6b2e2e;
-  color: #fff;
-  border: none;
-  border-radius: 0.3rem;
-  padding: 0.6rem 1.2rem;
-  font-size: 1.3rem;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
+
+.form-group{ margin-bottom: 1.15rem; }
+
+label{
+  display:block;
+  font-weight:700;
+  font-size:1rem;
+  margin-bottom:.45rem;
+  color: var(--text-dark);
 }
 
-.btn-ver:hover {
-  background-color: #a25454;
-  color:white;
+input{
+  width:100%;
+  padding:.8rem .9rem;
+  border:1px solid rgba(0,0,0,.18);
+  border-radius:.5rem;
+  font-size:1rem;
+  transition: border-color .25s ease, box-shadow .25s ease;
+  background: #fff;
+}
+input:focus{
+  outline:none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,176,86,.25);
 }
 
-.btn-ver:focus {
-  background-color: #6b2e2e;
-  color: #fff;
-  text-decoration: none;
+/* Botón principal login */
+.btn-login{
+  display:inline-flex; align-items:center; justify-content:center;
+  background: var(--burgundy); color:#fff;
+  border:none; border-radius:999px;
+  padding:.85rem 1.6rem;
+  font-size:1rem; font-weight:700;
+  letter-spacing:.02rem; cursor:pointer;
+  transition: background .3s, transform .15s, box-shadow .3s;
+  box-shadow: 0 10px 20px rgba(122,30,44,.25);
+}
+.btn-login:hover{ background: var(--gold); color: var(--burgundy); transform: translateY(-1px); box-shadow: 0 14px 28px rgba(212,176,86,.28); }
+.btn-login:active{ transform: scale(.98); }
+.btn-login:focus-visible{ outline:3px solid rgba(212,176,86,.6); outline-offset:2px; }
+
+.login-note{
+  text-align:center;
+  font-size:.95rem;
+  margin-top:1rem;
+  color: rgba(45,27,31,.75);
 }
 
-/* ===============================
-   PANEL ADMIN - Resultados
-=============================== */
+/* ==========================================
+   RESPONSIVE
+========================================== */
+@media (max-width: 768px){
+  .encuestas-section__header{
+    text-align:center; justify-content:center;
+  }
+  .encuestas-section__header p{ max-width:none; }
+  .admin-quick-actions{ justify-content:center; }
+}
+
+@media (max-width: 480px){
+  .card-admin{ padding: 1.6rem 1.2rem; }
+  .btn-ver{ width:100%; }
+}
