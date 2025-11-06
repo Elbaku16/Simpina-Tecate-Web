@@ -1,10 +1,6 @@
 <?php
-session_start();
-
-if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-    header('Location: ../admin/login.php');
-    exit;
-}
+require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/auth/verificar-sesion.php';
+requerir_admin();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -15,7 +11,6 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
-  
 </head>
 <body>
   <?php include $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header-admin.php'; ?>
@@ -23,14 +18,13 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
   <main class="admin-encuestas">
     <section class="admin-summary">
       <h1 class="titulo-admin">Encuestas registradas</h1>
-      <p class="subtitulo-admin">Consulta, supervisa y analiza los resultados de los diferentes niveles educativos para fortalecer la protección de los derechos de niñas, niños y adolescentes.</p>
-    
+      <p class="subtitulo-admin">Consulta, supervisa y analiza los resultados de los diferentes niveles educativos.</p>
     </section>
 
     <section class="encuestas-section">
       <div class="encuestas-section__header">
         <h2>Resultados por nivel</h2>
-        <p>Selecciona un nivel educativo para revisar el desempeño general, indicadores clave y reportes descargables.</p>
+        <p>Selecciona un nivel educativo para revisar indicadores clave y reportes descargables.</p>
       </div>
 
       <div class="cards-container">

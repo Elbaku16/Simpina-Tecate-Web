@@ -1,9 +1,6 @@
 <?php
-session_start();
-if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: /SIMPINNA/front-end/frames/panel-admin/login.php');
-    exit;
-}
+require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/auth/verificar-sesion.php';
+requerir_admin();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -55,7 +52,7 @@ if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         <h1 class="titulo-admin">Reportes y Comentarios</h1>
         <p class="subtitulo-admin">Revisa los reportes enviados desde el formulario de contacto</p>
         <a href="admin-comentarios.php" class="btn-comentarios">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
           Ver todos los comentarios

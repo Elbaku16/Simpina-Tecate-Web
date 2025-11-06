@@ -1,15 +1,13 @@
 <?php
 // front-end/frames/panel-admin/resultados.php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/auth/verificar-sesion.php';
+requerir_admin();
 
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
 
-// Verificar que esté logueado
-if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-    header('Location: ../admin/login.php');
-    exit;
-}
+
 
 // Obtener el nivel desde la URL (por ejemplo: resultados.php?nivel=primaria)
 $nivelNombre = isset($_GET['nivel']) ? strtolower(trim($_GET['nivel'])) : '';
