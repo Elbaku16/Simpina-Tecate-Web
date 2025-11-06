@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $tokenFormulario = $_POST['csrf_token'] ?? null;
 
-if (!validar_csrf(is_string($tokenFormulario) ? $tokenFormulario : null, 'login_form')) {
+if (!validar_csrf(is_string($tokenFormulario) ? $tokenFormulario : null, 'login_admin')) {
     header('Location: /SIMPINNA/front-end/frames/admin/login.php?e=csrf');
     exit;
 }
@@ -76,5 +76,5 @@ $_SESSION['usuario'] = (string) $datosUsuario['usuario'];
 $_SESSION['rol'] = 'admin';
 $_SESSION['last_activity'] = time();
 
-header('Location: /SIMPINNA/front-end/frames/panel-admin/panel-admin.php');
+header('Location: /SIMPINNA/front-end/frames/panel/panel-admin.php');
 exit;
