@@ -1,11 +1,8 @@
 <?php
-session_start();
-if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: /SIMPINNA/front-end/frames/panel-admin/login.php');
-    exit;
-}
+require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/auth/verificar-sesion.php';
+requerir_admin();
 
-require_once __DIR__ . '/../../../back-end/connect-db/conexion-db.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/connect-db/conexion-db.php';
 
 if (isset($_POST['eliminar']) && isset($_POST['id_contacto'])) {
     $idEliminar = (int)$_POST['id_contacto'];
