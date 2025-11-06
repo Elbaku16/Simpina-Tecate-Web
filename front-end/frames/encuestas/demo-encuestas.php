@@ -36,10 +36,13 @@ if ($stmt = $conn->prepare($sql)) {
           'opciones' => []
         ];
       }
-      if (!empty($row['texto_opcion'])) {
+
+      // ✅ Siempre agrega opción si tiene id_opcion (arreglo de checkboxes funcionando)
+      if ($row['id_opcion'] !== null) {
+        $texto = isset($row['texto_opcion']) ? trim((string)$row['texto_opcion']) : '';
         $preguntas[$pid]['opciones'][] = [
           'id'    => (int)$row['id_opcion'],
-          'texto' => $row['texto_opcion']
+          'texto' => $texto
         ];
       }
     }
@@ -48,41 +51,43 @@ if ($stmt = $conn->prepare($sql)) {
 }
 $conn->close();
 
+// ✅ Reindexar correctamente preguntas en array ordenado
 $preguntas = array_values($preguntas);
+
 $nivelTitulo = ucfirst($nivel);
 $claseAncho = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMPINNA | Encuestas</title>
-    <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/encuestas.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIMPINNA | Encuestas</title>
+  <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/encuestas.css">
 </head>
 <body>
-  <header><?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header.php'); ?></header>
+<header><?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header.php'); ?></header>
 
-  <main class="encuesta-container<?php echo $claseAncho; ?>">
-    <h1>Encuesta para <?php echo htmlspecialchars($nivelTitulo, ENT_QUOTES, 'UTF-8'); ?></h1>
+<main class="encuesta-container<?php echo $claseAncho; ?>">
+  <h1>Encuesta para <?php echo htmlspecialchars($nivelTitulo, ENT_QUOTES, 'UTF-8'); ?></h1>
 
-    <!-- Tu JS externo pinta aquí (o el server-side si ya lo haces por páginas) -->
-    <div id="contenedorPreguntas" data-nivel="<?php echo htmlspecialchars($nivel, ENT_QUOTES, 'UTF-8'); ?>"></div>
+  <!-- El JS pinta las preguntas aquí -->
+  <div id="contenedorPreguntas" data-nivel="<?php echo htmlspecialchars($nivel, ENT_QUOTES, 'UTF-8'); ?>"></div>
 
-    <div class="acciones-encuesta" style="margin-top:16px;">
-      <button id="btnAnterior" type="button">Anterior</button>
-      <button id="btnSiguiente" type="button">Siguiente</button>
-    </div>
-  </main>
+  <div class="acciones-encuesta" style="margin-top:16px;">
+    <button id="btnAnterior" type="button">Anterior</button>
+    <button id="btnSiguiente" type="button">Siguiente</button>
+  </div>
+</main>
 
-  <footer><?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'); ?></footer>
+<footer><?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'); ?></footer>
 
-  <script>
-    const preguntas  = <?php echo json_encode($preguntas, JSON_UNESCAPED_UNICODE); ?>;
-    const idEncuesta = <?php echo (int)$id_encuesta; ?>;
-  </script>
-  <script src="/SIMPINNA/front-end/scripts/encuesta.js?v=2025-11-05-10"></script>
+<script>
+  const preguntas  = <?php echo json_encode($preguntas, JSON_UNESCAPED_UNICODE); ?>;
+  const idEncuesta = <?php echo (int)$id_encuesta; ?>;
+</script>
+<script src="/SIMPINNA/front-end/scripts/encuesta.js?v=2025-11-05-11"></script>
 </body>
 </html>
