@@ -26,7 +26,7 @@ if ($usuario === '' || $password === '') {
 }
 
 $maxIntentos = 5;
-$tiempoBloqueo = 300;
+$tiempoBloqueo = 180;
 
 if (!isset($_SESSION['login_intentos'])) {
     $_SESSION['login_intentos'] = 0;

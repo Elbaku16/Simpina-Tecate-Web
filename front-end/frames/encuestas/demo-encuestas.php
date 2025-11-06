@@ -55,19 +55,12 @@ $claseAncho = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Encuesta Demo</title>
-
-  <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/encuestas.css">
-  <style>
-    /* fallback de páginas apiladas */
-    .pagina-encuesta{ display:none; flex-direction:column; gap:28px; }
-    .pagina-encuesta--visible{ display:flex; }
-    .acciones-encuesta{ display:flex; gap:12px; justify-content:center; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPINNA | Encuestas</title>
+    <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/encuestas.css">
 </head>
 <body>
   <header><?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header.php'); ?></header>

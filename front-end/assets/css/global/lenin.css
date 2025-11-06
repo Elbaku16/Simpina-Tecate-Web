@@ -105,8 +105,8 @@
 }
 
 .hero-icon-group {
-  width: 240px;
-  height: 240px;
+width: 23.5rem;
+  height: 23.5rem;
   background: linear-gradient(135deg, rgba(225, 204, 115, 0.2), rgba(225, 204, 115, 0.05));
   border-radius: 50%;
   display: flex;
