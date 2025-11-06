@@ -7,8 +7,6 @@ if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
 
-
-
 // Obtener el nivel desde la URL (por ejemplo: resultados.php?nivel=primaria)
 $nivelNombre = isset($_GET['nivel']) ? strtolower(trim($_GET['nivel'])) : '';
 
@@ -196,16 +194,13 @@ $nombresBonitos = [
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/resultados.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/global.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/resultados.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/header-admin.php'; ?>
 
   <div class="toolbar">
-    <a class="btn" href="../panel/panel-admin.php">← Volver</a>
+    <a class="btn" href="../panel/panel-admin.php">Volver</a>
   </div>
 
   <div class="res-header">
@@ -241,10 +236,17 @@ $nombresBonitos = [
           <h2 class="pregunta-titulo"><?php echo htmlspecialchars(($i+1).'. '.$p['texto_pregunta']); ?></h2>
           
           <?php if ($tipo === 'texto'): ?>
-            <!-- Pregunta de texto: solo mostrar botón -->
-            <a class="btn-ver-respuestas" href="ver_respuestas_texto.php?pregunta=<?php echo $pid; ?>&nivel=<?php echo htmlspecialchars($nivelNombre); ?><?php echo $escuelaFiltro > 0 ? '&escuela='.$escuelaFiltro : ''; ?>">
+            <!-- Pregunta de texto: icono centrado + botón -->
+            <div class="encuesta-icon-container">
+              <div class="encuesta-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+            </div>
+            <button class="btn-ver-respuestas" onclick="abrirRespuestas(<?php echo $pid; ?>, '<?php echo htmlspecialchars($nivelNombre); ?>', <?php echo $escuelaFiltro; ?>)">
               Ver respuestas de texto
-            </a>
+            </button>
           <?php else: ?>
             <!-- Pregunta de opción múltiple: mostrar gráfica y leyenda colapsable -->
             <div class="pie-slot" id="pie-q<?php echo $pid; ?>" data-pregunta-id="<?php echo $pid; ?>" data-tipo="<?php echo $tipo; ?>">
@@ -279,6 +281,20 @@ $nombresBonitos = [
     </main>
   <?php endif; ?>
 
+  <!-- Modal para respuestas de texto -->
+  <div id="modalRespuestas" class="modal-respuestas hidden">
+    <div class="modal-overlay" onclick="cerrarRespuestas()"></div>
+    <div class="modal-contenedor">
+      <div class="modal-header">
+        <h2 id="modalTitulo">Respuestas de texto</h2>
+        <button class="modal-close" onclick="cerrarRespuestas()">&times;</button>
+      </div>
+      <div id="modalContenido" class="modal-contenido">
+        <div class="loading">Cargando respuestas...</div>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer-admin.php'; ?>
   </footer>
@@ -287,6 +303,115 @@ $nombresBonitos = [
     window.ENCUESTA_ID = <?php echo (int)$encuestaId; ?>;
     window.NIVEL_NOMBRE = '<?php echo htmlspecialchars($nivelNombre); ?>';
     window.ESCUELA_FILTRO = <?php echo (int)$escuelaFiltro; ?>;
+
+    // Función para abrir modal de respuestas
+    function abrirRespuestas(preguntaId, nivelNombre, escuelaFiltro) {
+      const modal = document.getElementById('modalRespuestas');
+      const contenido = document.getElementById('modalContenido');
+      const titulo = document.getElementById('modalTitulo');
+
+      modal.classList.remove('hidden');
+      contenido.innerHTML = '<div class="loading">Cargando respuestas...</div>';
+
+      // Construir URL con parámetros
+      const url = new URL('obtener_respuestas_texto.php', window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')));
+      url.searchParams.append('pregunta', preguntaId);
+      url.searchParams.append('nivel', nivelNombre);
+      if (escuelaFiltro > 0) {
+        url.searchParams.append('escuela', escuelaFiltro);
+      }
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            titulo.textContent = `Respuestas - ${data.nombrePregunta}`;
+            let html = '<div class="respuestas-tabla">';
+            
+            if (data.respuestas.length === 0) {
+              html += '<div class="sin-respuestas">No hay respuestas para esta pregunta</div>';
+            } else {
+              html += '<div class="tabla-header">';
+              html += '<div class="col-respuesta">Respuesta</div>';
+              html += '<div class="col-info">Escuela</div>';
+              html += '<div class="col-info">Fecha</div>';
+              html += '<div class="col-accion">Acción</div>';
+              html += '</div>';
+
+              data.respuestas.forEach(resp => {
+                html += '<div class="tabla-fila">';
+                html += `<div class="col-respuesta"><p class="respuesta-texto">${escapeHtml(resp.texto)}</p></div>`;
+                html += `<div class="col-info">${escapeHtml(resp.escuela)}</div>`;
+                html += `<div class="col-info">${formatearFecha(resp.fecha)}</div>`;
+                html += `<div class="col-accion"><button class="btn-eliminar" onclick="eliminarRespuesta(${resp.id}, ${preguntaId}, '${nivelNombre}', ${escuelaFiltro})">Eliminar</button></div>`;
+                html += '</div>';
+              });
+            }
+
+            html += '</div>';
+            contenido.innerHTML = html;
+          } else {
+            contenido.innerHTML = `<div class="error-mensaje">${data.message}</div>`;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          contenido.innerHTML = '<div class="error-mensaje">Error al cargar las respuestas</div>';
+        });
+    }
+
+    // Función para cerrar modal
+    function cerrarRespuestas() {
+      const modal = document.getElementById('modalRespuestas');
+      modal.classList.add('hidden');
+    }
+
+    // Función para eliminar respuesta
+    function eliminarRespuesta(respuestaId, preguntaId, nivelNombre, escuelaFiltro) {
+      if (!confirm('¿Estás seguro de que deseas eliminar esta respuesta?')) {
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('id_respuesta', respuestaId);
+
+      fetch('eliminar_respuesta_texto.php', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Recargar respuestas
+            abrirRespuestas(preguntaId, nivelNombre, escuelaFiltro);
+          } else {
+            alert('Error al eliminar: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error al eliminar la respuesta');
+        });
+    }
+
+    // Función para escapar HTML
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Función para formatear fecha
+    function formatearFecha(fecha) {
+      const date = new Date(fecha);
+      const opciones = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return date.toLocaleDateString('es-MX', opciones);
+    }
 
     // Función para toggle de leyenda
     function toggleLegend(preguntaId) {
@@ -306,6 +431,13 @@ $nombresBonitos = [
         toggleText.textContent = 'Ver leyenda';
       }
     }
+
+    // Cerrar modal al presionar Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        cerrarRespuestas();
+      }
+    });
 
     // Esperar a que el DOM esté listo
     document.addEventListener('DOMContentLoaded', function() {

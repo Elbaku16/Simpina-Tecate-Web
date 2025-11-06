@@ -1,5 +1,5 @@
 /* ==========================================
-   admin.css — Panel Administrativo + Login
+   admin.css – Panel Administrativo + Login
    Estilo coherente con selección de encuestas
    ========================================== */
 
@@ -31,7 +31,7 @@ body {
 footer { flex-shrink: 0; }
 
 /* ==========================================
-   PANEL ADMIN — CONTENEDOR
+   PANEL ADMIN – CONTENEDOR
 ========================================== */
 main.admin-encuestas {
   flex: 1;
@@ -200,7 +200,130 @@ main.admin-encuestas {
 .btn-ver:focus-visible{ outline:3px solid rgba(212,176,86,.6); outline-offset:2px; }
 
 /* ==========================================
-   LOGIN ADMIN — CONTENEDOR Y FORMULARIO
+   SECCIÓN REPORTES Y COMENTARIOS (Uniforme)
+========================================== */
+.comentarios-section {
+  background: rgba(255,255,255,.75);
+  backdrop-filter: blur(4px);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--muted);
+}
+
+.comentarios-box {
+  background: var(--panel-cream);
+  border-radius: var(--radius-md);
+  padding: 2rem 1.8rem;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  transition: transform .3s ease, box-shadow .3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.comentarios-box::before {
+  content: "";
+  position: absolute;
+  inset: auto -60px -60px auto;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle at center, rgba(212,176,86,.2), transparent 70%);
+  transform: rotate(-15deg);
+}
+
+.comentarios-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 44px rgba(122,30,44,.25);
+}
+
+.comentarios-icon {
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, var(--burgundy), rgba(122,30,44,.8));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(122,30,44,.25);
+  position: relative;
+  z-index: 1;
+}
+
+.comentarios-icon svg {
+  width: 48px;
+  height: 48px;
+  stroke-width: 2;
+}
+
+.comentarios-box h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--burgundy);
+  font-weight: 700;
+  letter-spacing: .01em;
+  position: relative;
+  z-index: 1;
+}
+
+.comentarios-box p {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(45,27,31,.78);
+  max-width: 500px;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-comentarios {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.8rem;
+  border-radius: 10px;
+  background: var(--burgundy);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  box-shadow: 0 12px 24px rgba(122,30,44,.25);
+  transition: background .3s, transform .3s, box-shadow .3s;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-comentarios svg {
+  width: 18px;
+  height: 18px;
+  transition: transform .3s ease;
+}
+
+.btn-comentarios:hover {
+  background: var(--gold);
+  color: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(212,176,86,.28);
+}
+
+.btn-comentarios:hover svg {
+  transform: translateX(3px);
+}
+
+.btn-comentarios:focus-visible {
+  outline: 3px solid rgba(212,176,86,.6);
+  outline-offset: 2px;
+}
+
+/* ==========================================
+   LOGIN ADMIN – CONTENEDOR Y FORMULARIO
 ========================================== */
 .login-container {
   flex: 1 0 auto;
@@ -289,9 +412,11 @@ input:focus{
   }
   .encuestas-section__header p{ max-width:none; }
   .admin-quick-actions{ justify-content:center; }
+  .comentarios-box { padding: 1.6rem 1.4rem; }
 }
 
 @media (max-width: 480px){
   .card-admin{ padding: 1.6rem 1.2rem; }
   .btn-ver{ width:100%; }
+  .btn-comentarios { width: 100%; }
 }
