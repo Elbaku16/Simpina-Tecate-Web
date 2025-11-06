@@ -20,7 +20,7 @@
             <div class="hero-overlay">
                 <div class="hero-container">
                     <div class="hero-text-content">
-                        <h1 class="hero-title">Sistema Municipal de Protección Integral</h1>
+                        <h1 class="hero-title">Sistema Nacional de Protección Integral de Niñas, Niños y Adolescentes</h1>
                         <p class="hero-subtitle">Velamos por el bienestar y los derechos de las niñas, niños y adolescentes de Tecate</p>
                         <div class="hero-buttons">
                             <a href="/SIMPINNA/front-end/frames/inicio/seleccion-encuesta.php" class="btn-primary">
@@ -118,7 +118,7 @@
                                 Nos ayuda a proteger tus derechos
                             </li>
                         </ul>
-                        <a href="/SIMPINNA/front-end/frames/inicio/seleccion-encuesta.php" class="btn-encuesta-grande">
+                        <a href="/SIMPINNA/front-end/frames/inicio/seleccion-encuesta.php" class="btn-primary">
                             Contestar encuesta
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
