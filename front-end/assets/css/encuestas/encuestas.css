@@ -1,262 +1,147 @@
-/* === ENCUESTA DEMO (diseño base) === */
-
-body {
-  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
-  color: #4a1c1c;
-  margin: 0;
-  padding: 0;
+/* ============ Base y tarjetas ============ */
+:root{
+  --texto:#4a1c1c; --primario:#611232; --borde:#ddd4a8;
+  --fondo:#fff; --fondo-claro:#fafafa; --amarillo:#f0ad4e;
+}
+*{ box-sizing:border-box; } html,body{ height:100%; }
+body{
+  margin:0;
+  color:var(--texto);
+  font-family:"Open Sans","Helvetica Neue",Arial,sans-serif;
+  background:#fdfbf3;
+  font-size:16px;
+  line-height:1.45;
 }
 
-.encuesta-container {
-  max-width: 800px;
+/* Tamaño por defecto (todos los niveles) */
+.encuesta-container{
+  max-width: 1140px;
   margin: 3rem auto;
-  background: #ffffff;
-  border: 1px solid #ddd4a8;
-  border-radius: 0.6rem;
-  padding: 2.5rem 3rem;
-  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.05);
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: .8rem;
+  padding: 2.75rem 3.25rem;
+  box-shadow: 0 .45rem 1.1rem rgba(0,0,0,.05);
 }
 
-.encuesta-container h1 {
-  text-align: center;
-  font-size: 2.2rem;
-  color: #611232;
-  margin-bottom: 2rem;
+/* PRIMARIA más ancho */
+.encuesta-container--wide{
+  max-width: none !important;
+  width: min(96vw, 1280px) !important;
 }
 
-.pregunta {
-  margin-bottom: 2.5rem;
+.encuesta-container h1{
+  margin:0 0 2.2rem 0;
+  text-align:center;
+  font-size:2.35rem;
+  color:var(--primario);
 }
 
-.pregunta h2 {
-  font-size: 1.4rem;
-  color: #4a1c1c;
-  margin-bottom: 1rem;
-}
-
-.opciones {
+/* ============ Página (vertical: apila preguntas) ============ */
+.pagina-encuesta{
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  margin-left: 1rem;
+  gap: 28px;
+}
+.pagina-encuesta--visible{ display:flex; }
+
+.pregunta{ background:transparent; }
+.pregunta--full{ width: 100%; }
+
+/* ============ Tipografía y opciones ============ */
+.pregunta h2, .pregunta h3{
+  font-size:1.2rem;
+  margin:0 0 .7rem 0;
+  color:var(--texto);
 }
 
-.opciones label {
-  background: #fafafa;
-  border: 1px solid #ddd4a8;
-  border-radius: 0.4rem;
-  padding: 0.8rem 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+.opciones{ display:flex; flex-direction:column; gap:.6rem; }
+.opciones label{
+  background: var(--fondo-claro);
+  border:1px solid var(--borde);
+  border-radius:.5rem;
+  padding:1rem 1.1rem;
+  font-size:1.02rem;
+  cursor:pointer;
+  transition: background-color .2s ease, box-shadow .2s ease;
+}
+.opciones input[type="radio"], .opciones input[type="checkbox"]{
+  margin-right:.7rem;
+  transform: scale(1.05);
+}
+.opciones label:hover{
+  background:#f2ede0; box-shadow:0 .22rem .42rem rgba(0,0,0,.1);
 }
 
-.opciones input[type="radio"],
-.opciones input[type="checkbox"] {
-  margin-right: 0.6rem;
+/* Abiertas */
+textarea{
+  width:100%;
+  min-height:140px;
+  border:1px solid var(--borde);
+  border-radius:.5rem;
+  padding:1rem;
+  font-size:1.02rem;
+  resize:vertical;
 }
 
-.opciones label:hover {
-  background-color: #f2ede0;
-  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+/* Botones */
+button{
+  background:#6b2e2e; color:#fff; border:none; border-radius:.4rem;
+  padding:.9rem 1.7rem; margin:.5rem; cursor:pointer;
+  font-size:1rem; font-weight:700;
+  transition: background-color .3s ease, transform .1s ease;
+}
+button:hover{ background:#a25454; } button:active{ transform:scale(.97); }
+
+/* ============ Ranking (arrastrar) ============ */
+.instrucciones{
+  background:linear-gradient(135deg,#fff3cd 0%,#fef8e1 100%);
+  padding:12px; border-radius:.5rem; margin-bottom:12px;
+  border-left:3px solid var(--amarillo);
+  box-shadow:0 .1rem .3rem rgba(0,0,0,.05);
+}
+.instrucciones strong{ color:#856404; font-size:15px; }
+
+.ranking-container{
+  background:var(--fondo-claro); border:1px solid var(--borde); border-radius:.6rem;
+  padding:12px; max-height:620px; overflow-y:auto;
+  box-shadow:0 .1rem .3rem rgba(0,0,0,.05);
+  touch-action: none;                 /* mejora DnD en táctiles */
 }
 
-textarea {
-  width: 100%;
-  min-height: 100px;
-  border: 1px solid #ddd4a8;
-  border-radius: 0.4rem;
-  padding: 0.8rem;
-  font-size: 1rem;
-  resize: vertical;
+.ranking-item{
+  display:flex; align-items:center; padding:8px 12px; margin:4px 0; background:#fff;
+  border:1px solid var(--borde); border-radius:.4rem; cursor:move; transition:all .2s ease;
+  border-left:3px solid var(--primario); box-shadow:0 .05rem .2rem rgba(0,0,0,.05);
+  user-select:none;                   /* evita selección de texto al arrastrar */
+  -webkit-user-drag: element;         /* ayuda a Safari/Chrome */
 }
-
-/* === BOTONES === */
-
-button {
-  background-color: #6b2e2e;
-  color: #fff;
-  border: none;
-  border-radius: 0.3rem;
-  padding: 0.8rem 1.6rem;
-  margin: 0.5rem;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: background-color 0.3s ease, transform 0.1s ease;
+.ranking-item:hover{ background:#f2ede0; box-shadow:0 .2rem .5rem rgba(0,0,0,.08); transform:translateY(-1px); }
+.ranking-item.dragging{ opacity:.5; background:#e0d5c0; transform:rotate(1deg); }
+.drag-handle{ font-size:18px; color:#6b2e2e; margin-right:10px; cursor:grab; user-select:none; }
+.drag-handle:active{ cursor:grabbing; }
+.ranking-numero{
+  font-size:19px; font-weight:bold; color:var(--primario); min-width:40px; text-align:center; margin-right:12px;
+  background:#f9f6e9; border:2px solid var(--borde); padding:4px 8px; border-radius:50%;
+  box-shadow:0 .05rem .2rem rgba(0,0,0,.08);
 }
+.ranking-texto{ flex:1; font-size:14px; line-height:1.35; color:var(--texto); }
 
-button:hover {
-  background-color: #a25454;
-}
+/* Scrollbar WebKit */
+.ranking-container::-webkit-scrollbar{ width:8px; }
+.ranking-container::-webkit-scrollbar-track{ background:#f1f1f1; border-radius:10px; }
+.ranking-container::-webkit-scrollbar-thumb{ background:var(--borde); border-radius:10px; }
+.ranking-container::-webkit-scrollbar-thumb:hover{ background:#c9be94; }
 
-button:active {
-  transform: scale(0.97);
-}
+/* ============ Paginación (fallback/estilo) ============ */
+.pagina-encuesta{ display:none; }
+.pagina-encuesta:first-child,
+.pagina-encuesta--visible{ display:flex; }
 
-/* ===============================================
-   ESTILOS PARA PREGUNTAS TIPO RANKING - VERSIÓN ULTRA COMPACTA
-   =============================================== */
-
-.ranking-container {
-  max-width: 100%;
-  margin: 10px 0;
-  padding: 10px;
-  background: #fafafa;
-  border: 1px solid #ddd4a8;
-  border-radius: 0.5rem;
-  box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.05);
-}
-
-.ranking-item {
-  display: flex;
-  align-items: center;
-  padding: 6px 10px; /* ULTRA compacto */
-  margin: 3px 0; /* Mínimo margen */
-  background: #ffffff;
-  border: 1px solid #ddd4a8;
-  border-radius: 0.3rem;
-  cursor: move;
-  transition: all 0.2s ease;
-  border-left: 3px solid #611232;
-  box-shadow: 0 0.05rem 0.2rem rgba(0, 0, 0, 0.05);
-}
-
-.ranking-item:hover {
-  background: #f2ede0;
-  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
-}
-
-.ranking-item.dragging {
-  opacity: 0.5;
-  background: #e0d5c0;
-  transform: rotate(1deg);
-}
-
-.drag-handle {
-  font-size: 16px; /* Más pequeño */
-  color: #6b2e2e;
-  margin-right: 8px;
-  cursor: grab;
-  user-select: none;
-}
-
-.drag-handle:active {
-  cursor: grabbing;
-}
-
-.ranking-numero {
-  font-size: 18px; /* Más pequeño */
-  font-weight: bold;
-  color: #611232;
-  min-width: 38px; /* Más estrecho */
-  text-align: center;
-  margin-right: 10px;
-  background: #f9f6e9;
-  border: 2px solid #ddd4a8;
-  padding: 3px 6px; /* Mínimo padding */
-  border-radius: 50%;
-  box-shadow: 0 0.05rem 0.2rem rgba(0, 0, 0, 0.08);
-}
-
-.ranking-texto {
-  flex: 1;
-  font-size: 13px; /* Texto más pequeño */
-  line-height: 1.3;
-  color: #4a1c1c;
-}
-
-.instrucciones {
-  background: linear-gradient(135deg, #fff3cd 0%, #fef8e1 100%);
-  padding: 12px;
-  border-radius: 0.4rem;
-  margin-bottom: 15px;
-  border-left: 3px solid #f0ad4e;
-  box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.05);
-}
-
-.instrucciones strong {
-  color: #856404;
-  font-size: 15px;
-}
-
-/* Estilos adicionales para h3 en preguntas de ranking */
-.pregunta h3 {
-  font-size: 1.25rem;
-  color: #4a1c1c;
-  margin-bottom: 0.8rem;
-}
-
-/* Responsive para móviles */
-@media (max-width: 768px) {
-  .encuesta-container {
-    margin: 1rem;
-    padding: 1.2rem;
-  }
-
-  .ranking-item {
-    padding: 5px 8px;
-    margin: 2px 0;
-  }
-  
-  .ranking-numero {
-    font-size: 16px;
-    min-width: 35px;
-    padding: 2px 5px;
-  }
-  
-  .ranking-texto {
-    font-size: 12px;
-  }
-  
-  .drag-handle {
-    font-size: 14px;
-    margin-right: 6px;
-  }
-
-  .instrucciones {
-    padding: 10px;
-  }
-
-  .instrucciones strong {
-    font-size: 14px;
-  }
-
-  .pregunta h3 {
-    font-size: 1.1rem;
-  }
-}
-
-/* Eliminar espacios innecesarios */
-.ranking-container .ranking-item:first-child {
-  margin-top: 0;
-}
-
-.ranking-container .ranking-item:last-child {
-  margin-bottom: 0;
-}
-
-/* Optimización para 20 elementos */
-.ranking-container {
-  max-height: 600px; /* Altura máxima con scroll si es necesario */
-  overflow-y: auto;
-}
-
-/* Barra de scroll personalizada */
-.ranking-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.ranking-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-.ranking-container::-webkit-scrollbar-thumb {
-  background: #ddd4a8;
-  border-radius: 10px;
-}
-
-.ranking-container::-webkit-scrollbar-thumb:hover {
-  background: #c9be94;
+/* ============ Responsive ============ */
+@media (max-width: 860px){
+  .encuesta-container{ max-width: 96%; padding:1.6rem; }
+  .encuesta-container--wide{ width: 96vw !important; }
+  .pagina-encuesta{ gap: 18px; }
+  .encuesta-container h1{ font-size:1.9rem; }
 }
