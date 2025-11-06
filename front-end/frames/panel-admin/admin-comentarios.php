@@ -128,7 +128,7 @@ $estadosTexto = [
 
   <main class="comentarios-container">
     <div class="header-section">
-      <a href="admin-encuestas.php" class="btn-back">← Volver al panel</a>
+      <a href="../panel/panel-admin.php" class="btn-ver">← Volver al panel</a>
       <h1 style="color: var(--burgundy); margin: 0.5rem 0;">Gestión de Reportes y Comentarios</h1>
       <p style="margin: 0; opacity: 0.8;">Total de reportes: <strong><?= count($comentarios) ?></strong></p>
     </div>
