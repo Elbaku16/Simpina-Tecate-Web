@@ -3,7 +3,7 @@
 // Si quieres 3 por página, cambia la constante de abajo a 3.
 console.log('[encuesta.js v2025-11-05-OTRO] cargado');
 
-const PREGUNTAS_POR_PAGINA = 2;
+const PREGUNTAS_POR_PAGINA = 3;
 
 let paginaActual = 0;
 let paginas = [];                      // array de arrays (índices de preguntas por página)
