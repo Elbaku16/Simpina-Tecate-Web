@@ -108,7 +108,7 @@ $conn->close();
         color: #999;
       }
     </style>
-    <title>Contacto | SIMPINNA</title>
+    <title>SIMPINNA | Contactanos</title>
 </head>
 
 <body>

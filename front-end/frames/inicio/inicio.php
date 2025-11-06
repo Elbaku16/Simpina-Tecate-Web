@@ -6,7 +6,9 @@
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
     <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
     <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/lenin.css">
-    <title>SIMPINNA | Protegiendo los Derechos de la Niñez</title>
+   
+
+    <title>SIMPINNA | Inicio</title>
 </head>
 <body>
     <header> 
@@ -159,5 +161,6 @@
         <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'); ?>
   
     </footer>
+    <script src="https://kit.fontawesome.com/cba4ea3b6f.js" crossorigin="anonymous"></script>
 </body>
 </html>
