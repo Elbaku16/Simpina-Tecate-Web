@@ -59,7 +59,6 @@ body {
   width: 100%;
 }
 
-/* 🔹 Título de pregunta */
 .pregunta h3 {
   font-size: 1.8rem;
   font-weight: 800;
@@ -68,7 +67,7 @@ body {
   line-height: 1.3;
 }
 
-/* 🔹 Opciones */
+/* ===================== OPCIONES NORMALES ===================== */
 .opciones {
   display: flex;
   flex-direction: column;
@@ -79,8 +78,8 @@ body {
   background: var(--fondo-claro);
   border: 1px solid var(--borde);
   border-radius: 0.5rem;
-  padding: 1.1rem 1.4rem; /* ↑ más cómodo */
-  font-size: 1.2rem;      /* ↑ más grande */
+  padding: 1.1rem 1.4rem;
+  font-size: 1.2rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -90,17 +89,17 @@ body {
 
 .opciones label:hover {
   background-color: #f2ede0;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
   transform: translateY(-2px);
 }
 
 .opciones input[type="radio"],
 .opciones input[type="checkbox"] {
-  transform: scale(1.45);  /* un poco más grande */
+  transform: scale(1.45);
   accent-color: #6b2e2e;
 }
 
-/* 🔹 Preguntas abiertas */
+/* ===================== PREGUNTAS ABIERTAS ===================== */
 textarea {
   width: 100%;
   min-height: 140px;
@@ -126,7 +125,7 @@ button {
   padding: 1rem 1.8rem;
   margin: 0.6rem;
   cursor: pointer;
-  font-size: 1.1rem;  /* ↑ */
+  font-size: 1.1rem;
   font-weight: 700;
   transition: background-color 0.3s ease, transform 0.1s ease;
 }
@@ -135,63 +134,53 @@ button:active { transform: scale(0.97); }
 
 /* ===================== RANKING ===================== */
 .pregunta[data-tipo="ranking"] h3 {
-  font-size: 2rem;
+  font-size: 1.7rem;
   color: var(--primario);
   font-weight: 800;
-}
-
-.instrucciones {
-  background: linear-gradient(135deg, #fff3cd 0%, #fef8e1 100%);
-  padding: 12px;
-  border-radius: 0.6rem;
-  margin-bottom: 15px;
-  border-left: 4px solid var(--amarillo);
-  box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.05);
-}
-.instrucciones strong {
-  color: #856404;
-  font-size: 1.05rem;
+  margin-bottom: 1rem;
 }
 
 .ranking-container {
   background: var(--fondo-claro);
   border: 1px solid var(--borde);
   border-radius: 0.6rem;
-  padding: 12px;
-  max-height: 620px;
+  padding: 6px;
+  max-height: 520px;
   overflow-y: auto;
-  box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.05);
+  
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* ✅ DOS COLUMNAS */
+  gap: 8px 10px;
 }
 
 .ranking-item {
   display: flex;
   align-items: center;
-  padding: 10px 16px;
-  margin: 4px 0;
+  padding: 4px 8px;
   background: #fff;
   border: 1px solid var(--borde);
-  border-radius: 0.4rem;
+  border-radius: 0.35rem;
   cursor: move;
-  transition: all 0.2s ease;
+  transition: all 0.12s ease;
   border-left: 3px solid var(--primario);
   user-select: none;
+  min-height: 34px;
 }
 
 .ranking-item:hover {
-  background: #f2ede0;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+  background: #f7f3e8;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.06);
 }
 
 .ranking-item.dragging {
-  opacity: 0.5;
-  background: #e0d5c0;
-  transform: rotate(1deg);
+  opacity: 0.4;
+  background: #e8dec8;
 }
 
 .drag-handle {
-  font-size: 22px;
+  font-size: 16px;
   color: #6b2e2e;
-  margin-right: 12px;
+  margin-right: 6px;
   cursor: grab;
 }
 .drag-handle:active {
@@ -199,22 +188,23 @@ button:active { transform: scale(0.97); }
 }
 
 .ranking-numero {
-  font-size: 21px;
+  font-size: 13px;
   font-weight: bold;
-  color: var(--primario);
-  min-width: 42px;
+  min-width: 26px;
+  height: 26px;
   text-align: center;
-  margin-right: 14px;
-  background: #f9f6e9;
+  margin-right: 8px;
+  background: #f8f4df;
   border: 2px solid var(--borde);
-  padding: 5px 8px;
+  padding: 2px;
   border-radius: 50%;
+  line-height: 20px;
 }
 
 .ranking-texto {
   flex: 1;
-  font-size: 1.15rem; /* ↑ */
-  line-height: 1.4;
+  font-size: 0.92rem;
+  line-height: 1.2;
   color: var(--texto);
 }
 
@@ -230,5 +220,11 @@ button:active { transform: scale(0.97); }
   .opciones label {
     font-size: 1.05rem;
     padding: 0.9rem 1.1rem;
+  }
+
+  /* ✅ En móvil una sola columna */
+  .ranking-container {
+    grid-template-columns: 1fr;
+    max-height: 480px;
   }
 }
