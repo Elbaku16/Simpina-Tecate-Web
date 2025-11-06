@@ -1,130 +1,185 @@
-/* === ENCUESTA DEMO (diseño base) === */
-
-body {
-  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
-  color: #4a1c1c;
-  margin: 0;
-  padding: 0;
+:root {
+  --texto: #4a1c1c;
+  --primario: #611232;
+  --borde: #ddd4a8;
+  --fondo: #fff;
+  --fondo-claro: #fafafa;
+  --amarillo: #f0ad4e;
 }
 
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  color: var(--texto);
+  font-family: "Open Sans", "Helvetica Neue", Arial, sans-serif;
+  background: #fdfbf3;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+/* ===================== CONTENEDOR ===================== */
 .encuesta-container {
-  max-width: 800px;
+  max-width: 1140px;
   margin: 3rem auto;
-  background: #ffffff;
-  border: 1px solid #ddd4a8;
-  border-radius: 0.6rem;
-  padding: 2.5rem 3rem;
-  box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.05);
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 0.8rem;
+  padding: 3rem 3.5rem;
+  box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.05);
+}
+
+.encuesta-container--wide {
+  max-width: none !important;
+  width: min(96vw, 1300px) !important;
 }
 
 .encuesta-container h1 {
   text-align: center;
-  font-size: 2.2rem;
-  color: #611232;
-  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  color: var(--primario);
+  margin-bottom: 2.2rem;
+}
+
+/* ===================== PREGUNTAS ===================== */
+.pagina-encuesta {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
 .pregunta {
-  margin-bottom: 2.5rem;
+  background: transparent;
+  border-radius: 0.6rem;
+  padding: 0.6rem;
 }
 
-.pregunta h2 {
-  font-size: 1.4rem;
-  color: #4a1c1c;
+.pregunta--full {
+  width: 100%;
+}
+
+/* 🔹 Título de pregunta */
+.pregunta h3 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--texto);
   margin-bottom: 1rem;
+  line-height: 1.3;
 }
 
+/* 🔹 Opciones */
 .opciones {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  margin-left: 1rem;
+  gap: 0.8rem;
 }
 
 .opciones label {
-  background: #fafafa;
-  border: 1px solid #ddd4a8;
-  border-radius: 0.4rem;
-  padding: 0.8rem 1rem;
+  background: var(--fondo-claro);
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+  padding: 1.1rem 1.4rem; /* ↑ más cómodo */
+  font-size: 1.2rem;      /* ↑ más grande */
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.opciones input[type="radio"],
-.opciones input[type="checkbox"] {
-  margin-right: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
 }
 
 .opciones label:hover {
   background-color: #f2ede0;
-  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
+.opciones input[type="radio"],
+.opciones input[type="checkbox"] {
+  transform: scale(1.45);  /* un poco más grande */
+  accent-color: #6b2e2e;
+}
+
+/* 🔹 Preguntas abiertas */
 textarea {
   width: 100%;
-  min-height: 100px;
-  border: 1px solid #ddd4a8;
-  border-radius: 0.4rem;
-  padding: 0.8rem;
-  font-size: 1rem;
+  min-height: 140px;
+  border: 1px solid var(--borde);
+  border-radius: 0.6rem;
+  padding: 1rem;
+  font-size: 1.15rem;
   resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+textarea:focus {
+  outline: none;
+  border-color: #a25454;
+  box-shadow: 0 0 0 3px rgba(162, 84, 84, 0.15);
 }
 
-/* === BOTONES === */
-
+/* ===================== BOTONES ===================== */
 button {
-  background-color: #6b2e2e;
+  background: #6b2e2e;
   color: #fff;
   border: none;
-  border-radius: 0.3rem;
-  padding: 0.8rem 1.6rem;
-  margin: 0.5rem;
+  border-radius: 0.4rem;
+  padding: 1rem 1.8rem;
+  margin: 0.6rem;
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.1rem;  /* ↑ */
+  font-weight: 700;
   transition: background-color 0.3s ease, transform 0.1s ease;
 }
+button:hover { background: #a25454; }
+button:active { transform: scale(0.97); }
 
-button:hover {
-  background-color: #a25454;
+/* ===================== RANKING ===================== */
+.pregunta[data-tipo="ranking"] h3 {
+  font-size: 2rem;
+  color: var(--primario);
+  font-weight: 800;
 }
 
-button:active {
-  transform: scale(0.97);
+.instrucciones {
+  background: linear-gradient(135deg, #fff3cd 0%, #fef8e1 100%);
+  padding: 12px;
+  border-radius: 0.6rem;
+  margin-bottom: 15px;
+  border-left: 4px solid var(--amarillo);
+  box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.05);
 }
-
-/* ===============================================
-   ESTILOS PARA PREGUNTAS TIPO RANKING - VERSIÓN ULTRA COMPACTA
-   =============================================== */
+.instrucciones strong {
+  color: #856404;
+  font-size: 1.05rem;
+}
 
 .ranking-container {
-  max-width: 100%;
-  margin: 10px 0;
-  padding: 10px;
-  background: #fafafa;
-  border: 1px solid #ddd4a8;
-  border-radius: 0.5rem;
+  background: var(--fondo-claro);
+  border: 1px solid var(--borde);
+  border-radius: 0.6rem;
+  padding: 12px;
+  max-height: 620px;
+  overflow-y: auto;
   box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.05);
 }
 
 .ranking-item {
   display: flex;
   align-items: center;
-  padding: 6px 10px; /* ULTRA compacto */
-  margin: 3px 0; /* Mínimo margen */
-  background: #ffffff;
-  border: 1px solid #ddd4a8;
-  border-radius: 0.3rem;
+  padding: 10px 16px;
+  margin: 4px 0;
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 0.4rem;
   cursor: move;
   transition: all 0.2s ease;
-  border-left: 3px solid #611232;
-  box-shadow: 0 0.05rem 0.2rem rgba(0, 0, 0, 0.05);
+  border-left: 3px solid var(--primario);
+  user-select: none;
 }
 
 .ranking-item:hover {
   background: #f2ede0;
-  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
 }
 
 .ranking-item.dragging {
@@ -134,129 +189,46 @@ button:active {
 }
 
 .drag-handle {
-  font-size: 16px; /* Más pequeño */
+  font-size: 22px;
   color: #6b2e2e;
-  margin-right: 8px;
+  margin-right: 12px;
   cursor: grab;
-  user-select: none;
 }
-
 .drag-handle:active {
   cursor: grabbing;
 }
 
 .ranking-numero {
-  font-size: 18px; /* Más pequeño */
+  font-size: 21px;
   font-weight: bold;
-  color: #611232;
-  min-width: 38px; /* Más estrecho */
+  color: var(--primario);
+  min-width: 42px;
   text-align: center;
-  margin-right: 10px;
+  margin-right: 14px;
   background: #f9f6e9;
-  border: 2px solid #ddd4a8;
-  padding: 3px 6px; /* Mínimo padding */
+  border: 2px solid var(--borde);
+  padding: 5px 8px;
   border-radius: 50%;
-  box-shadow: 0 0.05rem 0.2rem rgba(0, 0, 0, 0.08);
 }
 
 .ranking-texto {
   flex: 1;
-  font-size: 13px; /* Texto más pequeño */
-  line-height: 1.3;
-  color: #4a1c1c;
+  font-size: 1.15rem; /* ↑ */
+  line-height: 1.4;
+  color: var(--texto);
 }
 
-.instrucciones {
-  background: linear-gradient(135deg, #fff3cd 0%, #fef8e1 100%);
-  padding: 12px;
-  border-radius: 0.4rem;
-  margin-bottom: 15px;
-  border-left: 3px solid #f0ad4e;
-  box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.05);
-}
-
-.instrucciones strong {
-  color: #856404;
-  font-size: 15px;
-}
-
-/* Estilos adicionales para h3 en preguntas de ranking */
-.pregunta h3 {
-  font-size: 1.25rem;
-  color: #4a1c1c;
-  margin-bottom: 0.8rem;
-}
-
-/* Responsive para móviles */
-@media (max-width: 768px) {
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 860px) {
   .encuesta-container {
-    margin: 1rem;
-    padding: 1.2rem;
+    max-width: 96%;
+    padding: 1.8rem;
   }
-
-  .ranking-item {
-    padding: 5px 8px;
-    margin: 2px 0;
-  }
-  
-  .ranking-numero {
-    font-size: 16px;
-    min-width: 35px;
-    padding: 2px 5px;
-  }
-  
-  .ranking-texto {
-    font-size: 12px;
-  }
-  
-  .drag-handle {
-    font-size: 14px;
-    margin-right: 6px;
-  }
-
-  .instrucciones {
-    padding: 10px;
-  }
-
-  .instrucciones strong {
-    font-size: 14px;
-  }
-
   .pregunta h3 {
-    font-size: 1.1rem;
+    font-size: 1.55rem;
   }
-}
-
-/* Eliminar espacios innecesarios */
-.ranking-container .ranking-item:first-child {
-  margin-top: 0;
-}
-
-.ranking-container .ranking-item:last-child {
-  margin-bottom: 0;
-}
-
-/* Optimización para 20 elementos */
-.ranking-container {
-  max-height: 600px; /* Altura máxima con scroll si es necesario */
-  overflow-y: auto;
-}
-
-/* Barra de scroll personalizada */
-.ranking-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.ranking-container::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-.ranking-container::-webkit-scrollbar-thumb {
-  background: #ddd4a8;
-  border-radius: 10px;
-}
-
-.ranking-container::-webkit-scrollbar-thumb:hover {
-  background: #c9be94;
+  .opciones label {
+    font-size: 1.05rem;
+    padding: 0.9rem 1.1rem;
+  }
 }
