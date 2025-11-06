@@ -1,7 +1,7 @@
 // front-end/scripts/encuesta.js
 // 2 preguntas por página (vertical). La de ranking va sola.
 // Si quieres 3 por página, cambia la constante de abajo a 3.
-console.log('[encuesta.js v2025-11-05-05] cargado');
+console.log('[encuesta.js v2025-11-05-OTRO] cargado');
 
 const PREGUNTAS_POR_PAGINA = 2;
 
@@ -38,10 +38,7 @@ function normalizaTipo(rawTipo, opciones) {
   return 'texto';
 }
 
-/* ========= Arma páginas con la regla:
-   - ranking: va sola
-   - demás: se empacan de a PREGUNTAS_POR_PAGINA
-=========== */
+/* ========= Arma páginas con la regla ========= */
 function construirPaginas(lista) {
   const pages = [];
   let buffer = [];
@@ -67,13 +64,13 @@ function construirPaginas(lista) {
   return pages;
 }
 
-/* ========= Render de página (vertical; CSS ya apila) ========= */
+/* ========= Render de página ========= */
 function mostrarPagina(k) {
   contenedor.innerHTML = '';
 
   const indices = paginas[k] || [];
   const page = document.createElement('div');
-  page.className = 'pagina-encuesta pagina-encuesta--visible'; // el CSS lo pone en columnas verticales
+  page.className = 'pagina-encuesta pagina-encuesta--visible';
 
   indices.forEach(i => {
     const p = preguntas[i];
@@ -92,6 +89,26 @@ function mostrarPagina(k) {
 
   contenedor.appendChild(page);
 
+  /* ✅ Activador dinámico para "Otro" */
+  page.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      const idPregunta = radio.name.split('_')[1];
+      const inputOtro = page.querySelector(`#otro_${idPregunta}`);
+      if (!inputOtro) return;
+
+      const texto = (e.target.dataset.texto || "").trim().toLowerCase();
+      const esOtro = texto.startsWith("otro") || texto.startsWith("otra");
+
+      if (esOtro) {
+        inputOtro.style.display = 'block';
+        inputOtro.focus();
+      } else {
+        inputOtro.style.display = 'none';
+        inputOtro.value = "";
+      }
+    });
+  });
+
   btnAnterior.disabled = (k === 0);
   btnSiguiente.textContent = (k === paginas.length - 1) ? 'Enviar Encuesta' : 'Siguiente';
 }
@@ -99,13 +116,8 @@ function mostrarPagina(k) {
 /* ========= Plantillas ========= */
 function plantillaPregunta(p) {
   if (p.tipo === 'ranking') {
-    const total = (p.opciones || []).length || 20;
     return `
       <h3>${p.texto}</h3>
-      <div class="instrucciones">
-        <strong>📋 Instrucciones:</strong> Arrastra las opciones para ordenarlas según tu preferencia.
-        <br>El <strong>#1</strong> es lo más importante para ti, el <strong>#${total}</strong> es lo menos importante.
-      </div>
       <div class="ranking-container" id="rankingContainer_${p.id}">
         ${(p.opciones || []).map((op, idx) => `
           <div class="ranking-item" draggable="true" data-opcion-id="${op.id}" data-posicion="${idx + 1}">
@@ -135,20 +147,30 @@ function plantillaPregunta(p) {
       <h3>${p.texto}</h3>
       <div class="opciones">
         ${p.opciones.map(op => `
-          <label><input type="radio" name="pregunta_${p.id}" value="${op.id}">${op.texto}</label>
+          <label class="opcion-item">
+            <input type="radio" 
+                  name="pregunta_${p.id}"
+                  value="${op.id}"
+                  data-texto="${op.texto.toLowerCase()}">
+            ${op.texto}
+          </label>
         `).join('')}
+        <input type="text"
+              class="input-otro"
+              id="otro_${p.id}"
+              placeholder="Especifica tu respuesta..."
+              style="display:none; margin-top:10px; width:95%; padding:10px; border:1px solid #ccc; border-radius:6px;">
       </div>
     `;
   }
 
-  // texto (abierta)
   return `
     <h3>${p.texto}</h3>
     <textarea id="texto_${p.id}" placeholder="Escribe tu respuesta aquí..." rows="5"></textarea>
   `;
 }
 
-/* ========= Ranking DnD ========= */
+/* ========= Ranking drag & drop ========= */
 function activarDragAndDrop(idPregunta) {
   const c = document.getElementById(`rankingContainer_${idPregunta}`);
   if (!c) return;
@@ -177,6 +199,7 @@ function activarDragAndDrop(idPregunta) {
     });
   });
 }
+
 function elementoDespuesDe(container, y) {
   const els = [...container.querySelectorAll('.ranking-item:not(.dragging)')];
   return els.reduce((closest, child) => {
@@ -186,12 +209,14 @@ function elementoDespuesDe(container, y) {
     return closest;
   }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
+
 function renumerarRanking(container) {
   container.querySelectorAll('.ranking-item').forEach((item, idx) => {
     item.querySelector('.ranking-numero').textContent = idx + 1;
     item.dataset.posicion = idx + 1;
   });
 }
+
 function guardarRanking(idPregunta, container) {
   if (!container) container = document.getElementById(`rankingContainer_${idPregunta}`);
   if (!container) return;
@@ -201,6 +226,7 @@ function guardarRanking(idPregunta, container) {
   });
   respuestasRanking[idPregunta] = arr;
 }
+
 function restaurarRanking(idPregunta) {
   const data = respuestasRanking[idPregunta];
   if (!data) return;
@@ -212,6 +238,7 @@ function restaurarRanking(idPregunta) {
   });
   renumerarRanking(c);
 }
+
 function guardarRankingsVisibles() {
   document.querySelectorAll('[id^="rankingContainer_"]').forEach(c => {
     const id = parseInt(c.id.replace('rankingContainer_', ''), 10);
@@ -226,12 +253,13 @@ btnSiguiente?.addEventListener('click', () => {
   if (esUltima) { enviarEncuesta(); return; }
   paginaActual++; mostrarPagina(paginaActual);
 });
+
 btnAnterior?.addEventListener('click', () => {
   guardarRankingsVisibles();
   if (paginaActual > 0) { paginaActual--; mostrarPagina(paginaActual); }
 });
 
-/* ========= Envío (placeholder) ========= */
+/* ========= Envío (por ahora ranking) ========= */
 function enviarEncuesta() {
   if (Object.keys(respuestasRanking).length > 0) {
     fetch('/SIMPINNA/back-end/guardar_ranking.php', {
@@ -257,7 +285,6 @@ function enviarEncuesta() {
     return;
   }
 
-  // Normaliza tipos para respetar opciones/abiertas/ranking
   preguntas.forEach(p => { p.tipo = normalizaTipo(p.tipo, p.opciones); });
 
   paginas = construirPaginas(preguntas);
