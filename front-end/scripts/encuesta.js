@@ -1,7 +1,8 @@
 // front-end/scripts/encuesta.js
-// v2025-11-06 SIN BD: detecta "dibujo" por texto y renderiza canvas
+// v2025-11-06: dual progress (respuestas + página) + canvas por texto + ranking
+// + "Otro" funcionando en radios y SELECCIÓN MÚLTIPLE (checkboxes)
 
-console.log('[encuesta.js] v2025-11-06 (canvas auto por texto)');
+console.log('[encuesta.js] v2025-11-06 (Otro en radios y múltiples)');
 
 const PREGUNTAS_POR_PAGINA = 3;
 
@@ -13,28 +14,47 @@ const contenedor   = document.getElementById('contenedorPreguntas');
 const btnSiguiente = document.getElementById('btnSiguiente');
 const btnAnterior  = document.getElementById('btnAnterior');
 
-/* --- Detectores por texto (sin tocar BD) --- */
+// Indicadores
+const progRespEl = document.getElementById('encuestaProgresoResp'); // "X de Y"
+const progPagEl  = document.getElementById('encuestaProgresoPag');  // "Página A de B"
+
+// Estado de “pregunta contestada”
+const estadoRespuestas = {}; // { [idPregunta]: boolean }
+
+// ----------------- Utilidades de progreso -----------------
+function setRespuesta(id, flag) {
+  estadoRespuestas[id] = !!flag;
+  actualizarProgresoRespuestas();
+}
+function actualizarProgresoRespuestas() {
+  const total = preguntas.length || 0;
+  const contestadas = Object.values(estadoRespuestas).filter(Boolean).length;
+  if (progRespEl) progRespEl.textContent = `${contestadas} de ${total}`;
+}
+function actualizarProgresoPagina() {
+  if (!progPagEl) return;
+  const total = paginas.length || 1;
+  const actual = Math.min(paginaActual + 1, total);
+  progPagEl.textContent = `Página ${actual} de ${total}`;
+}
+
+// ----------------- Detectores por texto (sin tocar BD) -----------------
 function esTextoDeDibujo(txt) {
   if (!txt) return false;
   const s = String(txt).toLowerCase();
-
-  // Frases que suelen traer esa pregunta en tus encuestas
   const patrones = [
     'dibuja tus derechos',
     'dibuja 1 o 2 derechos',
     'dibuja 2 o 3 derechos',
     'realiza un dibujo de tus derechos',
-    // si el wording aún dice “escribe 2 o 3 derechos humanos…”
-    // pero quieres que sea canvas, incluimos estas heurísticas:
-    'escribe 1 o 2 derechos', 
+    'escribe 1 o 2 derechos',
     'escribe 2 o 3 derechos',
     'derechos humanos que conozcas'
   ];
-
   return patrones.some(p => s.includes(p));
 }
 
-/* --- Normaliza tipos básicos saliendo de la BD --- */
+// ----------------- Normalización de tipos -----------------
 function normalizaTipo(rawTipo, opciones) {
   const s = String(rawTipo || '').toLowerCase().trim();
   const tieneOpciones = Array.isArray(opciones) && opciones.length > 0;
@@ -58,7 +78,7 @@ function normalizaTipo(rawTipo, opciones) {
   return 'texto';
 }
 
-/* --- Armado de páginas (ranking va solo) --- */
+// ----------------- Armado de páginas (ranking va solo) -----------------
 function construirPaginas(lista) {
   const pages = [];
   let buffer = [];
@@ -80,7 +100,7 @@ function construirPaginas(lista) {
   return pages;
 }
 
-/* --- Render de página --- */
+// ----------------- Render de página -----------------
 function mostrarPagina(k) {
   contenedor.innerHTML = '';
 
@@ -105,31 +125,89 @@ function mostrarPagina(k) {
 
   contenedor.appendChild(page);
 
-  // “Otro” dinámico para radios
-  page.querySelectorAll('input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-      const idPregunta = radio.name.split('_')[1];
-      const inputOtro = page.querySelector(`#otro_${idPregunta}`);
-      if (!inputOtro) return;
+  // ---- Radios + campo "Otro" (Fijo y sincronizado) ----
+  function toggleOtroRadio(id) {
+    const group = page.querySelectorAll(`input[type="radio"][name="pregunta_${id}"]`);
+    const inputOtro = page.querySelector(`#otro_${id}`);
+    if (!inputOtro) return;
 
-      const texto = (e.target.dataset.texto || "").trim().toLowerCase();
-      const esOtro = texto.startsWith("otro") || texto.startsWith("otra");
+    const selected = [...group].find(r => r.checked);
+    const isOtro = !!(selected && (selected.dataset.texto || '')
+      .trim().toLowerCase().startsWith('otro'));
 
-      if (esOtro) {
-        inputOtro.style.display = 'block';
-        inputOtro.focus();
-      } else {
-        inputOtro.style.display = 'none';
-        inputOtro.value = "";
-      }
+    inputOtro.style.display = isOtro ? 'block' : 'none';
+    if (!isOtro) inputOtro.value = '';
+
+    const hayRadio = [...group].some(r => r.checked);
+    const hayOtro  = isOtro && inputOtro.value.trim().length > 0;
+    setRespuesta(Number(id), hayRadio || hayOtro);
+  }
+
+  const idsRadioEnPagina = new Set();
+  page.querySelectorAll('input[type="radio"]').forEach(r => {
+    const id = Number(r.name.split('_')[1]);
+    idsRadioEnPagina.add(id);
+    r.addEventListener('change', () => toggleOtroRadio(id));
+  });
+  idsRadioEnPagina.forEach(id => toggleOtroRadio(id));
+
+  page.querySelectorAll('.input-otro').forEach(inp => {
+    const id = Number(inp.id.replace('otro_', ''));
+    inp.addEventListener('input', () => toggleOtroRadio(id));
+  });
+
+  // ---- Checkboxes (múltiple) + "Otro" ----
+  function toggleOtroMultiple(id) {
+    const group = page.querySelectorAll(`input[type="checkbox"][name="pregunta_${id}"]`);
+    const inputOtro = page.querySelector(`#otro_${id}`);
+    const chkOtro = [...group].find(ch => (ch.dataset.texto || '').trim().toLowerCase().startsWith('otro'));
+
+    if (inputOtro && chkOtro) {
+      const isChecked = chkOtro.checked;
+      inputOtro.style.display = isChecked ? 'block' : 'none';
+      if (!isChecked) inputOtro.value = '';
+    }
+
+    const hayChecked = [...group].some(ch => ch.checked);
+    const hayOtro = inputOtro && chkOtro && chkOtro.checked && inputOtro.value.trim().length > 0;
+    setRespuesta(Number(id), hayChecked || hayOtro);
+  }
+
+  const idsMultiEnPagina = new Set();
+  page.querySelectorAll('input[type="checkbox"]').forEach(ch => {
+    const id = Number(ch.name.split('_')[1]);
+    idsMultiEnPagina.add(id);
+    ch.addEventListener('change', () => toggleOtroMultiple(id));
+  });
+  // sincroniza al render
+  idsMultiEnPagina.forEach(id => toggleOtroMultiple(id));
+
+  // si escriben en "otro" de múltiple, también cuenta
+  page.querySelectorAll('.input-otro').forEach(inp => {
+    const id = Number(inp.id.replace('otro_', ''));
+    inp.addEventListener('input', () => {
+      // decide si el grupo es radio o checkbox; ambos llaman a su toggle
+      const hayRadios = page.querySelector(`input[type="radio"][name="pregunta_${id}"]`);
+      if (hayRadios) toggleOtroRadio(id);
+      else toggleOtroMultiple(id);
     });
   });
 
+  // ---- Texto/textarea: contestado si hay contenido ----
+  page.querySelectorAll('textarea[id^="texto_"]').forEach(t => {
+    const id = Number(t.id.replace('texto_', ''));
+    t.addEventListener('input', () => setRespuesta(id, t.value.trim().length > 0));
+  });
+
+  // Botones y progresos
   btnAnterior.disabled = (k === 0);
   btnSiguiente.textContent = (k === paginas.length - 1) ? 'Enviar Encuesta' : 'Siguiente';
+
+  actualizarProgresoPagina();
+  actualizarProgresoRespuestas();
 }
 
-/* --- Plantillas por tipo --- */
+// ----------------- Plantillas por tipo -----------------
 function plantillaPregunta(p) {
   if (p.tipo === 'ranking') {
     return `
@@ -147,13 +225,25 @@ function plantillaPregunta(p) {
   }
 
   if (p.tipo === 'multiple' && p.opciones?.length) {
+    // Notar: añadimos data-texto y el input "otro_${p.id}" (oculto)
     return `
       <h3>${p.texto}</h3>
       <p style="color:#666;font-size:14px;margin-bottom:10px;"><em>Puedes seleccionar varias opciones</em></p>
       <div class="opciones">
         ${p.opciones.map(op => `
-          <label><input type="checkbox" name="pregunta_${p.id}" value="${op.id}">${op.texto}</label>
+          <label>
+            <input type="checkbox"
+                   name="pregunta_${p.id}"
+                   value="${op.id}"
+                   data-texto="${(op.texto || '').toLowerCase()}">
+            ${op.texto}
+          </label>
         `).join('')}
+        <input type="text"
+               class="input-otro"
+               id="otro_${p.id}"
+               placeholder="Especifica tu respuesta..."
+               style="display:none; margin-top:10px; width:95%; padding:10px; border:1px solid #ccc; border-radius:6px;">
       </div>
     `;
   }
@@ -167,7 +257,7 @@ function plantillaPregunta(p) {
             <input type="radio" 
                   name="pregunta_${p.id}"
                   value="${op.id}"
-                  data-texto="${op.texto.toLowerCase()}">
+                  data-texto="${(op.texto || '').toLowerCase()}">
             ${op.texto}
           </label>
         `).join('')}
@@ -181,7 +271,6 @@ function plantillaPregunta(p) {
   }
 
   if (p.tipo === 'dibujo') {
-    // Coincide con canvas-paint.mount.js
     return `
       <h3>${p.texto}</h3>
       <div class="canvas-paint" data-default-color="#2b2b2b" data-default-size="5" data-id-pregunta="${p.id}">
@@ -198,14 +287,13 @@ function plantillaPregunta(p) {
     `;
   }
 
-  // texto / abierta
   return `
     <h3>${p.texto}</h3>
     <textarea id="texto_${p.id}" placeholder="Escribe tu respuesta aquí..." rows="5"></textarea>
   `;
 }
 
-/* --- Drag & drop ranking --- */
+// ----------------- Drag & drop Ranking -----------------
 function activarDragAndDrop(idPregunta) {
   const c = document.getElementById(`rankingContainer_${idPregunta}`);
   if (!c) return;
@@ -255,6 +343,7 @@ function guardarRanking(idPregunta, container) {
     arr.push({ id_opcion: parseInt(el.dataset.opcionId, 10), posicion: idx + 1 });
   });
   respuestasRanking[idPregunta] = arr;
+  setRespuesta(Number(idPregunta), (arr.length || 0) > 0);
 }
 function restaurarRanking(idPregunta) {
   const data = respuestasRanking[idPregunta];
@@ -274,13 +363,13 @@ function guardarRankingsVisibles() {
   });
 }
 
-/* --- Dibujo: recolectar PNG base64 --- */
+// ----------------- Dibujo: recolectar PNG base64 -----------------
 function recolectarDibujos() {
   const out = {};
   document.querySelectorAll('.canvas-paint').forEach(root => {
     const canvas = root.querySelector('.cp-canvas');
     const hidden = root.querySelector('.cp-data');
-    const id = root.getAttribute('data-id-pregunta');
+    const id     = root.getAttribute('data-id-pregunta');
     if (!canvas || !hidden || !id) return;
     hidden.value = canvas.toDataURL('image/png');
     out[id] = hidden.value;
@@ -288,19 +377,29 @@ function recolectarDibujos() {
   return out;
 }
 
-/* --- Navegación --- */
+// Progreso: escuchar eventos del canvas (trazo/limpiar)
+document.addEventListener('encuesta:dibujo-change', (ev) => {
+  const { id, filled } = ev.detail || {};
+  if (typeof id === 'number') setRespuesta(id, filled);
+});
+
+// ----------------- Navegación -----------------
 btnSiguiente?.addEventListener('click', () => {
   guardarRankingsVisibles();
   const esUltima = (paginaActual === paginas.length - 1);
   if (esUltima) { enviarEncuesta(); return; }
-  paginaActual++; mostrarPagina(paginaActual);
+  paginaActual++;
+  mostrarPagina(paginaActual);
 });
 btnAnterior?.addEventListener('click', () => {
   guardarRankingsVisibles();
-  if (paginaActual > 0) { paginaActual--; mostrarPagina(paginaActual); }
+  if (paginaActual > 0) {
+    paginaActual--;
+    mostrarPagina(paginaActual);
+  }
 });
 
-/* --- Envío --- */
+// ----------------- Envío -----------------
 function enviarEncuesta() {
   const dibujos = recolectarDibujos();
   const payload = {
@@ -322,26 +421,28 @@ function enviarEncuesta() {
   .catch(err => { console.error(err); alert('❌ Error de conexión.'); });
 }
 
-/* --- Init --- */
+// ----------------- Init -----------------
 (function init() {
   if (!Array.isArray(preguntas) || !preguntas.length || !contenedor) {
     console.warn('[encuesta.js] No hay preguntas o contenedor no encontrado.');
+    actualizarProgresoRespuestas();
+    actualizarProgresoPagina();
     return;
   }
 
-  // Normaliza tipo base y OVERRIDE por texto (sin tocar BD)
   preguntas.forEach(p => {
     p.tipo = normalizaTipo(p.tipo, p.opciones);
     if (esTextoDeDibujo(p.texto)) {
       p.tipo = 'dibujo';
-      // si quieres cambiar el enunciado automáticamente:
       if (p.texto.toLowerCase().startsWith('escribe')) {
         p.texto = 'Dibuja un derecho que conozcas';
       }
     }
+    estadoRespuestas[p.id] = false; // init respondidas
   });
 
   paginas = construirPaginas(preguntas);
   paginaActual = 0;
-  mostrarPagina(paginaActual);
+  mostrarPagina(paginaActual);      // también actualiza ambos indicadores
+  actualizarProgresoRespuestas();   // asegura 0 de N al cargar
 })();
