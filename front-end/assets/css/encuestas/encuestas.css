@@ -228,3 +228,7 @@ button:active { transform: scale(0.97); }
     max-height: 480px;
   }
 }
+
+/* Ajustes suaves para el bloque de dibujo */
+.pregunta-dibujo { padding: .4rem 0; }
+.pregunta-dibujo h3 { margin-bottom: .6rem; }

@@ -1,21 +1,40 @@
 // front-end/scripts/encuesta.js
-// 2 preguntas por página (vertical). La de ranking va sola.
-// Si quieres 3 por página, cambia la constante de abajo a 3.
-console.log('[encuesta.js v2025-11-05-OTRO] cargado');
+// v2025-11-06 SIN BD: detecta "dibujo" por texto y renderiza canvas
+
+console.log('[encuesta.js] v2025-11-06 (canvas auto por texto)');
 
 const PREGUNTAS_POR_PAGINA = 3;
 
 let paginaActual = 0;
-let paginas = [];                      // array de arrays (índices de preguntas por página)
-const respuestasRanking = {};          // { idPregunta: [{id_opcion, posicion}, ...] }
+let paginas = [];
+const respuestasRanking = {};
 
 const contenedor   = document.getElementById('contenedorPreguntas');
 const btnSiguiente = document.getElementById('btnSiguiente');
 const btnAnterior  = document.getElementById('btnAnterior');
 
-/* ========= Normalizador de tipos desde BD =========
-   Salida: 'opcion' | 'multiple' | 'texto' | 'ranking'
-*/
+/* --- Detectores por texto (sin tocar BD) --- */
+function esTextoDeDibujo(txt) {
+  if (!txt) return false;
+  const s = String(txt).toLowerCase();
+
+  // Frases que suelen traer esa pregunta en tus encuestas
+  const patrones = [
+    'dibuja tus derechos',
+    'dibuja 1 o 2 derechos',
+    'dibuja 2 o 3 derechos',
+    'realiza un dibujo de tus derechos',
+    // si el wording aún dice “escribe 2 o 3 derechos humanos…”
+    // pero quieres que sea canvas, incluimos estas heurísticas:
+    'escribe 1 o 2 derechos', 
+    'escribe 2 o 3 derechos',
+    'derechos humanos que conozcas'
+  ];
+
+  return patrones.some(p => s.includes(p));
+}
+
+/* --- Normaliza tipos básicos saliendo de la BD --- */
 function normalizaTipo(rawTipo, opciones) {
   const s = String(rawTipo || '').toLowerCase().trim();
   const tieneOpciones = Array.isArray(opciones) && opciones.length > 0;
@@ -24,7 +43,8 @@ function normalizaTipo(rawTipo, opciones) {
     ranking:  ['ranking','ordenar','prioridad','ordenamiento','drag'],
     multiple: ['multiple','múltiple','checkbox','seleccion_multiple','selección_múltiple','multi'],
     opcion:   ['opcion','opción','radio','seleccion_unica','selección_única','unica','única','single','one','si_no','sí_no'],
-    texto:    ['texto','abierta','abierta_corta','abierta_larga','open','textarea']
+    texto:    ['texto','abierta','abierta_corta','abierta_larga','open','textarea'],
+    dibujo:   ['dibujo','dibuja','canvas','pintar','pinta']
   };
 
   const en = (arr) => arr.includes(s);
@@ -32,39 +52,35 @@ function normalizaTipo(rawTipo, opciones) {
   if (en(tabla.multiple)) return 'multiple';
   if (en(tabla.opcion))   return 'opcion';
   if (en(tabla.texto))    return 'texto';
+  if (en(tabla.dibujo))   return 'dibujo';
 
-  // Heurística: si trae opciones, tratamos como opción única
   if (tieneOpciones) return 'opcion';
   return 'texto';
 }
 
-/* ========= Arma páginas con la regla ========= */
+/* --- Armado de páginas (ranking va solo) --- */
 function construirPaginas(lista) {
   const pages = [];
   let buffer = [];
 
   for (let i = 0; i < lista.length; i++) {
     const p = lista[i];
-    const esRanking = (p.tipo === 'ranking');
-
-    if (esRanking) {
+    if (p.tipo === 'ranking') {
       if (buffer.length) { pages.push(buffer.slice()); buffer = []; }
-      pages.push([i]); // ranking sola
+      pages.push([i]);
       continue;
     }
-
     buffer.push(i);
     if (buffer.length === PREGUNTAS_POR_PAGINA) {
       pages.push(buffer.slice());
       buffer = [];
     }
   }
-
   if (buffer.length) pages.push(buffer.slice());
   return pages;
 }
 
-/* ========= Render de página ========= */
+/* --- Render de página --- */
 function mostrarPagina(k) {
   contenedor.innerHTML = '';
 
@@ -89,7 +105,7 @@ function mostrarPagina(k) {
 
   contenedor.appendChild(page);
 
-  /* ✅ Activador dinámico para "Otro" */
+  // “Otro” dinámico para radios
   page.querySelectorAll('input[type="radio"]').forEach(radio => {
     radio.addEventListener('change', (e) => {
       const idPregunta = radio.name.split('_')[1];
@@ -113,7 +129,7 @@ function mostrarPagina(k) {
   btnSiguiente.textContent = (k === paginas.length - 1) ? 'Enviar Encuesta' : 'Siguiente';
 }
 
-/* ========= Plantillas ========= */
+/* --- Plantillas por tipo --- */
 function plantillaPregunta(p) {
   if (p.tipo === 'ranking') {
     return `
@@ -164,13 +180,32 @@ function plantillaPregunta(p) {
     `;
   }
 
+  if (p.tipo === 'dibujo') {
+    // Coincide con canvas-paint.mount.js
+    return `
+      <h3>${p.texto}</h3>
+      <div class="canvas-paint" data-default-color="#2b2b2b" data-default-size="5" data-id-pregunta="${p.id}">
+        <section class="paleta">
+          <b>Color: </b><input class="cp-color" type="color" value="#2b2b2b">
+          <b>Tamaño: </b><input class="cp-size" type="number" min="2" max="25" value="5" style="width:70px">
+          <input class="cp-clear" type="button" value="Limpiar">
+        </section>
+        <div class="canvas-wrap">
+          <canvas class="cp-canvas" width="800" height="500"></canvas>
+        </div>
+        <input type="hidden" class="cp-data" name="respuestas[${p.id}]" value="">
+      </div>
+    `;
+  }
+
+  // texto / abierta
   return `
     <h3>${p.texto}</h3>
     <textarea id="texto_${p.id}" placeholder="Escribe tu respuesta aquí..." rows="5"></textarea>
   `;
 }
 
-/* ========= Ranking drag & drop ========= */
+/* --- Drag & drop ranking --- */
 function activarDragAndDrop(idPregunta) {
   const c = document.getElementById(`rankingContainer_${idPregunta}`);
   if (!c) return;
@@ -183,14 +218,12 @@ function activarDragAndDrop(idPregunta) {
       item.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
     });
-
     item.addEventListener('dragend', () => {
       item.classList.remove('dragging');
       dragged = null;
       renumerarRanking(c);
       guardarRanking(idPregunta, c);
     });
-
     item.addEventListener('dragover', e => {
       e.preventDefault();
       const after = elementoDespuesDe(c, e.clientY);
@@ -199,7 +232,6 @@ function activarDragAndDrop(idPregunta) {
     });
   });
 }
-
 function elementoDespuesDe(container, y) {
   const els = [...container.querySelectorAll('.ranking-item:not(.dragging)')];
   return els.reduce((closest, child) => {
@@ -209,14 +241,12 @@ function elementoDespuesDe(container, y) {
     return closest;
   }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
-
 function renumerarRanking(container) {
   container.querySelectorAll('.ranking-item').forEach((item, idx) => {
     item.querySelector('.ranking-numero').textContent = idx + 1;
     item.dataset.posicion = idx + 1;
   });
 }
-
 function guardarRanking(idPregunta, container) {
   if (!container) container = document.getElementById(`rankingContainer_${idPregunta}`);
   if (!container) return;
@@ -226,7 +256,6 @@ function guardarRanking(idPregunta, container) {
   });
   respuestasRanking[idPregunta] = arr;
 }
-
 function restaurarRanking(idPregunta) {
   const data = respuestasRanking[idPregunta];
   if (!data) return;
@@ -238,7 +267,6 @@ function restaurarRanking(idPregunta) {
   });
   renumerarRanking(c);
 }
-
 function guardarRankingsVisibles() {
   document.querySelectorAll('[id^="rankingContainer_"]').forEach(c => {
     const id = parseInt(c.id.replace('rankingContainer_', ''), 10);
@@ -246,46 +274,72 @@ function guardarRankingsVisibles() {
   });
 }
 
-/* ========= Navegación ========= */
+/* --- Dibujo: recolectar PNG base64 --- */
+function recolectarDibujos() {
+  const out = {};
+  document.querySelectorAll('.canvas-paint').forEach(root => {
+    const canvas = root.querySelector('.cp-canvas');
+    const hidden = root.querySelector('.cp-data');
+    const id = root.getAttribute('data-id-pregunta');
+    if (!canvas || !hidden || !id) return;
+    hidden.value = canvas.toDataURL('image/png');
+    out[id] = hidden.value;
+  });
+  return out;
+}
+
+/* --- Navegación --- */
 btnSiguiente?.addEventListener('click', () => {
   guardarRankingsVisibles();
   const esUltima = (paginaActual === paginas.length - 1);
   if (esUltima) { enviarEncuesta(); return; }
   paginaActual++; mostrarPagina(paginaActual);
 });
-
 btnAnterior?.addEventListener('click', () => {
   guardarRankingsVisibles();
   if (paginaActual > 0) { paginaActual--; mostrarPagina(paginaActual); }
 });
 
-/* ========= Envío (por ahora ranking) ========= */
+/* --- Envío --- */
 function enviarEncuesta() {
-  if (Object.keys(respuestasRanking).length > 0) {
-    fetch('/SIMPINNA/back-end/guardar_ranking.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ respuestas: respuestasRanking, id_encuesta: idEncuesta })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) alert('¡Encuesta enviada exitosamente! ✅');
-      else alert('❌ Error al enviar: ' + data.message);
-    })
-    .catch(err => { console.error(err); alert('❌ Error de conexión.'); });
-  } else {
-    alert('Encuesta lista (sin rankings capturados).');
-  }
+  const dibujos = recolectarDibujos();
+  const payload = {
+    respuestas: respuestasRanking,
+    dibujos,
+    id_encuesta: idEncuesta
+  };
+
+  fetch('/SIMPINNA/back-end/guardar_ranking.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) alert('¡Encuesta enviada exitosamente! ✅');
+    else alert('❌ Error al enviar: ' + data.message);
+  })
+  .catch(err => { console.error(err); alert('❌ Error de conexión.'); });
 }
 
-/* ========= Init ========= */
+/* --- Init --- */
 (function init() {
   if (!Array.isArray(preguntas) || !preguntas.length || !contenedor) {
-    console.warn('[encuesta.js] No hay preguntas para este nivel o contenedor no encontrado.');
+    console.warn('[encuesta.js] No hay preguntas o contenedor no encontrado.');
     return;
   }
 
-  preguntas.forEach(p => { p.tipo = normalizaTipo(p.tipo, p.opciones); });
+  // Normaliza tipo base y OVERRIDE por texto (sin tocar BD)
+  preguntas.forEach(p => {
+    p.tipo = normalizaTipo(p.tipo, p.opciones);
+    if (esTextoDeDibujo(p.texto)) {
+      p.tipo = 'dibujo';
+      // si quieres cambiar el enunciado automáticamente:
+      if (p.texto.toLowerCase().startsWith('escribe')) {
+        p.texto = 'Dibuja un derecho que conozcas';
+      }
+    }
+  });
 
   paginas = construirPaginas(preguntas);
   paginaActual = 0;
