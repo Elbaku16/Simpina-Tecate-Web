@@ -1,0 +1,21 @@
+/* ===== Canvas Paint (scope) ===== */
+.canvas-paint { width:100%; max-width: 980px; margin:auto; padding-top:10px; }
+
+.canvas-paint .paleta {
+  width:100%;
+  border:2px solid var(--borde, #e6d9a3);
+  background:#fffaf0;
+  border-radius:10px;
+  padding:.5rem .75rem;
+  margin-bottom:12px;
+  display:flex; align-items:center; gap:.75rem; flex-wrap:wrap;
+}
+
+.canvas-paint b { font: 16px Verdana, sans-serif; }
+
+.canvas-paint .canvas-wrap { width:100%; overflow:auto; }
+.canvas-paint .cp-canvas { border:1px solid #000; width:100%; height:auto; }
+
+@media (max-width: 860px) {
+  .canvas-paint .cp-canvas { height:auto; }
+}

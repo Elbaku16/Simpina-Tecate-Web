@@ -91,3 +91,9 @@ $claseAncho = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 <script src="/SIMPINNA/front-end/scripts/encuesta.js?v=2025-11-05-11"></script>
 </body>
 </html>
+
+
+
+<link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/canvas-paint.css">
+<script src="/SIMPINNA/front-end/scripts/canvas/canvas-paint.js"></script>
+<script src="/SIMPINNA/front-end/scripts/canvas/canvas-paint.mount.js"></script>
