@@ -64,20 +64,47 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/encuestas.css">
   <!-- Estilos del canvas -->
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/canvas-paint.css">
-  <style>
-    /* Estilos rápidos para los dos indicadores */
-    .encuesta-progress {
-      display:flex; align-items:center; justify-content:space-between;
-      margin:0 0 .75rem 0;
-      gap:.75rem;
-    }
-    .badge {
-      background:#fffaf0; border:1px solid var(--borde, #e6d9a3);
-      padding:.35rem .6rem; border-radius:999px; color:#5a2a2a; font-size:.95rem;
-      white-space:nowrap;
-    }
-    .badge-page { background:#eef7ff; border-color:#bcdcff; color:#114a7a; }
-  </style>
+<style>
+  /* Indicadores de progreso (respondidas y página) */
+  .encuesta-progress{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1.25rem;
+    margin:0 0 1.25rem 0;
+  }
+
+  .badge{
+    background:#fffaf0;
+    border:2px solid #e6d9a3;
+    padding:.6rem 1.1rem;   /* un poco más grande */
+    border-radius:999px;
+    color:#5a2a2a;
+    font-size:1.25rem;      /* ↑ más grande */
+    font-weight:700;
+    line-height:1;
+    box-shadow:0 2px 2px rgba(0,0,0,.06);
+    white-space:nowrap;
+    transition:transform .2s ease;
+  }
+
+  .badge:hover{
+    transform:scale(1.03);
+  }
+
+  .badge-page{
+    background:#eaf4ff;
+    border-color:#bcdcff;
+    color:#114a7a;
+  }
+
+  /* Ajuste en pantallas chicas */
+  @media (max-width:600px){
+    .badge{ font-size:1.1rem; padding:.55rem .9rem; }
+  }
+</style>
+
+
 </head>
 <body>
 <header><?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header.php'); ?></header>
