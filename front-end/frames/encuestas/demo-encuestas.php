@@ -67,41 +67,51 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 <style>
   /* Indicadores de progreso (respondidas y página) */
   .encuesta-progress{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:1.25rem;
-    margin:0 0 1.25rem 0;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1.25rem; margin:0 0 1.25rem 0;
   }
-
   .badge{
-    background:#fffaf0;
-    border:2px solid #e6d9a3;
-    padding:.6rem 1.1rem;   /* un poco más grande */
-    border-radius:999px;
-    color:#5a2a2a;
-    font-size:1.25rem;      /* ↑ más grande */
-    font-weight:700;
-    line-height:1;
-    box-shadow:0 2px 2px rgba(0,0,0,.06);
-    white-space:nowrap;
-    transition:transform .2s ease;
+    background:#fffaf0; border:2px solid #e6d9a3;
+    padding:.6rem 1.1rem; border-radius:999px;
+    color:#5a2a2a; font-size:1.25rem; font-weight:700; line-height:1;
+    box-shadow:0 2px 2px rgba(0,0,0,.06); white-space:nowrap;
+  }
+  .badge-page{ background:#eaf4ff; border-color:#bcdcff; color:#114a7a; }
+
+  /* Barra de progreso */
+  .progress-wrap{ margin:.25rem 0 1.25rem 0; }
+  .progress-bar{
+    height:10px; border-radius:999px; background:#f1f1f1;
+    border:1px solid #e5e5e5; overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,#8b2a3c,#b7585f);
+    transition:width .35s ease; /* animación sutil */
   }
 
-  .badge:hover{
-    transform:scale(1.03);
-  }
+  /* Animaciones de página */
+  .pagina-encuesta{ opacity:0; transform:translateY(6px); }
+  .pagina-encuesta--visible{ opacity:1; transform:none;
+    transition:opacity .25s ease, transform .25s ease; }
 
-  .badge-page{
-    background:#eaf4ff;
-    border-color:#bcdcff;
-    color:#114a7a;
-  }
+  /* Aparición suave del input "Otro" */
+  .input-otro{ transition:opacity .2s ease; }
+  .input-otro[style*="display: none"]{ opacity:0; }
+  .input-otro[style*="display: block"]{ opacity:1; }
 
-  /* Ajuste en pantallas chicas */
-  @media (max-width:600px){
-    .badge{ font-size:1.1rem; padding:.55rem .9rem; }
+  /* Pantalla de gracias */
+  .gracias{
+    text-align:center; padding:2.5rem 1rem;
+    background:#fff; border:1px solid #eadfd4; border-radius:14px;
+    box-shadow:0 6px 16px rgba(0,0,0,.05);
   }
+  .gracias h2{ color:#53202a; margin:0 0 .75rem; font-size:1.75rem; }
+  .gracias p{ color:#5a5a5a; margin:0 0 1.25rem; font-size:1.1rem; }
+  .btn-prim{ background:#6f2b34; color:#fff; border:none; border-radius:10px;
+    padding:.7rem 1.1rem; cursor:pointer; font-weight:600; }
+  .btn-prim:hover{ filter:brightness(1.05); }
+  @media (max-width:600px){ .badge{ font-size:1.1rem; padding:.55rem .9rem; } }
 </style>
 
 
@@ -112,11 +122,17 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 <main class="encuesta-container<?php echo $claseAncho; ?>">
   <h1>Encuesta para <?php echo htmlspecialchars($nivelTitulo, ENT_QUOTES, 'UTF-8'); ?></h1>
 
-  <!-- Indicadores: izquierda (respondidas), derecha (página) -->
-  <div class="encuesta-progress">
-    <span id="encuestaProgresoResp" class="badge">0 de 0</span>
-    <span id="encuestaProgresoPag"  class="badge badge-page">Página 1 de 1</span>
-  </div>
+ <!-- Indicadores -->
+ <div class="encuesta-progress">
+  <span id="encuestaProgresoResp" class="badge">0 de 0</span>
+  <span id="encuestaProgresoPag"  class="badge badge-page">Página 1 de 1</span>
+ </div>
+
+<!-- Barra de progreso por respuestas -->
+<div class="progress-wrap">
+  <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+</div>
+
 
   <!-- El JS pinta las preguntas aquí -->
   <div id="contenedorPreguntas" data-nivel="<?php echo htmlspecialchars($nivel, ENT_QUOTES, 'UTF-8'); ?>"></div>

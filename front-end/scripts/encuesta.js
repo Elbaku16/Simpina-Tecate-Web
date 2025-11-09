@@ -21,6 +21,8 @@ const progPagEl  = document.getElementById('encuestaProgresoPag');  // "Página 
 // Estado de “pregunta contestada”
 const estadoRespuestas = {}; // { [idPregunta]: boolean }
 
+const progressFill = document.getElementById('progressFill');
+
 // ----------------- Utilidades de progreso -----------------
 function setRespuesta(id, flag) {
   estadoRespuestas[id] = !!flag;
