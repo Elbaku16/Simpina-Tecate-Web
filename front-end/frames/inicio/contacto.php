@@ -85,7 +85,6 @@ $conn->close();
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
     <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
     <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/contacto.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/lenin.css">
     <style>
       .required { color: #d32f2f; font-weight: 700; }
       select {
