@@ -20,7 +20,7 @@
             <div class="hero-overlay">
                 <div class="hero-container">
                     <div class="hero-text-content">
-                        <h1 class="hero-title">Sistema Nacional de Protección Integral de Niñas, Niños y Adolescentes</h1>
+                        <h1 class="hero-title">Sistema Municipal de Protección Integral de Niñas, Niños y Adolescentes</h1>
                         <p class="hero-subtitle">Velamos por el bienestar y los derechos de las niñas, niños y adolescentes de Tecate</p>
                         <div class="hero-buttons">
                             <a href="/SIMPINNA/front-end/frames/inicio/seleccion-encuesta.php" class="btn-primary">
