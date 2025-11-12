@@ -1,6 +1,6 @@
 /* ==========================================
    resultados.css – Página de Resultados
-   Estilo coherente con panel administrativo
+   Grid 4 columnas + Leyendas Desplegables
    ========================================== */
 
 :root {
@@ -26,8 +26,10 @@
   background: var(--panel-cream);
   border-bottom: 2px solid var(--gold);
   box-shadow: 0 4px 6px rgba(45, 27, 31, 0.08);
+  flex-wrap: wrap;
 }
 
+/* Botones principales */
 .toolbar .btn {
   display: inline-flex;
   align-items: center;
@@ -45,7 +47,7 @@
   box-shadow: 0 8px 16px rgba(122, 30, 44, 0.2);
 }
 
-.toolbar .btn:before {
+.toolbar .btn::before {
   content: '←';
   font-size: 1.2rem;
 }
@@ -61,9 +63,57 @@
   transform: translateY(0);
 }
 
-.toolbar .btn:focus-visible {
-  outline: 3px solid rgba(212, 176, 86, 0.6);
-  outline-offset: 2px;
+/* Contenedor de botones de exportación global */
+.export-buttons-global {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+  align-items: center;
+}
+
+/* Botones de exportación global */
+.btn-export-global {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(122, 30, 44, 0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Quicksand', sans-serif;
+  background: var(--burgundy);
+  color: white;
+}
+
+/* Efecto shimmer */
+.btn-export-global::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-export-global:hover::before {
+  left: 100%;
+}
+
+/* Hover */
+.btn-export-global:hover {
+  background: var(--gold);
+  color: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(212, 176, 86, 0.2);
 }
 
 /* === Header === */
@@ -72,20 +122,6 @@
   background: linear-gradient(135deg, var(--panel-cream) 0%, var(--cream) 100%);
   border-bottom: 2px solid var(--gold);
   box-shadow: 0 4px 6px rgba(45, 27, 31, 0.08);
-  position: relative;
-}
-
-.res-header::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(80%, 760px);
-  height: 4px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  border-radius: 2px;
-  opacity: 0.6;
 }
 
 .res-header h1 {
@@ -94,12 +130,6 @@
   font-weight: 700;
   color: var(--burgundy);
   letter-spacing: 0.02em;
-}
-
-.res-meta {
-  margin: 0.8rem 0 0;
-  color: rgba(45, 27, 31, 0.85);
-  font-size: 1rem;
 }
 
 /* === Filtros === */
@@ -147,26 +177,26 @@
   box-shadow: 0 0 0 4px rgba(122, 30, 44, 0.15);
 }
 
-/* === Wrapper === */
+/* === GRID 4 COLUMNAS === */
 .res-wrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: clamp(1rem, 3vw, 1.75rem);
-  padding: clamp(1.5rem, 3vw, 2.5rem);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 24px;
   background: var(--cream);
+  min-height: calc(100vh - 300px);
 }
 
 /* === Tarjetas === */
 .res-card {
   background: var(--panel-cream);
-  border-radius: var(--radius-md);
-  padding: 20px;
+  border-radius: 24px;
+  padding: 16px;
   box-shadow: var(--shadow-card);
-  border: 1px solid var(--muted);
+  border: 2px solid var(--muted);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  gap: 12px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -180,6 +210,7 @@
   height: 150px;
   background: radial-gradient(circle at center, rgba(212, 176, 86, 0.2), transparent 70%);
   transform: rotate(-15deg);
+  z-index: 0;
 }
 
 .res-card:hover {
@@ -189,8 +220,8 @@
 
 .pregunta-titulo {
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 0.9rem;
+  line-height: 1.4;
   color: var(--text-dark);
   font-weight: 600;
   text-align: center;
@@ -198,38 +229,81 @@
   z-index: 1;
 }
 
-/* === Gráficas === */
+/* === GRÁFICA - RECUADRO REDONDEADO === */
 .pie-slot {
   width: 100%;
-  height: 260px;
+  height: 220px;
   border: 2px dashed var(--gold);
-  border-radius: 12px;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(253, 252, 247, 0.8) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(253, 252, 247, 0.9) 100%);
   position: relative;
-  padding: 16px;
+  padding: 12px;
   z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.pie-slot:hover {
+  border-color: var(--burgundy);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(253, 252, 247, 1) 100%);
+  box-shadow: 0 8px 16px rgba(122, 30, 44, 0.1);
 }
 
 .pie-slot canvas {
-  max-height: 240px;
+  max-height: 200px;
   max-width: 100%;
 }
 
-.no-data-message {
-  color: rgba(45, 27, 31, 0.6);
-  font-size: 0.95rem;
-  text-align: center;
-  font-style: italic;
+/* === BOTÓN TOGGLE LEYENDA === */
+.toggle-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, var(--gold) 0%, #E1CC73 100%);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--burgundy);
+  transition: all 0.3s ease;
+  width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
-/* === Leyenda === */
+.toggle-legend:hover {
+  background: linear-gradient(135deg, var(--burgundy) 0%, #5a1520 100%);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(122, 30, 44, 0.2);
+}
+
+.toggle-legend.active {
+  background: linear-gradient(135deg, var(--burgundy) 0%, #5a1520 100%);
+  color: #fff;
+}
+
+.toggle-legend svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s ease;
+  stroke-width: 3;
+}
+
+.toggle-legend.active svg {
+  transform: rotate(180deg);
+}
+
+/* === LEYENDA DESPLEGABLE === */
 .legend {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   padding: 0;
   background: transparent;
   border-radius: 0;
@@ -246,93 +320,115 @@
 .legend.expanded {
   max-height: 500px;
   opacity: 1;
-  padding: 12px;
-  background: rgba(253, 252, 247, 0.7);
-  border-radius: 10px;
+  padding: 10px;
+  background: rgba(253, 252, 247, 0.8);
+  border-radius: 12px;
   border: 1px solid var(--muted);
-}
-
-.toggle-legend {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background: var(--gold);
-  border: 2px solid var(--gold);
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--burgundy);
-  transition: all 0.3s ease;
-  width: 100%;
-  position: relative;
-  z-index: 1;
-}
-
-.toggle-legend:hover {
-  background: var(--burgundy);
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(122, 30, 44, 0.2);
-}
-
-.toggle-legend svg {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.3s ease;
-  stroke-width: 3;
-}
-
-.toggle-legend.active svg {
-  transform: rotate(180deg);
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.95rem;
-  padding: 8px 10px;
+  gap: 8px;
+  font-size: 0.85rem;
+  padding: 6px 8px;
   border-radius: 8px;
   transition: background 0.2s ease;
 }
 
 .legend-item:hover {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .legend-color {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  border: 2px solid rgba(122, 30, 44, 0.2);
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(122, 30, 44, 0.2);
   flex: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.legend-total {
-  margin-left: auto;
-  font-weight: 700;
-  color: var(--burgundy);
-  font-size: 0.95rem;
+.legend-text {
+  flex: 1;
+  font-weight: 600;
+  color: var(--text-dark);
+  word-break: break-word;
 }
 
-/* === Icono de Encuesta === */
+.legend-total {
+  font-weight: 700;
+  color: var(--burgundy);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* === BOTONES DE EXPORTACIÓN === */
+.export-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  margin-top: 4px;
+}
+
+.btn-export {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(122, 30, 44, 0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: var(--burgundy);
+  color: white;
+}
+
+.btn-export::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-export:hover::before {
+  left: 100%;
+}
+
+.btn-export:hover {
+  background: var(--gold);
+  color: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(212, 176, 86, 0.2);
+}
+
+/* === ICONO DE DOCUMENTO === */
 .encuesta-icon-container {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 12px;
   position: relative;
   z-index: 1;
 }
 
 .encuesta-icon {
-  width: 90px;
-  height: 90px;
+  width: 70px;
+  height: 70px;
   background: linear-gradient(135deg, var(--burgundy), rgba(122, 30, 44, 0.8));
   border-radius: 50%;
   display: flex;
@@ -343,24 +439,24 @@
 }
 
 .encuesta-icon svg {
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
   stroke-width: 1.5;
 }
 
-/* === Botón Ver Respuestas === */
+/* === BOTÓN VER RESPUESTAS === */
 .btn-ver-respuestas {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 10px 16px;
   border-radius: 10px;
   background: var(--burgundy);
   color: #fff;
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   box-shadow: 0 12px 24px rgba(122, 30, 44, 0.25);
   transition: all 0.3s ease;
   border: none;
@@ -376,16 +472,7 @@
   box-shadow: 0 16px 28px rgba(212, 176, 86, 0.28);
 }
 
-.btn-ver-respuestas:active {
-  transform: translateY(0);
-}
-
-.btn-ver-respuestas:focus-visible {
-  outline: 3px solid rgba(212, 176, 86, 0.6);
-  outline-offset: 2px;
-}
-
-/* === Modal de Respuestas de Texto === */
+/* === MODAL === */
 .modal-respuestas {
   position: fixed;
   top: 0;
@@ -564,10 +651,6 @@
   box-shadow: 0 6px 12px rgba(212, 176, 86, 0.2);
 }
 
-.btn-eliminar:active {
-  transform: translateY(0);
-}
-
 .sin-respuestas {
   text-align: center;
   padding: 40px 20px;
@@ -591,8 +674,52 @@
   font-size: 1.1rem;
 }
 
-/* === Responsive Modal === */
+/* === RESPONSIVE === */
+@media (max-width: 1400px) {
+  .res-wrapper {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .res-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .pie-slot {
+    height: 200px;
+  }
+}
+
 @media (max-width: 768px) {
+  .res-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .pie-slot {
+    height: 200px;
+  }
+
+  .filtro-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtro-select {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .toolbar {
+    padding: 12px 16px;
+  }
+
+  .res-header {
+    padding: 20px 16px;
+  }
+
   .modal-contenedor {
     width: 95%;
     max-height: 90vh;
@@ -616,60 +743,37 @@
   }
 }
 
-/* === Responsive === */
-@media (max-width: 768px) {
-  .res-wrapper {
-    grid-template-columns: 1fr;
-    padding: 1rem;
-  }
-
-  .filtro-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filtro-select {
-    width: 100%;
-    min-width: auto;
-  }
-
-  .toolbar {
-    padding: 12px 16px;
-  }
-
-  .res-header {
-    padding: 20px 16px;
-  }
-
-  .pie-slot {
-    height: 220px;
-  }
-}
-
 @media (max-width: 480px) {
-  .toolbar {
-    flex-wrap: wrap;
-  }
-
   .res-wrapper {
     grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
   }
 
   .pregunta-titulo {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
 
   .pie-slot {
-    height: 200px;
+    height: 180px;
+  }
+
+  .export-buttons {
+    gap: 4px;
+  }
+
+  .btn-export {
+    padding: 5px 8px;
+    font-size: 0.75rem;
   }
 
   .encuesta-icon {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
   }
 
   .encuesta-icon svg {
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
   }
 }
