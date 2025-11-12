@@ -18,7 +18,7 @@ if (isset($_POST['cambiar_estado']) && isset($_POST['id_contacto']) && isset($_P
     $idContacto = (int)$_POST['id_contacto'];
     $nuevoEstado = $_POST['nuevo_estado'];
     
-    // Validar que sea un estado permitido
+    //Validar que sea un estado permitido
     if (in_array($nuevoEstado, ['pendiente', 'en_revision', 'resuelto'])) {
         $stmtUpdate = $conn->prepare("UPDATE contactos SET estado = ? WHERE id_contacto = ?");
         $stmtUpdate->bind_param("si", $nuevoEstado, $idContacto);
