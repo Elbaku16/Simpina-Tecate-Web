@@ -17,12 +17,15 @@ const nivel = contenedor.dataset.nivel;
 const btnAnterior  = document.getElementById('btnAnterior');
 const btnSiguiente = document.getElementById('btnSiguiente');
 
+
 async function cargarEncuesta() {
     const resp = await fetch(`/SIMPINNA/back-end/routes/encuestas/obtener.php?nivel=${nivel}`);
     const data = await resp.json();
 
     preguntas  = data.preguntas;
     idEncuesta = data.id_encuesta;
+
+    window.preguntas = preguntas; // necesario para progreso.js
 
     preguntas.forEach(p => {
         p.tipo = String(p.tipo).toLowerCase();
@@ -32,11 +35,18 @@ async function cargarEncuesta() {
     mostrarPagina();
 }
 
+
 function mostrarPagina() {
     renderPagina(paginas[paginaActual], preguntas, contenedor);
     actualizarProgresoPagina(paginaActual, paginas);
     actualizarProgresoRespuestas();
+
+    // Montar canvas después del render
+    if (window.initCanvasPaint) {
+        window.initCanvasPaint();
+    }
 }
+
 
 btnSiguiente.addEventListener('click', () => {
     if (paginaActual === paginas.length - 1) {
@@ -47,12 +57,14 @@ btnSiguiente.addEventListener('click', () => {
     }
 });
 
+
 btnAnterior.addEventListener('click', () => {
     if (paginaActual > 0) {
         paginaActual--;
         mostrarPagina();
     }
 });
+
 
 function enviar() {
     const dibujos = {};
@@ -81,5 +93,6 @@ function enviar() {
     .then(() => alert("Encuesta enviada"))
     .catch(() => alert("Error al enviar la encuesta"));
 }
+
 
 cargarEncuesta();

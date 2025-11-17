@@ -90,35 +90,38 @@ class EncuestasController
             if (is_array($valor)) {
                 $this->guardarArrayRespuesta((int)$id_pregunta, $valor);
             } else {
-                $this->guardarTexto((int)$id_pregunta, (string)$valor);
+                $this->guardarTexto((int)$id_pregunta, (string)$valor, $id_encuesta);
             }
         }
 
         foreach ($dibujos as $id_pregunta => $base64) {
-            $this->guardarDibujo((int)$id_pregunta, $base64);
+            $this->guardarDibujo((int)$id_pregunta, $base64, $id_encuesta);
         }
 
         return [ "success" => true ];
     }
 
-    private function guardarTexto(int $id_pregunta, string $valor): void
+    private function guardarTexto(int $id_pregunta, string $valor, int $id_encuesta): void
     {
-        $sql = "INSERT INTO respuestas (id_pregunta, respuesta_texto)
-                VALUES (?, ?)";
+        $sql = "INSERT INTO respuestas_usuario 
+            (id_encuesta, id_pregunta, respuesta_texto)
+            VALUES (?, ?, ?)";
+
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("is", $id_pregunta, $valor);
+        $stmt->bind_param("iis", $id_encuesta, $id_pregunta, $valor);
         $stmt->execute();
         $stmt->close();
     }
 
-    private function guardarArrayRespuesta(int $id_pregunta, array $arr): void
+   private function guardarArrayRespuesta(int $id_pregunta, array $arr): void
     {
         foreach ($arr as $item) {
             $id_op = (int)$item['id_opcion'];
-            $pos   = $item['posicion'] ?? null;
+            $pos   = (int)$item['posicion'];
 
-            $sql = "INSERT INTO respuestas (id_pregunta, id_opcion, posicion) 
-                    VALUES (?,?,?)";
+            $sql = "INSERT INTO respuestas_ranking
+                (id_usuario, id_pregunta, id_opcion, posicion)
+                VALUES (0, ?, ?, ?)";
 
             $stmt = $this->db->prepare($sql);
             $stmt->bind_param("iii", $id_pregunta, $id_op, $pos);
@@ -127,12 +130,14 @@ class EncuestasController
         }
     }
 
-    private function guardarDibujo(int $id_pregunta, string $base64): void
+    private function guardarDibujo(int $id_pregunta, string $base64, int $id_encuesta): void
     {
-        $sql = "INSERT INTO respuestas (id_pregunta, respuesta_imagen)
-                VALUES (?, ?)";
+        $sql = "INSERT INTO respuestas_usuario
+            (id_encuesta, id_pregunta, respuesta_texto)
+            VALUES (?, ?, ?)";
+
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("is", $id_pregunta, $base64);
+        $stmt->bind_param("iis", $id_encuesta, $id_pregunta, $base64);
         $stmt->execute();
         $stmt->close();
     }
