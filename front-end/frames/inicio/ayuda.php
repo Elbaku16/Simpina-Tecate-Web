@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
     <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/header-responsive.css">
     <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/ayuda.css">
     <title>SIMPINNA | Ayuda</title>
 </head>
@@ -279,6 +280,6 @@
     window.closeContactModal = closeContactModal;
     window.closeContactModalOnOverlay = closeContactModalOnOverlay;
 </script>
-
+<script src="/SIMPINNA/front-end/scripts/header-menu.js"></script>
 </body>
 </html>

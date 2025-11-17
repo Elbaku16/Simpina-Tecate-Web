@@ -6,6 +6,7 @@
   <title>SIMPINNA | Encuestas</title>
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/header-responsive.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/overrides_encuesta.css">
 </head>
 <body>
@@ -52,6 +53,6 @@
 <footer>
   <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer.php'; ?>
 </footer>
-
+<script src="/SIMPINNA/front-end/scripts/header-menu.js"></script>
 </body>
 </html>

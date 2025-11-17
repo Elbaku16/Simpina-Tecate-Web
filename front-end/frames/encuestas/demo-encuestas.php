@@ -17,6 +17,7 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/encuestas.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/progress.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/canvas-paint.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/header-responsive.css">
 </head>
 
 <body>
@@ -55,6 +56,6 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 
 <script type="module" src="/SIMPINNA/front-end/scripts/encuesta.js"></script>
 <script src="/SIMPINNA/front-end/scripts/canvas/canvas-paint.mount.js"></script>
-
+<script src="/SIMPINNA/front-end/scripts/header-menu.js"></script>
 </body>
 </html>
