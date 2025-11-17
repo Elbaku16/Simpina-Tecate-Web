@@ -1,8 +1,4 @@
 /* ========================================
-   HEADER RESPONSIVO - MENU HAMBURGUESA
-   ======================================== */
-
-/* ========================================
    BOTON HAMBURGUESA
    ======================================== */
 .menu-toggle {
@@ -192,6 +188,11 @@
     display: none !important;
   }
 
+  /* ocultar logo de gobierno en mobile */
+  .header-der {
+    display: none !important;
+  }
+
   /* mostrar boton hamburguesa */
   .menu-toggle {
     display: block;
@@ -220,12 +221,12 @@
 
   /* asegurar que el logo no sea demasiado grande */
   .logo-simpinna {
-    max-height: 3.125rem; /* 50px */
+    max-height: 6rem;
     width: auto;
   }
 }
 
-/* mobile pequeño */
+/* mobile pequeno */
 @media (max-width: 30rem) {
   .mobile-menu {
     width: 100%;
@@ -238,7 +239,7 @@
   }
 
   .logo-simpinna {
-    max-height: 2.5rem;
+    max-height: 3.5rem;
   }
 }
 

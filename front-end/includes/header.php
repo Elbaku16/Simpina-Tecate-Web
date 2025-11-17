@@ -8,7 +8,7 @@
            alt="Logo SIMPINNA" class="logo-simpinna">
   </div>
 
-  <!-- Menú Desktop -->
+  <!-- menu Desktop -->
   <nav class="header-nav">
     <ul>    
         <li>
@@ -38,7 +38,7 @@
     </ul>
   </nav>
 
-  <!-- Botón Hamburguesa (SVG) -->
+  <!-- boton Hamburguesa (SVG) -->
   <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
     <svg class="hamburger-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path class="line line-top" d="M5 8 L27 8" stroke="#611232" stroke-width="2.5" stroke-linecap="round"/>
@@ -46,9 +46,14 @@
       <path class="line line-bottom" d="M5 24 L27 24" stroke="#611232" stroke-width="2.5" stroke-linecap="round"/>
     </svg>
   </button>
+
+  <div class="header-der">
+      <img src="/SIMPINNA/front-end/assets/img/global/gobierno-logo.png" 
+           alt="Logo Gobierno Tecate" class="logo-gobierno">
+  </div>
 </header>
 
-<!-- Menú Mobile Lateral -->
+<!-- menu mobile lateral -->
 <div class="mobile-menu" id="mobileMenu">
   <div class="mobile-menu-header">
     <button class="menu-close" id="menuClose" aria-label="Cerrar menú">
@@ -102,5 +107,5 @@
   </nav>
 </div>
 
-<!-- Overlay para cerrar menú -->
+<!-- overlay para cerrar menu -->
 <div class="menu-overlay" id="menuOverlay"></div>
