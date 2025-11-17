@@ -115,4 +115,15 @@
   } else {
     initAll();
   }
+   window.initCanvasPaint = function () {
+      document.querySelectorAll('.canvas-paint').forEach(root => mountCanvas(root));
+  };
+
+  // Primer montaje: por si ya hay canvas presentes (normalmente no)
+  if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', window.initCanvasPaint);
+  } else {
+      window.initCanvasPaint();
+  }
+
 })();

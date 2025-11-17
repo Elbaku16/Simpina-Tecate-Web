@@ -28,7 +28,7 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
   <h1>Encuesta para <?= htmlspecialchars($nivelTitulo) ?></h1>
 
   <div class="encuesta-progress">
-    <span id="encuestaProgresoResp" class="badge">0 de 0</span>
+  
     <span id="encuestaProgresoPag" class="badge badge-page">Página 1 de 1</span>
   </div>
 

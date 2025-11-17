@@ -44,11 +44,11 @@ try {
     echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
 
 } catch (Throwable $e) {
-    // NO EXPONER descripciones detalladas en producción
+
     echo json_encode([
         'success' => false,
         'error'   => 'Error interno',
-        'detalle' => $e->getMessage()   // ❗ quitar en producción
+        'detalle' => $e->getMessage()
     ]);
 }
 

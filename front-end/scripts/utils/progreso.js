@@ -1,5 +1,5 @@
 // utils/progreso.js
-
+// NO SE USA DE MOMENTO(CREO QUE SOLO CON PAGINACION BASTA)
 export const estadoRespuestas = {}; // { [idPregunta]: boolean }
 
 export function setRespuesta(id, flag) {
@@ -9,7 +9,7 @@ export function setRespuesta(id, flag) {
 
 export function actualizarProgresoRespuestas() {
     const el = document.getElementById('encuestaProgresoResp');
-    const total = window.preguntas.length || 0;
+    const total = Object.keys(estadoRespuestas).length;
     const contestadas = Object.values(estadoRespuestas).filter(Boolean).length;
     if (el) el.textContent = `${contestadas} de ${total}`;
 }
