@@ -1,176 +1,10 @@
 <?php
-// front-end/frames/panel-admin/resultados.php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/auth/verificar-sesion.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/back-end/auth/verificar-sesion.php';
 requerir_admin();
 
-if (session_status() === PHP_SESSION_NONE) {
-  session_start();
-}
-
-// Obtener el nivel desde la URL
-$nivelNombre = isset($_GET['nivel']) ? strtolower(trim($_GET['nivel'])) : '';
-
-// Mapeo de nombres a IDs de nivel
-$nivelesMap = [
-    'preescolar'   => 1,
-    'primaria'     => 2,
-    'secundaria'   => 3,
-    'preparatoria' => 4
-];
-
-// Validar que el nivel sea válido
-if (!array_key_exists($nivelNombre, $nivelesMap)) {
-    http_response_code(400);
-    echo "Nivel no válido. Use: preescolar, primaria, secundaria o preparatoria.";
-    exit;
-}
-
-$nivelId = $nivelesMap[$nivelNombre];
-
-// Conectar a la base de datos
-$__opened_here = false;
-if (!isset($conn) || !($conn instanceof mysqli)) {
-  require_once __DIR__ . '/../../../back-end/connect-db/conexion-db.php';
-  $__opened_here = true;
-}
-
-// Obtener el ID de la encuesta para este nivel
-$encuestaId = 0;
-$stmt = $conn->prepare("SELECT id_encuesta FROM encuestas WHERE id_nivel = ? ORDER BY id_encuesta LIMIT 1");
-$stmt->bind_param("i", $nivelId);
-$stmt->execute();
-$stmt->bind_result($encuestaId);
-$stmt->fetch();
-$stmt->close();
-
-// Obtener las escuelas del nivel actual para el filtro
-$escuelasDelNivel = [];
-$stmt = $conn->prepare("SELECT id_escuela, nombre_escuela FROM escuelas WHERE id_nivel = ? ORDER BY nombre_escuela");
-$stmt->bind_param("i", $nivelId);
-$stmt->execute();
-$rsEscuelas = $stmt->get_result();
-while ($escuela = $rsEscuelas->fetch_assoc()) {
-  $escuelasDelNivel[] = [
-    'id' => (int)$escuela['id_escuela'],
-    'nombre' => $escuela['nombre_escuela']
-  ];
-}
-$stmt->close();
-
-// Obtener el filtro de escuela seleccionado
-$escuelaFiltro = isset($_GET['escuela']) ? (int)$_GET['escuela'] : 0;
-
-if ((int)$encuestaId <= 0) {
-  http_response_code(404);
-  echo "No se encontró encuesta para el nivel: " . htmlspecialchars($nivelNombre);
-  if ($__opened_here && isset($conn) && $conn instanceof mysqli) { $conn->close(); }
-  exit;
-}
-
-// Cargar preguntas
-$sqlPreg = "SELECT id_pregunta, id_encuesta, texto_pregunta, 
-                   COALESCE(tipo_pregunta,'opcion') AS tipo_pregunta,
-                   COALESCE(orden, id_pregunta) AS orden
-            FROM preguntas
-            WHERE id_encuesta = ?
-            ORDER BY orden ASC";
-$stmt = $conn->prepare($sqlPreg);
-if (!$stmt) { 
-    http_response_code(500); 
-    echo "Error preparando consulta: ".$conn->error; 
-    exit; 
-}
-$stmt->bind_param("i", $encuestaId);
-$stmt->execute();
-$rsPreg = $stmt->get_result();
-
-$preguntas = [];
-$ids = [];
-while ($row = $rsPreg->fetch_assoc()) {
-  $row['id_pregunta']   = (int)$row['id_pregunta'];
-  $row['id_encuesta']   = (int)$row['id_encuesta'];
-  $row['tipo_pregunta'] = strtolower($row['tipo_pregunta']);
-  $preguntas[] = $row;
-  $ids[] = $row['id_pregunta'];
-}
-$stmt->close();
-
-// Cargar estadísticas de respuestas
-$estadisticasPorPregunta = [];
-if (!empty($ids)) {
-  $ph = implode(',', array_fill(0, count($ids), '?'));
-  $types = str_repeat('i', count($ids));
-  
-  $sqlStats = "SELECT r.id_pregunta, r.id_opcion, COUNT(*) as total_respuestas
-               FROM respuestas_usuario r";
-  
-  if ($escuelaFiltro > 0) {
-    $sqlStats .= " WHERE r.id_pregunta IN ($ph) AND r.id_escuela = ?";
-    $types .= 'i';
-    $params = array_merge($ids, [$escuelaFiltro]);
-  } else {
-    $sqlStats .= " WHERE r.id_pregunta IN ($ph)";
-    $params = $ids;
-  }
-  
-  $sqlStats .= " GROUP BY r.id_pregunta, r.id_opcion";
-  
-  $stmt = $conn->prepare($sqlStats);
-  if ($stmt) {
-    $stmt->bind_param($types, ...$params);
-    $stmt->execute();
-    $rsStats = $stmt->get_result();
-    
-    while ($stat = $rsStats->fetch_assoc()) {
-      $pid = (int)$stat['id_pregunta'];
-      $oid = (int)$stat['id_opcion'];
-      $total = (int)$stat['total_respuestas'];
-      
-      if (!isset($estadisticasPorPregunta[$pid])) {
-        $estadisticasPorPregunta[$pid] = [];
-      }
-      $estadisticasPorPregunta[$pid][$oid] = $total;
-    }
-    $stmt->close();
-  }
-}
-
-// Cargar opciones con sus estadísticas
-$opcionesPorPregunta = [];
-if (!empty($ids)) {
-  $ph = implode(',', array_fill(0, count($ids), '?'));
-  $types = str_repeat('i', count($ids));
-  $sqlOpt = "SELECT id_opcion, id_pregunta, texto_opcion, icono, valor
-             FROM opciones_respuesta
-             WHERE id_pregunta IN ($ph)
-             ORDER BY id_pregunta, id_opcion";
-  $stmt = $conn->prepare($sqlOpt);
-  if ($stmt) {
-    $stmt->bind_param($types, ...$ids);
-    $stmt->execute();
-    $rsOpt = $stmt->get_result();
-    while ($opt = $rsOpt->fetch_assoc()) {
-      $pid = (int)$opt['id_pregunta'];
-      $oid = (int)$opt['id_opcion'];
-      
-      $totalRespuestas = isset($estadisticasPorPregunta[$pid][$oid]) 
-        ? $estadisticasPorPregunta[$pid][$oid] 
-        : 0;
-      
-      $opcionesPorPregunta[$pid][] = [
-        'id_opcion' => $oid,
-        'texto'     => $opt['texto_opcion'],
-        'icono'     => $opt['icono'],
-        'valor'     => isset($opt['valor']) ? (int)$opt['valor'] : null,
-        'total'     => $totalRespuestas
-      ];
-    }
-    $stmt->close();
-  }
-}
-$conn->close();
-
-$palette = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#84cc16','#f97316','#e11d48','#22c55e'];
+// Estas variables ya vienen desde el controlador
+// $nivelNombre, $escuelaFiltro, $escuelasDelNivel
+// $preguntas, $opcionesPorPregunta, $palette
 
 $nombresBonitos = [
     'preescolar'   => 'Preescolar',
@@ -179,6 +13,7 @@ $nombresBonitos = [
     'preparatoria' => 'Preparatoria'
 ];
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -199,7 +34,8 @@ $nombresBonitos = [
   <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/header-admin.php'; ?>
 
   <div class="toolbar">
-    <a class="btn" href="../panel/panel-admin.php">Volver</a>
+    <a class="btn" href="/SIMPINNA/front-end/frames/panel/panel-admin.php">Volver</a>
+
     
     <!-- BOTONES DE EXPORTACIÓN GLOBAL -->
     <div class="export-buttons-global">

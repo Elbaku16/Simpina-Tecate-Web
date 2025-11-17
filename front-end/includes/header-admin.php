@@ -18,7 +18,7 @@ $isLoginPage = (strpos($currentScript, '/frames/admin/login.php') !== false);
       <span class="titulo-header">Panel Administrativo</span>
 
       <?php if ($esAdmin): ?>
-        <a href="/SIMPINNA/back-end/auth/logout.php" class="btn-logout">Cerrar sesión</a>
+        <a href="/SIMPINNA/back-end/routes/auth/logout.php" class="btn-logout">Cerrar sesión</a>
       <?php elseif ($isLoginPage): ?>
         <a href="/SIMPINNA/front-end/frames/inicio/inicio.php" class="btn-exit">Salir</a>
       <?php endif; ?>

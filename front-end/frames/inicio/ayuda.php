@@ -267,29 +267,17 @@
   <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer.php'; ?>
 </footer>
 
-<script>
-function openContactModal() {
-  document.getElementById('contactModal').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
+<script type="module">
+    import { 
+        openContactModal, 
+        closeContactModal, 
+        closeContactModalOnOverlay 
+    } from "/SIMPINNA/front-end/scripts/ayuda/modal-ayuda.js";
 
-function closeContactModal() {
-  document.getElementById('contactModal').style.display = 'none';
-  document.body.style.overflow = 'auto';
-}
-
-function closeContactModalOnOverlay(event) {
-  if (event.target.id === 'contactModal') {
-    closeContactModal();
-  }
-}
-
-// Cerrar con tecla Escape
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'Escape') {
-    closeContactModal();
-  }
-});
+    // Hacer funciones accesibles desde onclick=""
+    window.openContactModal = openContactModal;
+    window.closeContactModal = closeContactModal;
+    window.closeContactModalOnOverlay = closeContactModalOnOverlay;
 </script>
 
 </body>

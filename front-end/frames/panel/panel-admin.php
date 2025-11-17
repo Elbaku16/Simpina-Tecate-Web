@@ -32,25 +32,25 @@ requerir_admin();
         <div class="card-admin preescolar">
           <img src="/SIMPINNA/front-end/assets/img/escolaridad/preescolar.png" alt="Preescolar">
           <h2>Preescolar</h2>
-          <a href="../panel-admin/resultados.php?nivel=preescolar" class="btn-ver">Ver resultados</a>
+          <a href="/SIMPINNA/back-end/routes/resultados/index.php?nivel=preescolar" class="btn-ver">Ver resultados</a>
         </div>
 
         <div class="card-admin primaria">
           <img src="/SIMPINNA/front-end/assets/img/escolaridad/primaria.png" alt="Primaria">
           <h2>Primaria</h2>
-          <a href="../panel-admin/resultados.php?nivel=primaria" class="btn-ver">Ver resultados</a>
+          <a href="/SIMPINNA/back-end/routes/resultados/index.php?nivel=primaria" class="btn-ver">Ver resultados</a>
         </div>
 
         <div class="card-admin secundaria">
           <img src="/SIMPINNA/front-end/assets/img/escolaridad/secundaria.png" alt="Secundaria">
           <h2>Secundaria</h2>
-          <a href="../panel-admin/resultados.php?nivel=secundaria" class="btn-ver">Ver resultados</a>
+          <a href="/SIMPINNA/back-end/routes/resultados/index.php?nivel=secundaria" class="btn-ver">Ver resultados</a>
         </div>
 
         <div class="card-admin preparatoria">
           <img src="/SIMPINNA/front-end/assets/img/escolaridad/preparatoria.png" alt="Preparatoria">
           <h2>Preparatoria</h2>
-          <a href="../panel-admin/resultados.php?nivel=preparatoria" class="btn-ver">Ver resultados</a>
+          <a href="/SIMPINNA/back-end/routes/resultados/index.php?nivel=preparatoria" class="btn-ver">Ver resultados</a>
         </div>
       </div>
     </section>
@@ -65,7 +65,7 @@ requerir_admin();
         </div>
         <h2>Reportes y Comentarios</h2>
         <p>Revisa y gestiona los reportes enviados desde el formulario de contacto</p>
-        <a href="../panel-admin/admin-comentarios.php" class="btn-comentarios">
+        <a href="/SIMPINNA/back-end/routes/comentarios/index.php" class="btn-comentarios">
           Ver todos los comentarios
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="5" y1="12" x2="19" y2="12"></line>

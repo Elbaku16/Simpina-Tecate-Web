@@ -1,54 +1,5 @@
-<?php 
-// front-end/frames/encuestas/demo-encuestas.php
-include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/connect-db/conexion-db.php');
-
-$nivel = isset($_GET['nivel']) ? strtolower(trim($_GET['nivel'])) : 'primaria';
-
-$niveles = [
-  'preescolar'   => 1,
-  'primaria'     => 4,
-  'secundaria'   => 5,
-  'preparatoria' => 6
-];
-$id_encuesta = $niveles[$nivel] ?? 4;
-
-$sql = "
-SELECT p.id_pregunta, p.texto_pregunta, p.tipo_pregunta,
-       o.id_opcion, o.texto_opcion
-FROM preguntas p
-LEFT JOIN opciones_respuesta o ON p.id_pregunta = o.id_pregunta
-WHERE p.id_encuesta = ?
-ORDER BY p.orden ASC, o.id_opcion ASC;
-";
-
-$preguntas = [];
-if ($stmt = $conn->prepare($sql)) {
-  $stmt->bind_param('i', $id_encuesta);
-  if ($stmt->execute()) {
-    $res = $stmt->get_result();
-    while ($row = $res->fetch_assoc()) {
-      $pid = (int)$row['id_pregunta'];
-      if (!isset($preguntas[$pid])) {
-        $preguntas[$pid] = [
-          'id'       => $pid,
-          'texto'    => $row['texto_pregunta'],
-          'tipo'     => $row['tipo_pregunta'],
-          'opciones' => []
-        ];
-      }
-      if ($row['id_opcion'] !== null) {
-        $preguntas[$pid]['opciones'][] = [
-          'id'    => (int)$row['id_opcion'],
-          'texto' => isset($row['texto_opcion']) ? trim((string)$row['texto_opcion']) : ''
-        ];
-      }
-    }
-  }
-  $stmt->close();
-}
-$conn->close();
-
-$preguntas = array_values($preguntas);
+<?php
+$nivel = $_GET['nivel'] ?? 'primaria';
 
 $nivelTitulo = ucfirst($nivel);
 $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
@@ -59,102 +10,51 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIMPINNA | Encuestas</title>
+
+  <!-- CSS -->
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/encuestas.css">
-  <!-- Estilos del canvas -->
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/progress.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/canvas-paint.css">
-<style>
-  /* Indicadores de progreso (respondidas y página) */
-  .encuesta-progress{
-    display:flex; align-items:center; justify-content:space-between;
-    gap:1.25rem; margin:0 0 1.25rem 0;
-  }
-  .badge{
-    background:#fffaf0; border:2px solid #e6d9a3;
-    padding:.6rem 1.1rem; border-radius:999px;
-    color:#5a2a2a; font-size:1.25rem; font-weight:700; line-height:1;
-    box-shadow:0 2px 2px rgba(0,0,0,.06); white-space:nowrap;
-  }
-  .badge-page{ background:#eaf4ff; border-color:#bcdcff; color:#114a7a; }
-
-  /* Barra de progreso */
-  .progress-wrap{ margin:.25rem 0 1.25rem 0; }
-  .progress-bar{
-    height:10px; border-radius:999px; background:#f1f1f1;
-    border:1px solid #e5e5e5; overflow:hidden;
-  }
-  .progress-fill{
-    height:100%; width:0%;
-    background:linear-gradient(90deg,#8b2a3c,#b7585f);
-    transition:width .35s ease; /* animación sutil */
-  }
-
-  /* Animaciones de página */
-  .pagina-encuesta{ opacity:0; transform:translateY(6px); }
-  .pagina-encuesta--visible{ opacity:1; transform:none;
-    transition:opacity .25s ease, transform .25s ease; }
-
-  /* Aparición suave del input "Otro" */
-  .input-otro{ transition:opacity .2s ease; }
-  .input-otro[style*="display: none"]{ opacity:0; }
-  .input-otro[style*="display: block"]{ opacity:1; }
-
-  /* Pantalla de gracias */
-  .gracias{
-    text-align:center; padding:2.5rem 1rem;
-    background:#fff; border:1px solid #eadfd4; border-radius:14px;
-    box-shadow:0 6px 16px rgba(0,0,0,.05);
-  }
-  .gracias h2{ color:#53202a; margin:0 0 .75rem; font-size:1.75rem; }
-  .gracias p{ color:#5a5a5a; margin:0 0 1.25rem; font-size:1.1rem; }
-  .btn-prim{ background:#6f2b34; color:#fff; border:none; border-radius:10px;
-    padding:.7rem 1.1rem; cursor:pointer; font-weight:600; }
-  .btn-prim:hover{ filter:brightness(1.05); }
-  @media (max-width:600px){ .badge{ font-size:1.1rem; padding:.55rem .9rem; } }
-</style>
-
-
 </head>
+
 <body>
-<header><?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header.php'); ?></header>
+<header>
+  <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header.php'); ?>
+</header>
 
-<main class="encuesta-container<?php echo $claseAncho; ?>">
-  <h1>Encuesta para <?php echo htmlspecialchars($nivelTitulo, ENT_QUOTES, 'UTF-8'); ?></h1>
+<main class="encuesta-container<?= $claseAncho ?>">
+  <h1>Encuesta para <?= htmlspecialchars($nivelTitulo) ?></h1>
 
- <!-- Indicadores -->
- <div class="encuesta-progress">
-  <span id="encuestaProgresoResp" class="badge">0 de 0</span>
-  <span id="encuestaProgresoPag"  class="badge badge-page">Página 1 de 1</span>
- </div>
+  <div class="encuesta-progress">
+    <span id="encuestaProgresoResp" class="badge">0 de 0</span>
+    <span id="encuestaProgresoPag" class="badge badge-page">Página 1 de 1</span>
+  </div>
 
-<!-- Barra de progreso por respuestas -->
-<div class="progress-wrap">
-  <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
-</div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+  </div>
 
+  <div id="contenedorPreguntas" data-nivel="<?= htmlspecialchars($nivel) ?>"></div>
 
-  <!-- El JS pinta las preguntas aquí -->
-  <div id="contenedorPreguntas" data-nivel="<?php echo htmlspecialchars($nivel, ENT_QUOTES, 'UTF-8'); ?>"></div>
-
-  <div class="acciones-encuesta" style="margin-top:16px;">
-    <button id="btnAnterior"  type="button">Anterior</button>
+  <div class="acciones-encuesta">
+    <button id="btnAnterior" type="button">Anterior</button>
     <button id="btnSiguiente" type="button">Siguiente</button>
   </div>
 </main>
 
-<footer><?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'); ?></footer>
+<footer>
+  <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'); ?>
+</footer>
 
+<!-- El JS pedirá las preguntas al backend -->
 <script>
-  const preguntas  = <?php echo json_encode($preguntas, JSON_UNESCAPED_UNICODE); ?>;
-  const idEncuesta = <?php echo (int)$id_encuesta; ?>;
+  const NIVEL = "<?= htmlspecialchars($nivel) ?>";
 </script>
 
-<!-- JS principal de la encuesta -->
-<script src="/SIMPINNA/front-end/scripts/encuesta.js?v=2025-11-06-dual-progress"></script>
+<script type="module" src="/SIMPINNA/front-end/scripts/encuesta.js"></script>
+<script src="/SIMPINNA/front-end/scripts/canvas/canvas-paint.mount.js"></script>
 
-<!-- JS del canvas -->
-<script src="/SIMPINNA/front-end/scripts/canvas/canvas-paint.js"></script>
-<script src="/SIMPINNA/front-end/scripts/canvas/canvas-paint.mount.js?v=2025-11-06-dpr"></script>
 </body>
 </html>

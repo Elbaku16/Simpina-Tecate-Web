@@ -1,15 +1,10 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/core/bootstrap_session.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/controllers/AuthController.php';
 
-/**
- * Ruta: /back-end/routes/auth/logout.php
- *
- * TODO:
- * - Este endpoint reemplazará a back-end/auth/logout.php.
- * - Debe:
- *   - Llamar a AuthController::logout().
- *   - Destruir la sesión.
- *   - Redirigir al inicio público.
- */
+$controller = new AuthController();
+$controller->logout();
 
-// TODO: require_once '../core/bootstrap.php';
-// TODO: llamar a AuthController::logout();
+// Después del logout redirigir al inicio público
+header('Location: /SIMPINNA/front-end/frames/inicio/inicio.php');
+exit;
