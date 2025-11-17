@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
     <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/header-responsive.css">
     <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/lenin.css">
-   
-
     <title>SIMPINNA | Inicio</title>
 </head>
 <body>
@@ -162,5 +161,6 @@
   
     </footer>
     <script src="https://kit.fontawesome.com/cba4ea3b6f.js" crossorigin="anonymous"></script>
+    <script src="/SIMPINNA/front-end/scripts/header-menu.js"></script>
 </body>
 </html>
