@@ -181,7 +181,7 @@ main.admin-encuestas {
   letter-spacing:.01em;
 }
 
-/* Botón dentro de tarjeta */
+/* Botón Ver resultados */
 .btn-ver{
   display:inline-flex; align-items:center; justify-content:center;
   font-size: 1.4rem;
@@ -199,8 +199,38 @@ main.admin-encuestas {
 .btn-ver:hover::after{ transform: translateX(6px); }
 .btn-ver:focus-visible{ outline:3px solid rgba(212,176,86,.6); outline-offset:2px; }
 
+
 /* ==========================================
-   SECCIÓN REPORTES Y COMENTARIOS (Uniforme)
+   NUEVO: BOTÓN MODIFICAR ENCUESTA
+========================================== */
+.btn-editar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: .9rem 1.6rem;
+  border-radius: 10px;
+  background: var(--burgundy);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.2rem;
+  box-shadow: 0 12px 24px rgba(122,30,44,.25);
+  transition: background .3s, transform .3s, box-shadow .3s, color .3s;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-editar:hover {
+  background: var(--gold);      /* AQUÍ SE AGREGA EL FONDO AMARILLO */
+  color: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(212,176,86,.28);
+}
+
+
+/* ==========================================
+   SECCIÓN REPORTES Y COMENTARIOS
 ========================================== */
 .comentarios-section {
   background: rgba(255,255,255,.75);
@@ -330,8 +360,8 @@ main.admin-encuestas {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* antes flex-start, ahora centrado verticalmente */
-  padding: clamp(3rem, 5vw, 6rem) 1.5rem 8vh; /* más espacio general */
+  justify-content: center;
+  padding: clamp(3rem, 5vw, 6rem) 1.5rem 8vh;
   gap: 1.5rem;
   text-align: center;
 }
@@ -344,17 +374,15 @@ main.admin-encuestas {
   margin: 0.5rem 0 1.5rem;
 }
 
-
 .login-form {
-  width: min(750px, 95%); /* antes 600px → más ancho */
+  width: min(750px, 95%);
   background: var(--panel-cream);
   border: 1px solid var(--muted);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-soft);
-  padding: clamp(2.5rem, 4vw, 3rem); /* más espacio interno */
+  padding: clamp(2.5rem, 4vw, 3rem);
   text-align: left;
 }
-
 
 .form-group{ margin-bottom: 1.15rem; }
 
