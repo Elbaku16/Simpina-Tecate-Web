@@ -1,4 +1,5 @@
 // components/pregunta-opcion.js
+
 import { setRespuesta } from '../utils/progreso.js';
 
 export function plantillaOpcion(p) {

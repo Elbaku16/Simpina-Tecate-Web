@@ -43,13 +43,13 @@ try {
 
     echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
 
-} catch (Throwable $e) {
-
+} } catch (Throwable $e) {
     echo json_encode([
         'success' => false,
         'error'   => 'Error interno',
         'detalle' => $e->getMessage()
     ]);
 }
+
 
 exit;

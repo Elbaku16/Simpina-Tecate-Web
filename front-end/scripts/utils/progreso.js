@@ -1,5 +1,6 @@
 // utils/progreso.js
 // NO SE USA DE MOMENTO(CREO QUE SOLO CON PAGINACION BASTA)
+
 export const estadoRespuestas = {}; // { [idPregunta]: boolean }
 
 export function setRespuesta(id, flag) {

@@ -1,4 +1,5 @@
 // components/pregunta-texto.js
+
 import { setRespuesta } from '../utils/progreso.js';
 
 export function plantillaTexto(p) {

@@ -1,21 +1,49 @@
-/* ===== Canvas Paint (scope) ===== */
-.canvas-paint { width:100%; max-width: 980px; margin:auto; padding-top:10px; }
+/* ===== Canvas Paint - FIX Responsivo ===== */
 
-.canvas-paint .paleta {
-  width:100%;
-  border:2px solid var(--borde, #e6d9a3);
-  background:#fffaf0;
-  border-radius:10px;
-  padding:.5rem .75rem;
-  margin-bottom:12px;
-  display:flex; align-items:center; gap:.75rem; flex-wrap:wrap;
+.canvas-paint {
+  width: 100%;
+  margin: 0 auto;
+  padding-top: 0.8rem;
 }
 
-.canvas-paint b { font: 16px Verdana, sans-serif; }
+/* Paleta arriba del canvas */
+.canvas-paint .paleta {
+  width: 100%;
+  border: 2px solid var(--borde, #e6d9a3);
+  background: #fffaf0;
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
 
-.canvas-paint .canvas-wrap { width:100%; overflow:auto; }
-.canvas-paint .cp-canvas { border:1px solid #000; width:100%; height:auto; }
+.canvas-paint b {
+  font-size: 0.95rem;
+}
 
+/* Contenedor del canvas */
+.canvas-paint .canvas-wrap {
+  width: 100%;
+  overflow: hidden; /* antes auto: causaba saltos */
+  border-radius: 0.5rem;
+}
+
+/* Canvas responsivo y estable */
+.canvas-paint .cp-canvas {
+  width: 100%;
+  height: 40rem;   /* 🔥 Mucho más grande (~416px) */
+
+  border: 2px solid #000;
+  display: block;
+}
+
+
+/* Móvil → un poco más pequeño */
 @media (max-width: 860px) {
-  .canvas-paint .cp-canvas { height:auto; }
+  .canvas-paint .cp-canvas {
+    height: 14rem;
+  }
 }
