@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../database/Conexion.php';
-require_once __DIR__ . '/../helpers/DibujoHelper.php'; // ✅ NUEVO
+require_once __DIR__ . '/../helpers/DibujoHelper.php';
 
 class ResultadosTextoController
 {
@@ -12,9 +12,9 @@ class ResultadosTextoController
     }
 
     /**
-     * ✅ MODIFICADO: Ahora diferencia entre texto y dibujos
+     * MODIFICADO: Ahora incluye filtro por ciclo escolar
      */
-    public function obtener(int $idPregunta, int $idEscuela = 0): array
+    public function obtener(int $idPregunta, int $idEscuela = 0, string $cicloEscolar = ''): array
     {
         if ($idPregunta <= 0) {
             return [
@@ -24,7 +24,15 @@ class ResultadosTextoController
             ];
         }
 
-        // ✅ NUEVO: Incluir dibujo_ruta en la consulta
+        // NUEVO: Extraer años del ciclo escolar
+        $cicloInicio = null;
+        $cicloFin = null;
+        if ($cicloEscolar && strpos($cicloEscolar, '-') !== false) {
+            list($cicloInicio, $cicloFin) = explode('-', $cicloEscolar);
+            $cicloInicio = (int)$cicloInicio;
+            $cicloFin = (int)$cicloFin;
+        }
+
         $sql = "SELECT 
                     r.id_respuesta_usuario,
                     r.respuesta_texto,
@@ -44,6 +52,17 @@ class ResultadosTextoController
             $sql .= " AND r.id_escuela = ?";
             $params[] = $idEscuela;
             $types .= "i";
+        }
+
+        // NUEVO: Filtro por ciclo escolar
+        if ($cicloInicio !== null && $cicloFin !== null) {
+            $sql .= " AND (
+                (YEAR(r.fecha_respuesta) = ? AND MONTH(r.fecha_respuesta) >= 8) OR
+                (YEAR(r.fecha_respuesta) = ? AND MONTH(r.fecha_respuesta) <= 7)
+            )";
+            $params[] = $cicloInicio;
+            $params[] = $cicloFin;
+            $types .= "ii";
         }
 
         $sql .= " ORDER BY r.fecha_respuesta DESC";
@@ -76,7 +95,7 @@ class ResultadosTextoController
                 'tipo' => $tipoPregunta
             ];
 
-            // ✅ NUEVO: Determinar si es texto o dibujo
+            // Determinar si es texto o dibujo
             if (!empty($row['dibujo_ruta'])) {
                 $respuesta['es_dibujo'] = true;
                 $respuesta['ruta_dibujo'] = $row['dibujo_ruta'];
@@ -104,7 +123,7 @@ class ResultadosTextoController
     }
 
     /**
-     * ✅ MODIFICADO: Ahora elimina también el archivo de dibujo
+     * Elimina respuesta y archivo de dibujo si existe
      */
     public function eliminar(int $idRespuesta): array
     {
@@ -115,7 +134,7 @@ class ResultadosTextoController
             ];
         }
 
-        // ✅ NUEVO: Obtener ruta del dibujo antes de eliminar
+        // Obtener ruta del dibujo antes de eliminar
         $stmt = $this->db->prepare("SELECT dibujo_ruta FROM respuestas_usuario WHERE id_respuesta_usuario = ?");
         if (!$stmt) {
             return [
@@ -130,7 +149,7 @@ class ResultadosTextoController
         $stmt->fetch();
         $stmt->close();
 
-        // ✅ NUEVO: Eliminar archivo si existe
+        // Eliminar archivo si existe
         if (!empty($rutaDibujo)) {
             DibujoHelper::eliminar($rutaDibujo);
         }
