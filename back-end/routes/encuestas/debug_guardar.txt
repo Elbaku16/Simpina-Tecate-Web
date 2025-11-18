@@ -1,0 +1,38 @@
+RAW:
+{"nivel":"preescolar","preguntas":[{"id_pregunta":-1763442132364,"id_encuesta":0,"texto":"hola","tipo":"texto","orden":1,"opciones":[]},{"id_pregunta":-1763442137139,"id_encuesta":0,"texto":"xd","tipo":"texto","orden":2,"opciones":[]}]}
+
+PARSED:
+Array
+(
+    [nivel] => preescolar
+    [preguntas] => Array
+        (
+            [0] => Array
+                (
+                    [id_pregunta] => -1763442132364
+                    [id_encuesta] => 0
+                    [texto] => hola
+                    [tipo] => texto
+                    [orden] => 1
+                    [opciones] => Array
+                        (
+                        )
+
+                )
+
+            [1] => Array
+                (
+                    [id_pregunta] => -1763442137139
+                    [id_encuesta] => 0
+                    [texto] => xd
+                    [tipo] => texto
+                    [orden] => 2
+                    [opciones] => Array
+                        (
+                        )
+
+                )
+
+        )
+
+)
