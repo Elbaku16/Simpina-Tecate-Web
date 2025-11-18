@@ -6,8 +6,11 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/back-end/controllers/Comentari
 
 $id = (int)($_POST['id'] ?? 0);
 
+// Obtener el usuario de la sesión
+$usuario = $_SESSION['nombre_usuario'] ?? 'Administrador';
+
 $controller = new ComentariosController();
-$controller->eliminar($id);
+$controller->eliminar($id, $usuario);
 
 header("Location: /SIMPINNA/back-end/routes/comentarios/index.php");
 exit;
