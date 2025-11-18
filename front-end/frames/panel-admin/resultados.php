@@ -79,80 +79,93 @@ $nombresBonitos = [
     <main class="res-wrapper">
       <?php foreach ($preguntas as $i => $p):
         $pid   = (int)$p['id_pregunta'];
-        $tipo  = $p['tipo_pregunta'];
+        $tipo  = strtolower(trim($p['tipo_pregunta'])); // Normalizar tipo
         $lista = $opcionesPorPregunta[$pid] ?? [];
         foreach ($lista as $k => $op) { $lista[$k]['color'] = $palette[$k % count($palette)]; }
+        
+        // Determinar si es tipo no graficable (texto o dibujo)
+        $esNoGraficable = in_array($tipo, ['texto', 'dibujo', 'imagen', 'canvas']);
       ?>
         <article class="res-card" id="pregunta-<?php echo $pid; ?>">
           <h2 class="pregunta-titulo"><?php echo htmlspecialchars(($i+1).'. '.$p['texto_pregunta']); ?></h2>
           
-          <?php if ($tipo === 'texto'): ?>
-            <!-- Preguntas de texto: icono + botón -->
+          <?php if ($esNoGraficable): ?>
+            <!-- Preguntas de texto o dibujo: icono + botón -->
             <div class="encuesta-icon-container">
               <div class="encuesta-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="12" y1="19" x2="12" y2="11"></line>
-                  <line x1="9" y1="14" x2="15" y2="14"></line>
-                </svg>
+                <?php if ($tipo === 'texto'): ?>
+                  <!-- Icono de texto -->
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="19" x2="12" y2="11"></line>
+                    <line x1="9" y1="14" x2="15" y2="14"></line>
+                  </svg>
+                <?php else: ?>
+                  <!-- Icono de dibujo/imagen -->
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                <?php endif; ?>
               </div>
             </div>
             <button class="btn-ver-respuestas" onclick="abrirRespuestas(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>)">
-              Ver respuestas de texto
+              Ver respuestas de <?php echo $tipo === 'texto' ? 'texto' : 'dibujo'; ?>
             </button>
 
         <?php else: ?>
-  <!-- Preguntas de opciones múltiples -->
-  <div
-    class="pie-slot"
-    id="pie-q<?php echo $pid; ?>"
-    data-pregunta-id="<?php echo $pid; ?>"
-    data-titulo="<?php echo htmlspecialchars($p['texto_pregunta'], ENT_QUOTES); ?>"
-    data-labels='<?php echo json_encode(array_column($lista, "texto"), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>'
-    data-values='<?php echo json_encode(array_column($lista, "total"), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>'
-    data-colors='<?php echo json_encode(array_column($lista, "color"), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>'
-  >
-    <canvas id="chart-<?php echo $pid; ?>"></canvas>
-  </div>
+          <!-- Preguntas de opciones múltiples (opcion, multiple, ranking) -->
+          <div
+            class="pie-slot"
+            id="pie-q<?php echo $pid; ?>"
+            data-pregunta-id="<?php echo $pid; ?>"
+            data-titulo="<?php echo htmlspecialchars($p['texto_pregunta'], ENT_QUOTES); ?>"
+            data-labels='<?php echo json_encode(array_column($lista, "texto"), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>'
+            data-values='<?php echo json_encode(array_column($lista, "total"), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>'
+            data-colors='<?php echo json_encode(array_column($lista, "color"), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>'
+          >
+            <canvas id="chart-<?php echo $pid; ?>"></canvas>
+          </div>
 
-  <!-- BOTÓN DESPLEGABLE LEYENDA -->
-  <button class="toggle-legend"
-          onclick="SimpinnaResultados.toggleLegend(<?php echo $pid; ?>)"
-          id="toggle-<?php echo $pid; ?>">
-    <span>Ver leyenda</span>
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
+          <!-- BOTÓN DESPLEGABLE LEYENDA -->
+          <button class="toggle-legend"
+                  onclick="SimpinnaResultados.toggleLegend(<?php echo $pid; ?>)"
+                  id="toggle-<?php echo $pid; ?>">
+            <span>Ver leyenda</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
 
-  <!-- LEYENDA DESPLEGABLE -->
-  <div class="legend collapsed" id="legend-<?php echo $pid; ?>">
-    <?php if (empty($lista)): ?>
-      <div class="legend-item" style="color:#9aa4b2">No hay opciones configuradas.</div>
-    <?php else: ?>
-      <?php 
-        $totalPregunta = array_sum(array_column($lista, 'total'));
-        foreach ($lista as $op): 
-          $porcentaje = $totalPregunta > 0 ? round(($op['total'] / $totalPregunta) * 100, 1) : 0;
-      ?>
-        <div class="legend-item">
-          <span class="legend-color" style="background: <?php echo htmlspecialchars($op['color']); ?>"></span>
-          <span class="legend-text"><?php echo htmlspecialchars($op['texto']); ?></span>
-          <span class="legend-total"><?php echo $op['total']; ?> (<?php echo $porcentaje; ?>%)</span>
-        </div>
-      <?php endforeach; ?>
-    <?php endif; ?>
-  </div>
+          <!-- LEYENDA DESPLEGABLE -->
+          <div class="legend collapsed" id="legend-<?php echo $pid; ?>">
+            <?php if (empty($lista)): ?>
+              <div class="legend-item" style="color:#9aa4b2">No hay opciones configuradas.</div>
+            <?php else: ?>
+              <?php 
+                $totalPregunta = array_sum(array_column($lista, 'total'));
+                foreach ($lista as $op): 
+                  $porcentaje = $totalPregunta > 0 ? round(($op['total'] / $totalPregunta) * 100, 1) : 0;
+              ?>
+                <div class="legend-item">
+                  <span class="legend-color" style="background: <?php echo htmlspecialchars($op['color']); ?>"></span>
+                  <span class="legend-text"><?php echo htmlspecialchars($op['texto']); ?></span>
+                  <span class="legend-total"><?php echo $op['total']; ?> (<?php echo $porcentaje; ?>%)</span>
+                </div>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </div>
 
-        <!-- BOTONES DE EXPORTACIÓN (INDIVIDUALES) -->
+          <!-- BOTONES DE EXPORTACIÓN (INDIVIDUALES) -->
           <div class="export-buttons">
             <button class="btn-export btn-csv"  onclick="exportarGrafica(<?php echo $pid; ?>, 'csv')">CSV</button>
             <button class="btn-export btn-excel"  onclick="exportarGrafica(<?php echo $pid; ?>, 'excel')">Excel</button>
             <button class="btn-export btn-pdf"   onclick="exportarGrafica(<?php echo $pid; ?>, 'pdf')">PDF</button>
             <button class="btn-export btn-print" onclick="exportarGrafica(<?php echo $pid; ?>, 'print')">Imprimir</button>
-            </div>
-          <?php endif; ?>
+          </div>
+        <?php endif; ?>
 
         </article>
       <?php endforeach; ?>
@@ -175,9 +188,8 @@ $nombresBonitos = [
 
   <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer-admin.php'; ?>
 
-
   
-    <!-- Módulos JS de resultados -->
+  <!-- Módulos JS de resultados -->
   <script src="/SIMPINNA/front-end/scripts/admin/resultados/helpers.js"></script>
   <script src="/SIMPINNA/front-end/scripts/admin/resultados/graficas.js"></script>
   <script src="/SIMPINNA/front-end/scripts/admin/resultados/export-pregunta.js"></script>
