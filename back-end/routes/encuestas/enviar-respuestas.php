@@ -6,7 +6,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/controllers/Encuest
 
 header('Content-Type: application/json; charset=utf-8');
 
-// --- Validación del método ---
+// Validar método
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode([
         'success' => false,
@@ -15,10 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// --- Obtener el JSON del body ---
-$payload = json_decode(file_get_contents('php://input'), true);
+// Obtener JSON crudo
+$rawBody = file_get_contents('php://input');
+$payload = json_decode($rawBody, true);
 
-// Si JSON no es válido
+// Validar JSON
 if (!is_array($payload)) {
     echo json_encode([
         'success' => false,
@@ -36,20 +37,17 @@ if (!isset($payload['id_encuesta'])) {
     exit;
 }
 
-// --- Controlador ---
 try {
     $controller = new EncuestasController();
     $resultado  = $controller->enviarRespuestas($payload);
 
     echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
-
-} } catch (Throwable $e) {
+} catch (Throwable $e) {
     echo json_encode([
         'success' => false,
         'error'   => 'Error interno',
         'detalle' => $e->getMessage()
     ]);
 }
-
 
 exit;

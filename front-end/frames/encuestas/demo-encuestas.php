@@ -55,7 +55,9 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
   </div>
 
   <div class="progress-wrap">
-    <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+    <div class="progress-bar">
+      <div id="progressFill" class="progress-fill"></div>
+    </div>
   </div>
 
   <!-- ✅ LOADER -->
@@ -81,8 +83,10 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 
 <script>
 document.addEventListener("encuesta:lista", () => {
-    document.getElementById("loaderEncuesta").style.display = "none";
-    document.getElementById("contenedorPreguntas").classList.add("visible");
+    const loader = document.getElementById("loaderEncuesta");
+    const cont = document.getElementById("contenedorPreguntas");
+    if (loader) loader.style.display = "none";
+    if (cont) cont.classList.add("visible");
 });
 </script>
 

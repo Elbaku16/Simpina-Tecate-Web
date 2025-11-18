@@ -1,5 +1,4 @@
-// modal-respuestas.js - ACTUALIZADO
-// Maneja el modal de respuestas de texto Y dibujos
+// modal-respuestas.js - COMPATIBLE CON BACKEND NUEVO
 
 function abrirRespuestas(idPregunta, nivel, escuela) {
     const modal = document.getElementById('modalRespuestas');
@@ -9,7 +8,9 @@ function abrirRespuestas(idPregunta, nivel, escuela) {
     modal.classList.remove('hidden');
     contenido.innerHTML = '<div class="loading">Cargando respuestas...</div>';
 
-    const url = `/SIMPINNA/back-end/routes/resultados/respuestas_texto.php?accion=obtener&id_pregunta=${idPregunta}&escuela=${escuela}`;
+    const url =
+        `/SIMPINNA/back-end/routes/resultados/respuestas_texto.php?accion=obtener` +
+        `&id_pregunta=${idPregunta}&escuela=${escuela}`;
 
     fetch(url)
         .then(r => r.json())
@@ -20,59 +21,49 @@ function abrirRespuestas(idPregunta, nivel, escuela) {
             }
 
             const respuestas = data.respuestas || [];
-            const tipoPregunta = data.tipo_pregunta || 'texto';
 
-            // ✅ NUEVO: Actualizar título según tipo
-            if (tipoPregunta === 'dibujo' || tipoPregunta === 'imagen' || tipoPregunta === 'canvas') {
-                titulo.textContent = 'Respuestas de dibujo';
-            } else {
-                titulo.textContent = 'Respuestas de texto';
-            }
+            // Como la vista sabe si es texto o dibujo según el tipo de la pregunta,
+            // aquí no necesitamos tipo_pregunta
+            titulo.textContent = "Respuestas";
 
             if (respuestas.length === 0) {
                 contenido.innerHTML = '<p class="empty">No hay respuestas todavía.</p>';
                 return;
             }
 
-            // ✅ NUEVO: Renderizar según tipo de respuesta
             let html = '<div class="respuestas-lista">';
 
             respuestas.forEach(r => {
+                const isDibujo = (r.tipo === 'dibujo');
                 html += `
-                    <div class="respuesta-item" data-id="${r.id}">
+                    <div class="respuesta-item" data-id="${r.id_respuesta}">
                         <div class="respuesta-header">
-                            <span class="respuesta-escuela">${r.escuela}</span>
+                            <span class="respuesta-escuela">${escapeHtml(r.escuela || '')}</span>
                             <span class="respuesta-fecha">${formatearFecha(r.fecha)}</span>
-                            <button class="btn-eliminar-respuesta" onclick="eliminarRespuesta(${r.id}, ${idPregunta}, '${nivel}', ${escuela})" title="Eliminar">
-                                ×
-                            </button>
+                            <button class="btn-eliminar-respuesta"
+                                onclick="eliminarRespuesta(${r.id_respuesta}, ${idPregunta}, '${nivel}', ${escuela})"
+                                title="Eliminar">×</button>
                         </div>
                 `;
 
-                // ✅ NUEVO: Mostrar contenido según tipo
-                if (r.es_dibujo) {
-                    if (r.existe_archivo) {
+                if (isDibujo) {
+                    if (r.dibujo_url) {
                         html += `
                             <div class="respuesta-dibujo">
-                                <img src="${r.ruta_dibujo}" alt="Dibujo del estudiante" class="dibujo-preview">
-                                <div class="dibujo-info">
-                                    <span class="dibujo-tamaño">${r.tamaño || 'N/A'}</span>
-                                    <a href="${r.ruta_dibujo}" target="_blank" class="btn-ver-completo">Ver completo</a>
-                                </div>
-                            </div>
-                        `;
+                                <img src="${r.dibujo_url}" class="dibujo-preview" alt="Dibujo">
+                                <a class="btn-ver-completo" href="${r.dibujo_url}" target="_blank">Ver completo</a>
+                            </div>`;
                     } else {
                         html += `<p class="error-archivo">⚠️ Archivo no encontrado</p>`;
                     }
                 } else {
-                    html += `<div class="respuesta-texto">${escapeHtml(r.texto)}</div>`;
+                    html += `<div class="respuesta-texto">${escapeHtml(r.texto || '')}</div>`;
                 }
 
                 html += `</div>`;
             });
 
             html += '</div>';
-
             contenido.innerHTML = html;
         })
         .catch(err => {
@@ -86,9 +77,7 @@ function cerrarRespuestas() {
 }
 
 function eliminarRespuesta(idRespuesta, idPregunta, nivel, escuela) {
-    if (!confirm('¿Estás seguro de eliminar esta respuesta?')) {
-        return;
-    }
+    if (!confirm('¿Deseas eliminar esta respuesta?')) return;
 
     const formData = new FormData();
     formData.append('accion', 'eliminar');
@@ -98,41 +87,38 @@ function eliminarRespuesta(idRespuesta, idPregunta, nivel, escuela) {
         method: 'POST',
         body: formData
     })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            // Recargar el modal
-            abrirRespuestas(idPregunta, nivel, escuela);
-        } else {
-            alert('Error al eliminar: ' + (data.error || data.message));
-        }
-    })
-    .catch(err => {
-        console.error('Error:', err);
-        alert('Error al eliminar la respuesta');
-    });
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                abrirRespuestas(idPregunta, nivel, escuela);
+            } else {
+                alert('Error al eliminar: ' + data.error);
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert('Error al eliminar la respuesta.');
+        });
 }
 
-function formatearFecha(fecha) {
-    const d = new Date(fecha);
-    const opciones = { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric',
+function formatearFecha(f) {
+    const d = new Date(f);
+    return d.toLocaleDateString('es-MX', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
-    };
-    return d.toLocaleDateString('es-MX', opciones);
+    });
 }
 
 function escapeHtml(texto) {
     const div = document.createElement('div');
-    div.textContent = texto;
+    div.textContent = texto || '';
     return div.innerHTML;
 }
 
-// Cerrar modal con ESC
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
         cerrarRespuestas();
     }
