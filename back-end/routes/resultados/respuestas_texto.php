@@ -17,9 +17,11 @@ try {
         case 'obtener':
             $idPregunta = (int)($_GET['id_pregunta'] ?? 0);
             $idEscuela  = (int)($_GET['escuela'] ?? 0);
+            // NUEVO: Obtener parámetro de ciclo escolar
+            $cicloEscolar = $_GET['ciclo'] ?? '';
 
             echo json_encode(
-                $controller->obtener($idPregunta, $idEscuela),
+                $controller->obtener($idPregunta, $idEscuela, $cicloEscolar),
                 JSON_UNESCAPED_UNICODE
             );
             break;
