@@ -1,4 +1,5 @@
 // Monta el canvas en cada bloque .canvas-paint, guarda Base64 al enviar y soporta mouse/touch
+
 (function () {
   function mountCanvas(root) {
     const canvas     = root.querySelector('.cp-canvas');

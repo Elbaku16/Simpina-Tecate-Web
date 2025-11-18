@@ -1,5 +1,6 @@
 // front-end/scripts/encuesta.js
 // ✅ VERSIÓN CORREGIDA - Recolecta TODOS los tipos de respuestas
+console.log("CARGADO encuesta.js", performance.now());
 
 import { construirPaginas } from './utils/paginacion.js';
 import { renderPagina } from './utils/renderer.js';
@@ -39,12 +40,31 @@ function mostrarPagina() {
     renderPagina(paginas[paginaActual], preguntas, contenedor);
     actualizarProgresoPagina(paginaActual, paginas);
     actualizarProgresoRespuestas();
-
-    // Montar canvas después del render
+    if (paginaActual === 0) {
+        btnAnterior.style.visibility = "hidden";   // o display: "none"
+    } else {
+        btnAnterior.style.visibility = "visible";
+    }
     if (window.initCanvasPaint) {
         window.initCanvasPaint();
     }
+
+    // 🔥 Ajustar texto del botón según página
+    if (paginaActual === paginas.length - 1) {
+        btnSiguiente.textContent = "Enviar encuesta";
+    } else {
+        btnSiguiente.textContent = "Siguiente";
+    }
+
+    // 🔥 Notificar que ya cargó
+    document.dispatchEvent(new CustomEvent("encuesta:lista"));
+    window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+});
 }
+
+
 
 btnSiguiente.addEventListener('click', () => {
     if (paginaActual === paginas.length - 1) {

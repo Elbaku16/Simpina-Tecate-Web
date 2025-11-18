@@ -1,4 +1,5 @@
 // components/pregunta-ranking.js
+
 import { setRespuesta } from '../utils/progreso.js';
 
 export const respuestasRanking = {};

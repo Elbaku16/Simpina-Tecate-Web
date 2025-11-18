@@ -18,6 +18,27 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/progress.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/canvas-paint.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/header-responsive.css">
+
+  <!-- Loader CSS (simple y directo en este archivo) -->
+  <style>
+    #contenedorPreguntas {
+      visibility: hidden;
+      min-height: 200px;
+    }
+    #contenedorPreguntas.visible {
+      visibility: visible;
+    }
+    #loaderEncuesta {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #7A1E2C;
+    }
+  </style>
+
 </head>
 
 <body>
@@ -26,10 +47,10 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 </header>
 
 <main class="encuesta-container<?= $claseAncho ?>">
+  
   <h1>Encuesta para <?= htmlspecialchars($nivelTitulo) ?></h1>
 
   <div class="encuesta-progress">
-  
     <span id="encuestaProgresoPag" class="badge badge-page">Página 1 de 1</span>
   </div>
 
@@ -37,6 +58,10 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
     <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
   </div>
 
+  <!-- ✅ LOADER -->
+  <div id="loaderEncuesta">Cargando preguntas...</div>
+
+  <!-- Contenedor real -->
   <div id="contenedorPreguntas" data-nivel="<?= htmlspecialchars($nivel) ?>"></div>
 
   <div class="acciones-encuesta">
@@ -54,6 +79,14 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
   const NIVEL = "<?= htmlspecialchars($nivel) ?>";
 </script>
 
+<script>
+document.addEventListener("encuesta:lista", () => {
+    document.getElementById("loaderEncuesta").style.display = "none";
+    document.getElementById("contenedorPreguntas").classList.add("visible");
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script type="module" src="/SIMPINNA/front-end/scripts/encuesta.js"></script>
 <script src="/SIMPINNA/front-end/scripts/canvas/canvas-paint.mount.js"></script>
 <script src="/SIMPINNA/front-end/scripts/header-menu.js"></script>

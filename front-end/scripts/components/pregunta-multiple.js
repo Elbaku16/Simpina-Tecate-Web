@@ -1,4 +1,5 @@
 // components/pregunta-multiple.js
+
 import { setRespuesta } from '../utils/progreso.js';
 
 export function plantillaMultiple(p) {
