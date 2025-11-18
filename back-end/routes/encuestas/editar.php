@@ -14,10 +14,10 @@ $nivelTitulo = ucfirst($nivel);
 
     <!-- CSS global -->
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="../../../front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
 
     <!-- CSS del editor -->
-    <link rel="stylesheet" href="../../../front-end/assets/css/encuestas/editarencuestas.css">
+    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/editarencuestas.css">
 </head>
 
 <body>
@@ -29,14 +29,17 @@ $nivelTitulo = ucfirst($nivel);
     <h1>Editar encuesta: <?= htmlspecialchars($nivelTitulo) ?></h1>
     <p class="editor-sub">Modifica preguntas, opciones y orden de la encuesta seleccionada.</p>
 
-    <!-- Contenedor donde se renderizan las preguntas -->
+    <!-- Contenedor dinámico -->
     <div id="editorPreguntas" data-nivel="<?= htmlspecialchars($nivel) ?>"></div>
 
-    <!-- Botón agregar -->
+    <!-- Agregar -->
     <button id="btnAgregarPregunta" class="btn-add-pregunta">+ Agregar pregunta</button>
 
-    <!-- Botón guardar -->
-    <button id="btnGuardar" class="btn-guardar">Guardar cambios</button>
+    <!-- Acciones finales -->
+    <div class="editor-final-buttons">
+        <button id="btnGuardar" class="btn-guardar">Guardar cambios</button>
+        <button id="btnCancelar" class="btn-cancelar">Cancelar</button>
+    </div>
 
 </main>
 
@@ -45,7 +48,7 @@ $nivelTitulo = ucfirst($nivel);
 </footer>
 
 <!-- JS del editor -->
-<script src="../../../front-end/scripts/editarencuesta.js" defer></script>
+<script src="/SIMPINNA/front-end/scripts/editarencuesta.js" defer></script>
 
 </body>
 </html>
