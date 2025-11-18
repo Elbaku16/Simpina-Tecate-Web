@@ -14,9 +14,29 @@ const API_GUARDAR  = `/SIMPINNA/back-end/routes/encuestas/guardar.php`;
 let preguntas = [];           // preguntas activas
 const eliminadas = new Set(); // ids de preguntas eliminadas
 
-const btnAgregar = document.getElementById("btnAgregarPregunta");
-const btnGuardar = document.getElementById("btnGuardar");
+const btnAgregar  = document.getElementById("btnAgregarPregunta");
+const btnGuardar  = document.getElementById("btnGuardar");
+const btnCancelar = document.getElementById("btnCancelar");
 
+// snapshot para botón cancelar
+let snapshotEstado = null;
+
+// Clonar estado actual profundamente
+function clonarEstadoActual() {
+  return {
+    preguntas: JSON.parse(JSON.stringify(preguntas)),
+    eliminadas: Array.from(eliminadas)
+  };
+}
+
+// Restaurar estado desde snapshot
+function restaurarDesdeSnapshot(snap) {
+  if (!snap) return;
+  preguntas = JSON.parse(JSON.stringify(snap.preguntas));
+  eliminadas.clear();
+  snap.eliminadas.forEach(id => eliminadas.add(id));
+  renderPreguntas();
+}
 
 // -------------------------------------------------------
 // CARGAR DESDE BD
@@ -28,18 +48,23 @@ async function cargarPreguntas() {
 
     console.log("DATA RECIBIDA EDITAR:", data);
 
-    // Normalizar preguntas
+    // ✅ Normalizar preguntas para asegurar que tengan id_pregunta
     preguntas = (data.preguntas || []).map(p => ({
       ...p,
       id_pregunta: p.id_pregunta || p.id || 0,
+      id_encuesta: p.id_encuesta || data.id_encuesta || 0,
       texto: p.texto_pregunta || p.texto || "",
       tipo: (p.tipo_pregunta || p.tipo || "texto").toLowerCase(),
+      orden: p.orden || 0,
       opciones: Array.isArray(p.opciones) ? p.opciones : []
     }));
 
-    console.log("PREGUNTAS NORMALIZADAS:", preguntas);
+    console.log("✅ PREGUNTAS NORMALIZADAS:", preguntas);
 
     eliminadas.clear();
+
+    // tomar snapshot inicial para el botón "Cancelar"
+    snapshotEstado = clonarEstadoActual();
 
     renderPreguntas();
   } catch (e) {
@@ -48,13 +73,13 @@ async function cargarPreguntas() {
   }
 }
 
-
 // -------------------------------------------------------
 // RENDERIZAR
 // -------------------------------------------------------
 function renderPreguntas() {
   contenedor.innerHTML = "";
 
+  // ordenar por 'orden' y si no, por posición
   preguntas.sort((a, b) => (a.orden || 0) - (b.orden || 0));
 
   preguntas.forEach((p, idx) => {
@@ -63,11 +88,10 @@ function renderPreguntas() {
   });
 }
 
-
 function crearBloquePregunta(p, numero) {
   const wrapper = document.createElement("div");
   wrapper.className = "editor-pregunta";
-  wrapper.dataset.idPregunta = p.id_pregunta || "";
+  wrapper.dataset.idPregunta = p.id_pregunta || 0;
 
   // HEADER
   const header = document.createElement("div");
@@ -83,16 +107,19 @@ function crearBloquePregunta(p, numero) {
   const btnUp = document.createElement("button");
   btnUp.className = "btn-icon btn-updown";
   btnUp.textContent = "▲";
+  btnUp.title = "Subir";
   btnUp.onclick = () => moverPregunta(p, -1);
 
   const btnDown = document.createElement("button");
   btnDown.className = "btn-icon btn-updown";
   btnDown.textContent = "▼";
+  btnDown.title = "Bajar";
   btnDown.onclick = () => moverPregunta(p, +1);
 
   const btnDel = document.createElement("button");
   btnDel.className = "btn-icon btn-danger";
   btnDel.textContent = "🗑";
+  btnDel.title = "Eliminar pregunta";
   btnDel.onclick = () => eliminarPregunta(p);
 
   actions.appendChild(btnUp);
@@ -102,10 +129,11 @@ function crearBloquePregunta(p, numero) {
   header.appendChild(actions);
   wrapper.appendChild(header);
 
-  // TEXTO
+  // TEXTO PREGUNTA
   const txt = document.createElement("textarea");
   txt.className = "editor-texto";
-  txt.value = p.texto;
+  txt.value = p.texto || "";
+  txt.placeholder = "Escribe el texto de la pregunta...";
   txt.oninput = () => (p.texto = txt.value);
   wrapper.appendChild(txt);
 
@@ -116,14 +144,15 @@ function crearBloquePregunta(p, numero) {
   wrapper.appendChild(labelTipo);
 
   const select = document.createElement("select");
-  select.className = "editor-tipo";
+  // para estilos y para poder seleccionarlo en JS
+  select.className = "tipo-select editor-tipo";
 
   const tipos = [
-    { val: "opcion", label: "Opción única" },
+    { val: "opcion",   label: "Opción única" },
     { val: "multiple", label: "Opción múltiple" },
-    { val: "texto", label: "Texto abierto" },
-    { val: "ranking", label: "Ranking" },
-    { val: "dibujo", label: "Dibujo / Canvas" }
+    { val: "texto",    label: "Texto abierto" },
+    { val: "ranking",  label: "Ranking" },
+    { val: "dibujo",   label: "Dibujo / Canvas" }
   ];
 
   tipos.forEach(t => {
@@ -134,7 +163,6 @@ function crearBloquePregunta(p, numero) {
   });
 
   select.value = p.tipo;
-
   select.onchange = () => {
     p.tipo = select.value;
     renderPreguntas();
@@ -149,6 +177,7 @@ function crearBloquePregunta(p, numero) {
   const tiposConOpciones = ["opcion", "multiple", "ranking"];
 
   if (tiposConOpciones.includes(p.tipo)) {
+    // Normalizar opciones
     if (!Array.isArray(p.opciones) || p.opciones.length === 0) {
       p.opciones = [];
     } else {
@@ -163,6 +192,7 @@ function crearBloquePregunta(p, numero) {
     });
 
     const btnAddOp = document.createElement("button");
+    btnAddOp.type = "button";
     btnAddOp.className = "btn-add-opcion";
     btnAddOp.textContent = "+ Agregar opción";
     btnAddOp.onclick = () => {
@@ -178,7 +208,6 @@ function crearBloquePregunta(p, numero) {
   return wrapper;
 }
 
-
 function crearFilaOpcion(p, op) {
   const fila = document.createElement("div");
   fila.className = "opcion-item";
@@ -186,12 +215,15 @@ function crearFilaOpcion(p, op) {
   const input = document.createElement("input");
   input.type = "text";
   input.className = "opcion-texto";
-  input.value = op.texto;
+  input.value = op.texto || "";
+  input.placeholder = "Texto de opción";
   input.oninput = () => (op.texto = input.value);
 
   const btnDel = document.createElement("button");
+  btnDel.type = "button";
   btnDel.className = "btn-icon btn-danger";
   btnDel.textContent = "✕";
+  btnDel.title = "Eliminar opción";
   btnDel.onclick = () => {
     p.opciones = p.opciones.filter(o => o !== op);
     renderPreguntas();
@@ -202,47 +234,57 @@ function crearFilaOpcion(p, op) {
   return fila;
 }
 
-
 // -------------------------------------------------------
 // OPERACIONES
 // -------------------------------------------------------
-
-// ✅ SOLO CAMBIÉ ESTA FUNCIÓN
 function moverPregunta(p, dir) {
-  const id = parseInt(p.id_pregunta) || 0;
-
-  // Buscar índice por id, no por referencia
-  const idx = preguntas.findIndex(x => (parseInt(x.id_pregunta) || 0) === id);
-
-  if (idx === -1) {
-    console.warn("No encontré la pregunta para mover:", p);
-    return;
+  // Prioridad: usar id_pregunta (para preguntas existentes)
+  let idx = -1;
+  if (p.id_pregunta && p.id_pregunta !== 0) {
+    idx = preguntas.findIndex(q => parseInt(q.id_pregunta) === parseInt(p.id_pregunta));
   }
+
+  // Si es nueva (id 0) o no encontró, hacemos fallback por referencia
+  if (idx === -1) {
+    idx = preguntas.indexOf(p);
+  }
+
+  if (idx === -1) return;
 
   const nuevo = idx + dir;
   if (nuevo < 0 || nuevo >= preguntas.length) return;
 
+  // Intercambiar
   const tmp = preguntas[idx];
   preguntas[idx] = preguntas[nuevo];
   preguntas[nuevo] = tmp;
 
-  // Reordenar
+  // actualizar orden
   preguntas.forEach((q, i) => q.orden = i + 1);
 
   renderPreguntas();
 }
 
-
 function eliminarPregunta(p) {
+  console.log("🗑️ ELIMINANDO PREGUNTA:", p);
+
   const idPregunta = parseInt(p.id_pregunta) || 0;
 
-  if (idPregunta > 0) eliminadas.add(idPregunta);
+  if (idPregunta > 0) {
+    console.log("✅ Agregando ID a eliminadas:", idPregunta);
+    eliminadas.add(idPregunta);
+  } else {
+    console.log("⚠️ Pregunta nueva sin ID, solo se quita en memoria");
+  }
 
   preguntas = preguntas.filter(x => x !== p);
 
+  console.log("📋 Estado actual:");
+  console.log("   - Preguntas restantes:", preguntas.length);
+  console.log("   - IDs en eliminadas:", [...eliminadas]);
+
   renderPreguntas();
 }
-
 
 // -------------------------------------------------------
 // SINCRONIZAR DOM -> ARRAY
@@ -250,23 +292,36 @@ function eliminarPregunta(p) {
 function sincronizarDesdeDom() {
   const bloques = contenedor.querySelectorAll(".editor-pregunta");
 
+  console.log("🔄 SINCRONIZANDO DESDE DOM:", bloques.length, "bloques");
+
   bloques.forEach((b, index) => {
-    if (index < preguntas.length) {
-      const p = preguntas[index];
-      p.texto = b.querySelector(".editor-texto").value.trim();
-      p.tipo = b.querySelector(".editor-tipo").value;
-      p.orden = index + 1;
+    const idDom = parseInt(b.dataset.idPregunta || "0");
+    let p = null;
 
-      const ops = [...b.querySelectorAll(".opcion-texto")]
-        .map(inp => inp.value.trim())
-        .filter(t => t !== "")
-        .map(t => ({ texto: t }));
-
-      p.opciones = ops;
+    if (idDom > 0) {
+      p = preguntas.find(q => parseInt(q.id_pregunta) === idDom);
     }
-  });
-}
+    if (!p && index < preguntas.length) {
+      p = preguntas[index];
+    }
+    if (!p) return;
 
+    p.texto = b.querySelector(".editor-texto")?.value.trim() || "";
+    p.tipo  = b.querySelector(".editor-tipo")?.value || "texto";
+    p.orden = index + 1;
+
+    // Sincronizar opciones
+    const ops = [...b.querySelectorAll(".opcion-texto")]
+      .map(inp => inp.value.trim())
+      .filter(t => t !== "")
+      .map(t => ({ texto: t }));
+
+    p.opciones = ops;
+  });
+
+  console.log("✅ PREGUNTAS SINCRONIZADAS:", preguntas.length);
+  console.log("✅ ELIMINADAS:", [...eliminadas]);
+}
 
 // -------------------------------------------------------
 // GUARDAR
@@ -283,6 +338,18 @@ async function guardarCambios() {
       eliminadas: eliminadasArray
     };
 
+    console.log("📤 ============ ENVIANDO PAYLOAD ============");
+    console.log("  📊 Nivel:", payload.nivel);
+    console.log("  📝 Preguntas a guardar:", payload.preguntas.length);
+    console.log("  🗑️ IDs a eliminar:", eliminadasArray);
+    console.log("  📦 Payload completo:");
+    console.table(payload.preguntas.map(p => ({
+      id: p.id_pregunta,
+      texto: (p.texto || "").substring(0, 30) + '...',
+      tipo: p.tipo,
+      orden: p.orden
+    })));
+
     const res = await fetch(API_GUARDAR, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -290,28 +357,53 @@ async function guardarCambios() {
     });
 
     const txt = await res.text();
+    console.log("📥 RESPUESTA RAW:", txt);
 
     let data;
-
     try {
       data = JSON.parse(txt);
     } catch {
+      console.error("❌ Respuesta NO JSON:", txt);
       alert("Error: El servidor no respondió con JSON válido.\n\n" + txt);
       return;
     }
 
+    console.log("📥 RESPUESTA PARSEADA:", data);
+
     if (data.success) {
-      alert("Cambios guardados correctamente");
+      alert("✅ Cambios guardados correctamente");
       eliminadas.clear();
+
+      // Nuevo snapshot del estado "guardado"
+      snapshotEstado = clonarEstadoActual();
+
+      console.log("🔄 Recargando preguntas desde BD...");
       await cargarPreguntas();
     } else {
-      alert("Error al guardar:\n" + (data.error || "Desconocido"));
+      alert("❌ Error al guardar:\n" + (data.error || "Desconocido"));
     }
   } catch (e) {
+    console.error("❌ Error guardando cambios:", e);
     alert("Error al guardar los cambios: " + e.message);
   }
 }
 
+// -------------------------------------------------------
+// CANCELAR CAMBIOS
+// -------------------------------------------------------
+function cancelarCambios() {
+  if (!snapshotEstado) {
+    alert("No hay cambios previos que deshacer.");
+    return;
+  }
+
+  if (!confirm("¿Seguro que quieres descartar los cambios no guardados?")) {
+    return;
+  }
+
+  restaurarDesdeSnapshot(snapshotEstado);
+  alert("Cambios descartados. Se restauró el último estado guardado/cargado.");
+}
 
 // -------------------------------------------------------
 // INICIO
@@ -334,5 +426,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (btnGuardar) {
     btnGuardar.onclick = guardarCambios;
+  }
+
+  if (btnCancelar) {
+    btnCancelar.onclick = cancelarCambios;
   }
 });

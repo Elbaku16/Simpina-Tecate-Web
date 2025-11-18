@@ -2,129 +2,126 @@
   --texto: #4a1c1c;
   --primario: #611232;
   --primario-light: #8c2a4d;
-  --borde: #e6dcc2;
-  --fondo: #ffffff;
-  --fondo-claro: #fdfaf3;
+  --borde: #ddd4a8;
+  --fondo: #fff;
+  --fondo-claro: #fafafa;
   --amarillo: #f0ad4e;
   --amarillo-light: #f5c06a;
   --rojo: #c0392b;
   --rojo-light: #e74c3c;
-  --verde: #2ecc71;
-  --verde-light: #48d388;
-
-  --sombra-suave: 0 8px 20px rgba(0,0,0,0.08);
-  --sombra-hover: 0 12px 28px rgba(0,0,0,0.12);
+  --verde: #28a745;
+  --verde-light: #4cd964;
 }
 
 /* =======================================================
    CONTENEDOR GENERAL
 ======================================================= */
+
 .editor-container {
-  width: 90%;
-  max-width: 1500px;
-  margin: 2.5rem auto;
+  width: 96vw;                
+  max-width: 96vw;            
+  margin: 2rem auto;
   background: var(--fondo);
   border: 1px solid var(--borde);
   border-radius: 1rem;
-  padding: 3rem 4rem;
-  box-shadow: var(--sombra-suave);
-  transition: 0.3s ease;
+  padding: 3rem 3.5rem;        
+  box-shadow: 0 0.6rem 1.5rem rgba(0,0,0,0.08);
 }
 
-.editor-container:hover {
-  box-shadow: var(--sombra-hover);
-}
 
 .editor-container h1 {
   text-align: center;
-  font-size: 2.8rem;
-  font-weight: 900;
-  letter-spacing: -1px;
+  font-size: 2.6rem;
+  font-weight: 800;
   color: var(--primario);
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .editor-sub {
   text-align: center;
   font-size: 1.25rem;
   color: var(--texto);
-  margin-bottom: 2.8rem;
-  opacity: 0.7;
+  opacity: 0.8;
+  margin-bottom: 2.5rem;
 }
 
 /* =======================================================
-   BLOQUE DE PREGUNTA
+   BLOQUES DE PREGUNTA
 ======================================================= */
 .editor-pregunta {
-  background: #fffdf7;
   border: 1px solid var(--borde);
-  padding: 2rem 2.2rem;
-  border-radius: 1rem;
-  margin-bottom: 2.2rem;
-  transition: 0.25s ease;
+  padding: 1.7rem 2rem;
+  border-radius: 0.9rem;
+  background: #fffdf7;
+  margin-bottom: 2rem;
   box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+  transition: .25s ease;
 }
 
 .editor-pregunta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  box-shadow: 0 7px 16px rgba(0,0,0,0.10);
 }
 
 .editor-pregunta-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.2rem;
+  margin-bottom: .9rem;
 }
 
 .editor-pregunta h3 {
-  font-size: 1.85rem;
-  font-weight: 800;
+  font-size: 1.8rem;
   color: var(--texto);
+  font-weight: 800;
   margin: 0;
 }
 
-/* =======================================================
-   AREA DE TEXTO
-======================================================= */
-.editor-pregunta textarea {
+/* textarea */
+.editor-texto {
   width: 100%;
-  min-height: 95px;
-  resize: vertical;
-  font-size: 1.2rem;
-  padding: 1rem;
-  border-radius: 0.6rem;
-  border: 1px solid #d8ceb0;
-  background: #fffdfa;
-  transition: 0.2s ease;
+  min-height: 80px;
+  padding: .8rem;
+  font-size: 1.15rem;
+  border-radius: .55rem;
+  border: 1px solid var(--borde);
+  background: var(--fondo);
 }
 
-.editor-pregunta textarea:focus {
+.editor-texto:focus {
   outline: none;
   border-color: var(--primario);
-  box-shadow: 0 0 0 3px rgba(97,18,50,0.15);
+  box-shadow: 0 0 0 2px rgba(97,18,50,0.16);
 }
 
-/* ===================== BOTONES PEQUEÑOS ====================== */
+/* =======================================================
+   ACCIONES
+======================================================= */
 .editor-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: .55rem;
 }
 
 .btn-icon {
   background: var(--primario);
   color: #fff;
   border: none;
-  padding: 0.55rem 0.85rem;
-  border-radius: 0.5rem;
+  padding: .55rem .9rem;
+  border-radius: .45rem;
   cursor: pointer;
   font-size: 1rem;
-  transition: 0.25s ease;
+  transition: 0.25s;
 }
 
 .btn-icon:hover {
   background: var(--primario-light);
   transform: translateY(-2px);
+}
+
+.btn-updown {
+  background: #b08968 !important;
+}
+.btn-updown:hover {
+  background: #cdab8f !important;
 }
 
 .btn-danger {
@@ -134,73 +131,57 @@
   background: var(--rojo-light) !important;
 }
 
-.btn-updown {
-  background: #a77b5a !important;
-}
-.btn-updown:hover {
-  background: #c09d7e !important;
-}
-
-/* ====================== SELECT DEL TIPO ====================== */
-.tipo-select,
+/* =======================================================
+   SELECT
+======================================================= */
 .editor-tipo {
   margin-top: 1rem;
-  width: 280px;
-  padding: 0.75rem;
-  border-radius: 0.6rem;
+  width: 300px;
+  padding: .65rem;
+  border-radius: .55rem;
   border: 1px solid var(--borde);
-  background: var(--fondo);
   font-size: 1.1rem;
-  transition: 0.2s ease;
 }
 
-.tipo-select:focus {
-  outline: none;
+.editor-tipo:focus {
   border-color: var(--primario);
-  box-shadow: 0 0 0 3px rgba(97,18,50,0.15);
+  box-shadow: 0 0 0 2px rgba(97,18,50,0.16);
 }
 
 /* =======================================================
    OPCIONES
 ======================================================= */
 .opcion-item {
-  background: #fbf7ee;
+  margin-top: .8rem;
+  padding: .85rem;
+  background: var(--fondo-claro);
   border: 1px solid var(--borde);
-  border-radius: 0.6rem;
-  padding: 1rem 1.2rem;
+  border-radius: .5rem;
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.8rem;
-  transition: .25s ease;
+  gap: .8rem;
+  transition: .2s;
 }
 
 .opcion-item:hover {
-  background: #f2ecdd;
+  background: #f3eee0;
 }
 
 .opcion-texto {
   flex: 1;
-  padding: 0.65rem 0.85rem;
+  padding: .55rem .75rem;
+  border-radius: .45rem;
   border: 1px solid var(--borde);
-  border-radius: 0.5rem;
-  font-size: 1.1rem;
-}
-
-.opcion-texto:focus {
-  outline: none;
-  border-color: var(--primario);
-  box-shadow: 0 0 0 3px rgba(97,18,50,0.15);
+  font-size: 1.05rem;
 }
 
 .btn-add-opcion {
   background: var(--amarillo);
-  padding: 0.8rem 1rem;
-  border-radius: 0.5rem;
-  color: #4a1c1c;
-  font-weight: 800;
+  color: var(--texto);
+  margin-top: .8rem;
+  padding: .7rem 1rem;
+  border-radius: .5rem;
+  font-weight: bold;
   cursor: pointer;
-  margin-top: 0.6rem;
   transition: .25s;
 }
 
@@ -210,58 +191,78 @@
 }
 
 /* =======================================================
-   BOTONES GRANDES
+   BOTÓN AGREGAR PREGUNTA
 ======================================================= */
-.btn-guardar {
-  width: 100%;
-  background: var(--verde);
-  color: white;
-  padding: 1.2rem;
-  font-size: 1.4rem;
-  font-weight: 900;
-  border-radius: 0.7rem;
-  margin-top: 2.5rem;
-  cursor: pointer;
-  transition: 0.3s ease;
-}
-
-.btn-guardar:hover {
-  background: var(--verde-light);
-  transform: translateY(-3px);
-}
 
 .btn-add-pregunta {
+  display: block;
   width: 100%;
   background: var(--primario);
-  color: white;
-  padding: 1.3rem;
-  font-size: 1.4rem;
-  border-radius: 0.7rem;
-  margin-top: 2.5rem;
+  color: #fff;
+  padding: .9rem;     /* antes 1.3rem */
+  font-size: 1.15rem; /* antes 1.3rem */
+  font-weight: 800;
+  border-radius: .55rem;
   cursor: pointer;
-  font-weight: 900;
-  transition: 0.3s ease;
+  margin-top: 2.5rem;
+  margin-bottom: 1.2rem; 
+  transition: .3s;
 }
 
 .btn-add-pregunta:hover {
   background: var(--primario-light);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+}
+
+/* =======================================================
+   BOTONES GUARDAR & CANCELAR
+======================================================= */
+.btn-guardar,
+.btn-cancelar {
+  padding: .9rem 2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  border: none;
+  border-radius: .55rem;
+  cursor: pointer;
+  transition: .3s;
+  min-width: 180px;     
+  text-align: center;
+}
+
+.btn-guardar {
+  background: var(--verde);
+  color: white;
+}
+
+.btn-guardar:hover {
+  background: var(--verde-light);
+  transform: translateY(-2px);
+}
+
+.btn-cancelar {
+  background: var(--rojo);
+  color: white;
+  margin-left: 1rem;
+}
+
+.btn-cancelar:hover {
+  background: var(--rojo-light);
+  transform: translateY(-2px);
 }
 
 /* =======================================================
    RESPONSIVE
 ======================================================= */
-@media(max-width: 900px) {
+@media (max-width: 860px) {
   .editor-container {
     padding: 2rem;
-    width: 95%;
   }
-
-  .editor-pregunta {
-    padding: 1.3rem;
+  .editor-tipo {
+    width: 100%;
   }
-
-  .editor-container h1 {
-    font-size: 2.2rem;
+  .btn-guardar, .btn-cancelar {
+    width: 100%;
+    margin: .4rem 0;
   }
 }
