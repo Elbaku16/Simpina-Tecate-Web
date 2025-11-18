@@ -143,14 +143,21 @@
 .filtro-group {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
   flex-wrap: wrap;
+}
+
+.filtro-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .filtro-label {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-dark);
+  white-space: nowrap;
 }
 
 .filtro-select {
@@ -163,7 +170,7 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
-  min-width: 280px;
+  min-width: 200px;
 }
 
 .filtro-select:hover {
@@ -691,6 +698,21 @@
   .pie-slot {
     height: 200px;
   }
+
+  .filtro-group {
+    gap: 16px;
+  }
+
+  .filtro-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .filtro-select {
+    width: 100%;
+    min-width: auto;
+  }
 }
 
 @media (max-width: 768px) {
@@ -705,6 +727,11 @@
   .filtro-group {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
+  }
+
+  .filtro-item {
+    width: 100%;
   }
 
   .filtro-select {
