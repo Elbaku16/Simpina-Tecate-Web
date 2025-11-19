@@ -1,7 +1,9 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/back-end/auth/verificar-sesion.php';
 requerir_admin();
-
+// Crear conexión a la base de datos
+require_once $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/back-end/database/Conexion.php';
+$conn = Conexion::getConexion();
 // Estas variables ya vienen desde el controlador
 // $nivelNombre, $escuelaFiltro, $escuelasDelNivel
 // $preguntas, $opcionesPorPregunta, $palette
