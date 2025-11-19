@@ -44,11 +44,8 @@ if (!$idEncuesta) {
 try {
     $db->begin_transaction();
 
-    // ---------------------------------------------------------
     // 1) ELIMINAR PREGUNTAS MARCADAS
-    // ---------------------------------------------------------
     if (!empty($eliminadas)) {
-
         $delOpc  = $db->prepare("DELETE FROM opciones_respuesta WHERE id_pregunta=?");
         $delRU   = $db->prepare("DELETE FROM respuestas_usuario WHERE id_pregunta=?");
         $delRR   = $db->prepare("DELETE FROM respuestas_ranking WHERE id_pregunta=?");
@@ -72,10 +69,7 @@ try {
         }
     }
 
-    // ---------------------------------------------------------
     // 2) GUARDAR / ACTUALIZAR PREGUNTAS
-    // ---------------------------------------------------------
-
     $update = $db->prepare(
         "UPDATE preguntas 
          SET texto_pregunta=?, tipo_pregunta=?, orden=? 
@@ -97,40 +91,33 @@ try {
     );
 
     foreach ($preguntas as $p) {
-
         $idPregunta = (int)($p['id_pregunta'] ?? 0);
-        $texto = trim($p['texto'] ?? "");
-        $tipo  = strtolower(trim($p['tipo'] ?? "texto"));
-        $orden = (int)($p['orden'] ?? 0);
+        $texto      = trim($p['texto'] ?? "");
+        $tipo       = strtolower(trim($p['tipo'] ?? "texto"));
+        $orden      = (int)($p['orden'] ?? 0);
 
         if ($texto === "") continue;
 
-        if (!in_array($tipo, ['opcion','multiple','ranking','texto','dibujo'])) {
+        if (!in_array($tipo, ['opcion','multiple','ranking','texto','dibujo'], true)) {
             $tipo = 'texto';
         }
 
-        // --- UPDATE ---
         if ($idPregunta > 0) {
-
+            // UPDATE
             $update->bind_param("ssii", $texto, $tipo, $orden, $idPregunta);
             $update->execute();
-
         } else {
-            // --- INSERT ---
+            // INSERT
             $insert->bind_param("issi", $idEncuesta, $texto, $tipo, $orden);
             $insert->execute();
-
             $idPregunta = $db->insert_id;
         }
 
-        // --------------------------------
         // OPCIONES
-        // --------------------------------
         $delOpciones->bind_param("i", $idPregunta);
         $delOpciones->execute();
 
-        if (in_array($tipo, ['opcion','multiple','ranking'])) {
-
+        if (in_array($tipo, ['opcion','multiple','ranking'], true) && isset($p['opciones']) && is_array($p['opciones'])) {
             foreach ($p['opciones'] as $op) {
                 $textoOp = trim($op['texto'] ?? "");
                 if ($textoOp === "") continue;
@@ -143,7 +130,6 @@ try {
 
     $db->commit();
     echo json_encode(["success" => true]);
-
 } catch (Throwable $e) {
     $db->rollback();
     echo json_encode(["success" => false, "error" => $e->getMessage()]);

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 require_once __DIR__ . '/../database/Conexion.php';
 require_once __DIR__ . '/../helpers/DibujoHelper.php';
 
@@ -12,165 +14,217 @@ class ResultadosTextoController
     }
 
     /**
-     * MODIFICADO: Ahora incluye filtro por ciclo escolar
+     * Obtener respuestas de una pregunta (texto o dibujo)
      */
     public function obtener(int $idPregunta, int $idEscuela = 0, string $cicloEscolar = ''): array
     {
         if ($idPregunta <= 0) {
             return [
                 'success' => false,
-                'error' => 'ID de pregunta inválido',
-                'respuestas' => []
+                'error'   => 'id_pregunta inválido'
             ];
         }
 
-        // NUEVO: Extraer años del ciclo escolar
-        $cicloInicio = null;
-        $cicloFin = null;
-        if ($cicloEscolar && strpos($cicloEscolar, '-') !== false) {
-            list($cicloInicio, $cicloFin) = explode('-', $cicloEscolar);
-            $cicloInicio = (int)$cicloInicio;
-            $cicloFin = (int)$cicloFin;
-        }
+        // 1) Averiguar tipo de pregunta
+        $tipo = $this->obtenerTipoPregunta($idPregunta);
+        $tipoNorm = $this->normalizarTipo($tipo);
+        $esDibujo = in_array($tipoNorm, ['dibujo'], true);
 
-        $sql = "SELECT 
-                    r.id_respuesta_usuario,
-                    r.respuesta_texto,
-                    r.dibujo_ruta,
-                    r.fecha_respuesta,
-                    e.nombre_escuela,
-                    p.tipo_pregunta
-                FROM respuestas_usuario r
-                INNER JOIN escuelas e ON r.id_escuela = e.id_escuela
-                INNER JOIN preguntas p ON r.id_pregunta = p.id_pregunta
-                WHERE r.id_pregunta = ?";
+        // 2) Construir consulta base
+        $sql = "
+            SELECT 
+                r.id_respuesta_usuario,
+                r.respuesta_texto,
+                r.dibujo_ruta,
+                r.fecha_respuesta,
+                e.nombre_escuela
+            FROM respuestas_usuario r
+            LEFT JOIN escuelas e ON e.id_escuela = r.id_escuela
+            WHERE r.id_pregunta = ?
+        ";
 
-        $params = [$idPregunta];
         $types  = "i";
+        $params = [$idPregunta];
 
         if ($idEscuela > 0) {
-            $sql .= " AND r.id_escuela = ?";
+            $sql    .= " AND r.id_escuela = ?";
+            $types  .= "i";
             $params[] = $idEscuela;
-            $types .= "i";
         }
 
-        // NUEVO: Filtro por ciclo escolar
-        if ($cicloInicio !== null && $cicloFin !== null) {
-            $sql .= " AND (
-                (YEAR(r.fecha_respuesta) = ? AND MONTH(r.fecha_respuesta) >= 8) OR
-                (YEAR(r.fecha_respuesta) = ? AND MONTH(r.fecha_respuesta) <= 7)
-            )";
-            $params[] = $cicloInicio;
-            $params[] = $cicloFin;
-            $types .= "ii";
+        // 3) Filtrar según si es texto o dibujo
+        if ($esDibujo) {
+            $sql .= " AND r.dibujo_ruta IS NOT NULL";
+        } else {
+            $sql .= " AND r.respuesta_texto IS NOT NULL AND r.respuesta_texto <> ''";
         }
 
-        $sql .= " ORDER BY r.fecha_respuesta DESC";
+        $sql .= " ORDER BY r.fecha_respuesta DESC, r.id_respuesta_usuario DESC";
 
         $stmt = $this->db->prepare($sql);
         if (!$stmt) {
             return [
                 'success' => false,
-                'error' => 'Error en la consulta: ' . $this->db->error,
-                'respuestas' => []
+                'error'   => 'Error al preparar consulta'
             ];
         }
 
+        // bind dinámico
         $stmt->bind_param($types, ...$params);
         $stmt->execute();
-        $result = $stmt->get_result();
+        $res = $stmt->get_result();
 
-        $respuestas = [];
-        $tipoPregunta = null;
+        $salida = [];
+        while ($row = $res->fetch_assoc()) {
+            $idRespuesta = (int)$row['id_respuesta_usuario'];
+            $rutaDibujo  = $row['dibujo_ruta'] ?? null;
 
-        while ($row = $result->fetch_assoc()) {
-            if ($tipoPregunta === null) {
-                $tipoPregunta = strtolower($row['tipo_pregunta']);
-            }
-
-            $respuesta = [
-                'id' => (int)$row['id_respuesta_usuario'],
-                'fecha' => $row['fecha_respuesta'],
-                'escuela' => $row['nombre_escuela'],
-                'tipo' => $tipoPregunta
+            $item = [
+                'id'        => $idRespuesta,
+                'escuela'   => $row['nombre_escuela'] ?? 'Sin escuela',
+                'fecha'     => $row['fecha_respuesta'],
+                'es_dibujo' => $esDibujo,
             ];
 
-            // Determinar si es texto o dibujo
-            if (!empty($row['dibujo_ruta'])) {
-                $respuesta['es_dibujo'] = true;
-                $respuesta['ruta_dibujo'] = $row['dibujo_ruta'];
-                $respuesta['existe_archivo'] = DibujoHelper::existe($row['dibujo_ruta']);
-                
-                // Info adicional del archivo si existe
-                if ($respuesta['existe_archivo']) {
-                    $info = DibujoHelper::obtenerInfo($row['dibujo_ruta']);
-                    $respuesta['tamaño'] = $info['tamaño_legible'] ?? 'N/A';
-                }
+            if ($esDibujo) {
+                $item['ruta_dibujo']    = $this->resolverRutaPublica($rutaDibujo);
+                $item['existe_archivo'] = $this->existeArchivo($rutaDibujo);
+                $item['tamaño']         = $this->tamañoArchivoLegible($rutaDibujo);
             } else {
-                $respuesta['es_dibujo'] = false;
-                $respuesta['texto'] = $row['respuesta_texto'];
+                $item['texto'] = $row['respuesta_texto'] ?? '';
             }
 
-            $respuestas[] = $respuesta;
+            $salida[] = $item;
         }
 
+        $stmt->close();
+
         return [
-            'success' => true,
-            'respuestas' => $respuestas,
-            'total' => count($respuestas),
-            'tipo_pregunta' => $tipoPregunta
+            'success'       => true,
+            'tipo_pregunta' => $tipoNorm, // "texto" o "dibujo"
+            'respuestas'    => $salida
         ];
     }
 
     /**
-     * Elimina respuesta y archivo de dibujo si existe
+     * Eliminar respuesta (y borrar dibujo si aplica)
      */
     public function eliminar(int $idRespuesta): array
     {
         if ($idRespuesta <= 0) {
             return [
                 'success' => false,
-                'error' => 'ID inválido'
+                'error'   => 'id_respuesta inválido'
             ];
         }
 
-        // Obtener ruta del dibujo antes de eliminar
-        $stmt = $this->db->prepare("SELECT dibujo_ruta FROM respuestas_usuario WHERE id_respuesta_usuario = ?");
-        if (!$stmt) {
-            return [
-                'success' => false,
-                'error' => 'Error en la consulta: ' . $this->db->error
-            ];
-        }
-
+        // 1) Obtener ruta de dibujo si existe
+        $sql = "SELECT dibujo_ruta FROM respuestas_usuario WHERE id_respuesta_usuario = ?";
+        $stmt = $this->db->prepare($sql);
         $stmt->bind_param("i", $idRespuesta);
         $stmt->execute();
         $stmt->bind_result($rutaDibujo);
         $stmt->fetch();
         $stmt->close();
 
-        // Eliminar archivo si existe
-        if (!empty($rutaDibujo)) {
-            DibujoHelper::eliminar($rutaDibujo);
-        }
-
-        // Eliminar registro de DB
+        // 2) Borrar registro
         $stmt = $this->db->prepare("DELETE FROM respuestas_usuario WHERE id_respuesta_usuario = ? LIMIT 1");
-        if (!$stmt) {
+        $stmt->bind_param("i", $idRespuesta);
+        $stmt->execute();
+        $afectadas = $stmt->affected_rows;
+        $stmt->close();
+
+        if ($afectadas <= 0) {
             return [
                 'success' => false,
-                'error' => 'Error en la consulta: ' . $this->db->error
+                'error'   => 'No se encontró la respuesta o no se pudo eliminar'
             ];
         }
 
-        $stmt->bind_param("i", $idRespuesta);
-        $stmt->execute();
+        // 3) Borrar dibujo del disco si existía
+        if (!empty($rutaDibujo)) {
+            try {
+                DibujoHelper::eliminar($rutaDibujo);
 
-        return [
-            'success' => $stmt->affected_rows > 0,
-            'message' => ($stmt->affected_rows > 0)
-                ? "Respuesta eliminada"
-                : "No se pudo eliminar"
-        ];
+                } catch (Throwable $e) {
+                // No romper si falla, solo avisar
+                return [
+                    'success' => true,
+                    'warning' => 'Respuesta borrada, pero hubo un problema al eliminar el archivo de dibujo.'
+                ];
+            }
+        }
+
+        return ['success' => true];
+    }
+
+    /* ===========================================================
+       Helpers privados
+       =========================================================== */
+
+    private function obtenerTipoPregunta(int $idPregunta): string
+    {
+        $stmt = $this->db->prepare("SELECT COALESCE(tipo_pregunta,'texto') FROM preguntas WHERE id_pregunta = ?");
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $stmt->bind_result($tipo);
+        $stmt->fetch();
+        $stmt->close();
+
+        return $tipo ?? 'texto';
+    }
+
+    private function normalizarTipo(string $tipo): string
+    {
+        $t = strtolower(trim($tipo));
+
+        if (in_array($t, ['dibujo', 'imagen', 'canvas'], true)) {
+            return 'dibujo';
+        }
+
+        return 'texto';
+    }
+
+    private function resolverRutaPublica(?string $ruta): ?string
+    {
+        if (!$ruta) return null;
+
+        // Si ya parece URL absoluta o empieza con "/", regresarla tal cual
+        if (str_starts_with($ruta, 'http://') || str_starts_with($ruta, 'https://') || str_starts_with($ruta, '/')) {
+            return $ruta;
+        }
+
+        // Si se guardó relativa al proyecto
+        return '/SIMPINNA/' . ltrim($ruta, '/');
+    }
+
+    private function existeArchivo(?string $ruta): bool
+    {
+        if (!$ruta) return false;
+
+        // Asumimos que se guarda como ruta relativa a la raíz del proyecto
+        $abs = $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/' . ltrim($ruta, '/');
+        return is_file($abs);
+    }
+
+    private function tamañoArchivoLegible(?string $ruta): ?string
+    {
+        if (!$ruta) return null;
+
+        $abs = $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/' . ltrim($ruta, '/');
+        if (!is_file($abs)) {
+            return null;
+        }
+
+        $bytes = filesize($abs);
+        if ($bytes === false) return null;
+
+        $kb = $bytes / 1024;
+        if ($kb < 1024) {
+            return round($kb, 1) . ' KB';
+        }
+
+        $mb = $kb / 1024;
+        return round($mb, 2) . ' MB';
     }
 }
