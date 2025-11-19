@@ -47,7 +47,7 @@ requerir_admin();
             Ver resultados
           </a>
 
-          <a href="/SIMPINNA/back-end/routes/encuestas/editar.php?nivel=preescolar" class="btn-editar">
+          <a href="/SIMPINNA/front-end/frames/panel-admin/editar.php?nivel=preescolar" class="btn-editar">
             Modificar encuesta
           </a>
         </div>
@@ -61,7 +61,7 @@ requerir_admin();
             Ver resultados
           </a>
 
-          <a href="/SIMPINNA/back-end/routes/encuestas/editar.php?nivel=primaria" class="btn-editar">
+          <a href="/SIMPINNA/front-end/frames/panel-admin/editar.php?nivel=primaria" class="btn-editar">
             Modificar encuesta
           </a>
         </div>
@@ -75,7 +75,7 @@ requerir_admin();
             Ver resultados
           </a>
 
-          <a href="/SIMPINNA/back-end/routes/encuestas/editar.php?nivel=secundaria" class="btn-editar">
+          <a href="/SIMPINNA/front-end/frames/panel-admin/editar.php?nivel=secundaria" class="btn-editar">
             Modificar encuesta
           </a>
         </div>
@@ -89,7 +89,7 @@ requerir_admin();
             Ver resultados
           </a>
 
-          <a href="/SIMPINNA/back-end/routes/encuestas/editar.php?nivel=preparatoria" class="btn-editar">
+          <a href="/SIMPINNA/front-end/frames/panel-admin/editar.php?nivel=preparatoria" class="btn-editar">
             Modificar encuesta
           </a>
         </div>

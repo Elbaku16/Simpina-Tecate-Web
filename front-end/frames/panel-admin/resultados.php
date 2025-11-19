@@ -1,9 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/back-end/auth/verificar-sesion.php';
 requerir_admin();
-// Crear conexión a la base de datos
-require_once $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/back-end/database/Conexion.php';
-$conn = Conexion::getConexion();
+
 // Estas variables ya vienen desde el controlador
 // $nivelNombre, $escuelaFiltro, $escuelasDelNivel
 // $preguntas, $opcionesPorPregunta, $palette
@@ -14,99 +12,6 @@ $nombresBonitos = [
     'secundaria'   => 'Secundaria',
     'preparatoria' => 'Preparatoria'
 ];
-
-// NUEVA FUNCIÓN: Obtener ciclos escolares disponibles basados en las fechas de respuesta
-function obtenerCiclosEscolares($conn, $nivelNombre) {
-    $ciclos = [];
-    
-    // Mapeo de nombres a IDs de nivel
-    $nivelMap = [
-        'preescolar' => 1,
-        'primaria' => 2,
-        'secundaria' => 3,
-        'preparatoria' => 4
-    ];
-    
-    $idNivel = $nivelMap[strtolower($nivelNombre)] ?? 0;
-    
-    if ($idNivel === 0) {
-        return $ciclos; // Nivel no válido
-    }
-    
-    // Obtener el id_encuesta del nivel actual
-    $stmtEncuesta = $conn->prepare("SELECT id_encuesta FROM encuestas WHERE id_nivel = ?");
-    $stmtEncuesta->bind_param("i", $idNivel);
-    $stmtEncuesta->execute();
-    $resultEncuesta = $stmtEncuesta->get_result();
-    
-    if ($rowEncuesta = $resultEncuesta->fetch_assoc()) {
-        $idEncuesta = $rowEncuesta['id_encuesta'];
-        
-        // Obtener todas las fechas de respuesta únicas
-        $sql = "SELECT DISTINCT YEAR(fecha_respuesta) as anio, MONTH(fecha_respuesta) as mes
-                FROM respuestas_usuario ru
-                INNER JOIN preguntas p ON ru.id_pregunta = p.id_pregunta
-                WHERE p.id_encuesta = ?
-                ORDER BY anio DESC, mes DESC";
-        
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $idEncuesta);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $ciclosUnicos = [];
-        
-        while ($row = $result->fetch_assoc()) {
-            $anio = (int)$row['anio'];
-            $mes = (int)$row['mes'];
-            
-            // Determinar el ciclo escolar basándose en el mes
-            // Ciclo escolar va de Agosto (mes 8) a Julio (mes 7)
-            if ($mes >= 8) {
-                // De agosto a diciembre: ciclo actual-siguiente
-                $cicloInicio = $anio;
-                $cicloFin = $anio + 1;
-            } else {
-                // De enero a julio: ciclo anterior-actual
-                $cicloInicio = $anio - 1;
-                $cicloFin = $anio;
-            }
-            
-            $cicloKey = $cicloInicio . '-' . $cicloFin;
-            
-            if (!isset($ciclosUnicos[$cicloKey])) {
-                $ciclosUnicos[$cicloKey] = [
-                    'inicio' => $cicloInicio,
-                    'fin' => $cicloFin,
-                    'label' => $cicloInicio . ' - ' . $cicloFin
-                ];
-            }
-        }
-        
-        // Convertir a array indexado y ordenar por año descendente
-        $ciclos = array_values($ciclosUnicos);
-        usort($ciclos, function($a, $b) {
-            return $b['inicio'] - $a['inicio'];
-        });
-    }
-    
-    return $ciclos;
-}
-
-// Obtener ciclos escolares disponibles
-$ciclosDisponibles = obtenerCiclosEscolares($conn, $nivelNombre);
-
-// Obtener el ciclo escolar del filtro (si existe)
-$cicloFiltro = isset($_GET['ciclo']) ? $_GET['ciclo'] : '';
-
-// Si hay un ciclo seleccionado, extraer años de inicio y fin
-$cicloInicio = null;
-$cicloFin = null;
-if ($cicloFiltro && strpos($cicloFiltro, '-') !== false) {
-    list($cicloInicio, $cicloFin) = explode('-', $cicloFiltro);
-    $cicloInicio = (int)$cicloInicio;
-    $cicloFin = (int)$cicloFin;
-}
 ?>
 
 <!DOCTYPE html>
@@ -131,6 +36,7 @@ if ($cicloFiltro && strpos($cicloFiltro, '-') !== false) {
   <div class="toolbar">
     <a class="btn" href="/SIMPINNA/front-end/frames/panel/panel-admin.php">Volver</a>
 
+    
     <!-- BOTONES DE EXPORTACIÓN GLOBAL -->
     <div class="export-buttons-global">
       <button class="btn-export-global btn-csv-global" onclick="exportarTodosCSV()" title="Exportar todas las respuestas a CSV">
@@ -155,33 +61,15 @@ if ($cicloFiltro && strpos($cicloFiltro, '-') !== false) {
   <section class="filtros-section">
     <form method="GET" action="" class="filtro-group">
       <input type="hidden" name="nivel" value="<?php echo htmlspecialchars($nivelNombre); ?>">
-      
-      <!-- Filtro por escuela -->
-      <div class="filtro-item">
-        <label class="filtro-label" for="escuela-filter">Filtrar por escuela:</label>
-        <select name="escuela" id="escuela-filter" class="filtro-select" onchange="this.form.submit()">
-          <option value="0" <?php echo $escuelaFiltro === 0 ? 'selected' : ''; ?>>Todas las escuelas</option>
-          <?php foreach ($escuelasDelNivel as $esc): ?>
-            <option value="<?php echo $esc['id']; ?>" <?php echo $escuelaFiltro === $esc['id'] ? 'selected' : ''; ?>>
-              <?php echo htmlspecialchars($esc['nombre']); ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-
-      <!-- Filtro por ciclo escolar -->
-      <div class="filtro-item">
-        <label class="filtro-label" for="ciclo-filter">Filtrar por ciclo escolar:</label>
-        <select name="ciclo" id="ciclo-filter" class="filtro-select" onchange="this.form.submit()">
-          <option value="" <?php echo $cicloFiltro === '' ? 'selected' : ''; ?>>Todos los ciclos</option>
-          <?php foreach ($ciclosDisponibles as $ciclo): ?>
-            <option value="<?php echo $ciclo['inicio'] . '-' . $ciclo['fin']; ?>" 
-                    <?php echo $cicloFiltro === ($ciclo['inicio'] . '-' . $ciclo['fin']) ? 'selected' : ''; ?>>
-              <?php echo htmlspecialchars($ciclo['label']); ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
+      <label class="filtro-label" for="escuela-filter">Filtrar por escuela:</label>
+      <select name="escuela" id="escuela-filter" class="filtro-select" onchange="this.form.submit()">
+        <option value="0" <?php echo $escuelaFiltro === 0 ? 'selected' : ''; ?>>Todas las escuelas</option>
+        <?php foreach ($escuelasDelNivel as $esc): ?>
+          <option value="<?php echo $esc['id']; ?>" <?php echo $escuelaFiltro === $esc['id'] ? 'selected' : ''; ?>>
+            <?php echo htmlspecialchars($esc['nombre']); ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
     </form>
   </section>
 
@@ -223,7 +111,7 @@ if ($cicloFiltro && strpos($cicloFiltro, '-') !== false) {
                 <?php endif; ?>
               </div>
             </div>
-            <button class="btn-ver-respuestas" onclick="abrirRespuestas(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, '<?php echo $cicloFiltro; ?>')">
+            <button class="btn-ver-respuestas" onclick="abrirRespuestas(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>)">
               Ver respuestas de <?php echo $tipo === 'texto' ? 'texto' : 'dibujo'; ?>
             </button>
 
@@ -300,6 +188,7 @@ if ($cicloFiltro && strpos($cicloFiltro, '-') !== false) {
 
   <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer-admin.php'; ?>
 
+  
   <!-- Módulos JS de resultados -->
   <script src="/SIMPINNA/front-end/scripts/admin/resultados/helpers.js"></script>
   <script src="/SIMPINNA/front-end/scripts/admin/resultados/graficas.js"></script>
