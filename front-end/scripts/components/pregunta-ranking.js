@@ -10,7 +10,7 @@ export function plantillaRanking(p) {
         <div class="ranking-container" id="rankingContainer_${p.id}">
             ${p.opciones.map((op, i) => `
                 <div class="ranking-item" draggable="true"
-                     data-opcion-id="${op.id}" data-posicion="${i+1}">
+                     data-opcion-id="${op.id_opcion}" data-posicion="${i+1}">
                     <span class="drag-handle">☰</span>
                     <span class="ranking-numero">${i+1}</span>
                     <span class="ranking-texto">${op.texto}</span>
@@ -53,8 +53,8 @@ function guardar(id, cont) {
             posicion: idx + 1
         });
     });
+    console.log("Ranking guardado:", JSON.stringify(arr, null, 2));
     respuestasRanking[id] = arr;
     setRespuesta(id, arr.length > 0);
 }
-
 export function restaurarRanking() {}
