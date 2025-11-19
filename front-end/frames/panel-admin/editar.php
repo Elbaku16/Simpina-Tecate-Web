@@ -27,6 +27,9 @@ $nivelTitulo = ucfirst($nivel);
 <main class="editor-container">
     
     <h1>Editar encuesta: <?= htmlspecialchars($nivelTitulo) ?></h1>
+    <a href="/SIMPINNA/front-end/frames/panel/panel-admin.php" class="btn-back">
+    ← Volver
+    </a>
     <p class="editor-sub">Modifica preguntas, opciones y orden de la encuesta seleccionada.</p>
 
     <!-- Contenedor dinámico -->

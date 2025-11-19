@@ -11,6 +11,8 @@
   --rojo-light: #e74c3c;
   --verde: #28a745;
   --verde-light: #4cd964;
+   --burgundy: #7A1E2C;
+   --gold: #D4B056;
 }
 
 /* =======================================================
@@ -99,6 +101,33 @@
 .editor-actions {
   display: flex;
   gap: .55rem;
+}
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  background: var(--burgundy);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 0.875rem;
+  font-weight: 600;
+  font-size: 1.25rem;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 0.625rem 1.25rem rgba(122, 30, 44, 0.25);
+  align-self: flex-start;
+}
+
+.btn-back:hover {
+  background: var(--gold);
+  color: var(--burgundy);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.75rem 1.375rem rgba(212, 176, 86, 0.25);
+}
+
+.btn-back:focus-visible {
+  outline: 0.1875rem solid rgba(212, 176, 86, 0.6);
+  outline-offset: 0.125rem;
 }
 
 .btn-icon {
