@@ -1,127 +1,390 @@
-// modal-respuestas.js - COMPATIBLE CON BACKEND NUEVO
+// modal-respuestas.js - Gestión del modal de respuestas de texto y dibujo
+(function() {
+  'use strict';
 
-function abrirRespuestas(idPregunta, nivel, escuelaId, cicloEscolar = '') {
+  let datosActuales = [];
+  let paginaActual = 1;
+  const RESPUESTAS_POR_PAGINA = 20;
+
+  window.abrirRespuestas = function(idPregunta, nivel, escuela) {
     const modal = document.getElementById('modalRespuestas');
-    const modalContenido = document.getElementById('modalContenido');
     const modalTitulo = document.getElementById('modalTitulo');
+    const modalContenido = document.getElementById('modalContenido');
 
     // Mostrar modal
     modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    // Mostrar loading
     modalContenido.innerHTML = '<div class="loading">Cargando respuestas...</div>';
 
-    const url =
-        `/SIMPINNA/back-end/routes/resultados/respuestas_texto.php?accion=obtener` +
-        `&id_pregunta=${idPregunta}` +
-        `&escuela=${escuelaId}` +
-        `&ciclo=${encodeURIComponent(cicloEscolar)}`;
+    // Construir URL con parámetros
+    const params = new URLSearchParams({
+      accion: 'obtener',
+      id_pregunta: idPregunta,
+      escuela: escuela || 0
+    });
 
-    fetch(url)
-        .then(r => r.json())
-        .then(data => {
-            if (!data.success) {
-                modalContenido.innerHTML = `<p class="error">Error: ${data.error}</p>`;
-                return;
-            }
+    // Petición AJAX
+    fetch(`/SIMPINNA/back-end/routes/resultados/respuestas_texto.php?${params}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          throw new Error(data.error || 'Error al cargar respuestas');
+        }
 
-            modalTitulo.textContent = "Respuestas";
+        const tipo = data.tipo_pregunta || 'texto';
+        const respuestas = data.respuestas || [];
+        
+        datosActuales = respuestas;
+        paginaActual = 1;
 
-            const respuestas = data.respuestas || [];
-            if (respuestas.length === 0) {
-                modalContenido.innerHTML = '<p class="empty">No hay respuestas todavía.</p>';
-                return;
-            }
+        // Actualizar título
+        modalTitulo.textContent = tipo === 'dibujo' 
+          ? 'Respuestas de dibujo' 
+          : 'Respuestas de texto';
 
-            let html = '<div class="respuestas-lista">';
+        // Renderizar respuestas
+        renderizarRespuestas(respuestas, tipo);
+      })
+      .catch(err => {
+        console.error('Error al cargar respuestas:', err);
+        modalContenido.innerHTML = `
+          <div class="error-message">
+            <p>Error al cargar respuestas: ${err.message}</p>
+            <button class="btn" onclick="cerrarRespuestas()">Cerrar</button>
+          </div>
+        `;
+      });
+  };
 
-            respuestas.forEach(r => {
-                const isDibujo = r.es_dibujo === true;
-                html += `
-                    <div class="respuesta-item" data-id="${r.id}">
-                        <div class="respuesta-header">
-                            <span class="respuesta-escuela">${escapeHtml(r.escuela || '')}</span>
-                            <span class="respuesta-fecha">${formatearFecha(r.fecha)}</span>
-                            <button class="btn-eliminar-respuesta"
-                                onclick="eliminarRespuesta(${r.id}, ${idPregunta}, '${nivel}', ${escuelaId}, '${cicloEscolar}')"
-                                title="Eliminar">×</button>
-                        </div>
-                `;
+  window.cerrarRespuestas = function() {
+    const modal = document.getElementById('modalRespuestas');
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+    datosActuales = [];
+    paginaActual = 1;
+  };
 
-                if (isDibujo) {
-                    if (r.ruta_dibujo) {
-                        html += `
-                            <div class="respuesta-dibujo">
-                                <img src="${r.ruta_dibujo}" class="dibujo-preview" alt="Dibujo">
-                                <a class="btn-ver-completo" href="${r.ruta_dibujo}" target="_blank">Ver completo</a>
-                            </div>`;
-                    } else {
-                        html += `<p class="error-archivo">⚠️ Archivo no encontrado</p>`;
-                    }
-                } else {
-                    html += `<div class="respuesta-texto">${escapeHtml(r.texto || '')}</div>`;
-                }
+  function renderizarRespuestas(respuestas, tipo) {
+    const modalContenido = document.getElementById('modalContenido');
+    
+    if (respuestas.length === 0) {
+      modalContenido.innerHTML = `
+        <div class="empty-state">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11H3v2h6v-2z"/>
+            <path d="M21 11h-6v2h6v-2z"/>
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+          <p>No hay respuestas para mostrar</p>
+        </div>
+      `;
+      return;
+    }
 
-                html += `</div>`;
-            });
+    // Calcular paginación
+    const totalRespuestas = respuestas.length;
+    const totalPaginas = Math.ceil(totalRespuestas / RESPUESTAS_POR_PAGINA);
+    const inicio = (paginaActual - 1) * RESPUESTAS_POR_PAGINA;
+    const fin = Math.min(inicio + RESPUESTAS_POR_PAGINA, totalRespuestas);
+    const respuestasPagina = respuestas.slice(inicio, fin);
 
-            html += '</div>';
-            modalContenido.innerHTML = html;
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            modalContenido.innerHTML = '<p class="error">Error al cargar las respuestas.</p>';
-        });
-}
+    // Construir HTML
+    let html = `
+      <div class="respuestas-container">
+        <!-- Contador -->
+        <div class="respuestas-contador">
+          Mostrando ${inicio + 1} - ${fin} de ${totalRespuestas} respuesta${totalRespuestas !== 1 ? 's' : ''}
+        </div>
 
-function cerrarRespuestas() {
-    document.getElementById('modalRespuestas').classList.add('hidden');
-}
+        <!-- Lista de respuestas -->
+        <div class="respuestas-lista">
+    `;
 
-function eliminarRespuesta(idRespuesta, idPregunta, nivel, escuelaId, cicloEscolar = '') {
-    if (!confirm('¿Deseas eliminar esta respuesta?')) return;
+    respuestasPagina.forEach(resp => {
+      if (tipo === 'dibujo') {
+        html += generarCardDibujo(resp);
+      } else {
+        html += generarCardTexto(resp);
+      }
+    });
+
+    html += '</div>'; // Cierra respuestas-lista
+
+    // Paginación
+    if (totalPaginas > 1) {
+      html += generarPaginacion(totalPaginas);
+    }
+
+    html += '</div>'; // Cierra respuestas-container
+
+    modalContenido.innerHTML = html;
+  }
+
+  function generarCardTexto(resp) {
+    const fecha = new Date(resp.fecha);
+    const fechaFormateada = formatearFecha(fecha);
+    const horaFormateada = formatearHora(fecha);
+
+    return `
+      <div class="respuesta-card">
+        <div class="respuesta-header">
+          <div class="respuesta-info">
+            <span class="respuesta-escuela">${escapeHtml(resp.escuela)}</span>
+            <span class="respuesta-fecha-hora">
+              ${fechaFormateada} • ${horaFormateada}
+            </span>
+          </div>
+          <button class="respuesta-eliminar" 
+                  onclick="eliminarRespuesta(${resp.id})"
+                  title="Eliminar respuesta">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="respuesta-contenido">
+          <p>${escapeHtml(resp.texto)}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function generarCardDibujo(resp) {
+    const fecha = new Date(resp.fecha);
+    const fechaFormateada = formatearFecha(fecha);
+    const horaFormateada = formatearHora(fecha);
+    
+    const existeArchivo = resp.existe_archivo;
+    const rutaDibujo = resp.ruta_dibujo || '';
+    const tamaño = resp.tamaño || '';
+
+    return `
+      <div class="respuesta-card respuesta-dibujo">
+        <div class="respuesta-header">
+          <div class="respuesta-info">
+            <span class="respuesta-escuela">${escapeHtml(resp.escuela)}</span>
+            <span class="respuesta-fecha-hora">
+              ${fechaFormateada} • ${horaFormateada}
+            </span>
+          </div>
+          <button class="respuesta-eliminar" 
+                  onclick="eliminarRespuesta(${resp.id})"
+                  title="Eliminar respuesta">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="respuesta-contenido respuesta-imagen-wrapper">
+          ${existeArchivo 
+            ? `<img src="${rutaDibujo}" alt="Dibujo" class="respuesta-imagen" onclick="abrirImagenCompleta('${rutaDibujo}')">
+               ${tamaño ? `<span class="imagen-tamaño">${tamaño}</span>` : ''}`
+            : '<div class="imagen-no-disponible">Imagen no disponible</div>'
+          }
+        </div>
+      </div>
+    `;
+  }
+
+  function generarPaginacion(totalPaginas) {
+    let html = '<div class="respuestas-paginacion">';
+
+    // Botón anterior
+    html += `
+      <button class="paginacion-btn ${paginaActual === 1 ? 'disabled' : ''}" 
+              onclick="cambiarPagina(${paginaActual - 1})"
+              ${paginaActual === 1 ? 'disabled' : ''}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        Anterior
+      </button>
+    `;
+
+    // Números de página
+    html += '<div class="paginacion-numeros">';
+    
+    // Mostrar primera página
+    if (paginaActual > 3) {
+      html += `<button class="paginacion-numero" onclick="cambiarPagina(1)">1</button>`;
+      if (paginaActual > 4) {
+        html += '<span class="paginacion-dots">...</span>';
+      }
+    }
+
+    // Mostrar páginas cercanas
+    for (let i = Math.max(1, paginaActual - 2); i <= Math.min(totalPaginas, paginaActual + 2); i++) {
+      html += `
+        <button class="paginacion-numero ${i === paginaActual ? 'active' : ''}" 
+                onclick="cambiarPagina(${i})">
+          ${i}
+        </button>
+      `;
+    }
+
+    // Mostrar última página
+    if (paginaActual < totalPaginas - 2) {
+      if (paginaActual < totalPaginas - 3) {
+        html += '<span class="paginacion-dots">...</span>';
+      }
+      html += `<button class="paginacion-numero" onclick="cambiarPagina(${totalPaginas})">${totalPaginas}</button>`;
+    }
+
+    html += '</div>';
+
+    // Botón siguiente
+    html += `
+      <button class="paginacion-btn ${paginaActual === totalPaginas ? 'disabled' : ''}" 
+              onclick="cambiarPagina(${paginaActual + 1})"
+              ${paginaActual === totalPaginas ? 'disabled' : ''}>
+        Siguiente
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    `;
+
+    html += '</div>';
+    return html;
+  }
+
+  window.cambiarPagina = function(nuevaPagina) {
+    const totalPaginas = Math.ceil(datosActuales.length / RESPUESTAS_POR_PAGINA);
+    
+    if (nuevaPagina < 1 || nuevaPagina > totalPaginas) {
+      return;
+    }
+
+    paginaActual = nuevaPagina;
+    
+    const tipo = datosActuales[0]?.es_dibujo ? 'dibujo' : 'texto';
+    renderizarRespuestas(datosActuales, tipo);
+
+    // Scroll al inicio del contenido
+    const modalContenido = document.getElementById('modalContenido');
+    modalContenido.scrollTop = 0;
+  };
+
+  window.eliminarRespuesta = function(idRespuesta) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta respuesta?')) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('accion', 'eliminar');
+    formData.append('id_respuesta', idRespuesta);
 
     fetch('/SIMPINNA/back-end/routes/resultados/respuestas_texto.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-            accion: 'eliminar',
-            id_respuesta: idRespuesta
-        })
+      method: 'POST',
+      body: formData
     })
-    .then(r => r.json())
-    .then(data => {
+      .then(res => res.json())
+      .then(data => {
         if (data.success) {
-            // Recargar el modal después de eliminar
-            abrirRespuestas(idPregunta, nivel, escuelaId, cicloEscolar);
+          // Remover de datosActuales
+          datosActuales = datosActuales.filter(r => r.id !== idRespuesta);
+          
+          // Ajustar página si es necesario
+          const totalPaginas = Math.ceil(datosActuales.length / RESPUESTAS_POR_PAGINA);
+          if (paginaActual > totalPaginas && totalPaginas > 0) {
+            paginaActual = totalPaginas;
+          }
+          
+          // Re-renderizar
+          const tipo = datosActuales[0]?.es_dibujo ? 'dibujo' : 'texto';
+          renderizarRespuestas(datosActuales, tipo);
+          
+          // Mostrar mensaje de éxito
+          mostrarMensaje('Respuesta eliminada correctamente', 'success');
         } else {
-            alert('Error al eliminar: ' + data.error);
+          throw new Error(data.error || 'Error al eliminar respuesta');
         }
-    })
-    .catch(err => {
+      })
+      .catch(err => {
         console.error('Error:', err);
-        alert('Error al eliminar la respuesta.');
+        mostrarMensaje('Error al eliminar respuesta: ' + err.message, 'error');
+      });
+  };
+
+  window.abrirImagenCompleta = function(rutaImagen) {
+    const overlay = document.createElement('div');
+    overlay.className = 'imagen-overlay';
+    overlay.innerHTML = `
+      <div class="imagen-overlay-contenido">
+        <button class="imagen-overlay-close" onclick="this.parentElement.parentElement.remove()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <img src="${rutaImagen}" alt="Imagen completa">
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    
+    // Cerrar al hacer clic en el overlay
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        overlay.remove();
+      }
     });
-}
+  };
 
+  // Helpers
+  function formatearFecha(fecha) {
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const año = fecha.getFullYear();
+    return `${dia}/${mes}/${año}`;
+  }
 
-function formatearFecha(f) {
-    const d = new Date(f);
-    return d.toLocaleDateString('es-MX', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
+  function formatearHora(fecha) {
+    const horas = fecha.getHours().toString().padStart(2, '0');
+    const minutos = fecha.getMinutes().toString().padStart(2, '0');
+    return `${horas}:${minutos}`;
+  }
 
-function escapeHtml(texto) {
-    const div = document.createElement('div');
-    div.textContent = texto || '';
-    return div.innerHTML;
-}
+  function escapeHtml(unsafe) {
+    return String(unsafe)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 
-document.addEventListener('keydown', e => {
+  function mostrarMensaje(mensaje, tipo = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${tipo}`;
+    toast.textContent = mensaje;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 100);
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // Cerrar modal con tecla ESC
+  document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+      const modal = document.getElementById('modalRespuestas');
+      if (modal && !modal.classList.contains('hidden')) {
         cerrarRespuestas();
+      }
     }
-});
+  });
+
+})();

@@ -391,37 +391,34 @@ tbody td {
   color: #fff;
 }
 
-.badge::before {
-  content: '';
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 50%;
-  background: currentColor;
+.badge.en-revision {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 0.5rem 1rem rgba(59, 130, 246, 0.3);
 }
 
-.badge-pendiente {
-  background: #f59e0b;
-  box-shadow: 0 0.375rem 1rem rgba(245, 158, 11, 0.35);
+.badge.resuelto {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 0.5rem 1rem rgba(16, 185, 129, 0.3);
 }
 
-.badge-revisado,
-.badge-resuelto {
-  background: #10b981;
-  box-shadow: 0 0.375rem 1rem rgba(16, 185, 129, 0.35);
+.badge.pendiente {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 0.5rem 1rem rgba(245, 158, 11, 0.3);
 }
 
-.badge-archivado {
-  background: #6b7280;
-  box-shadow: 0 0.375rem 1rem rgba(107, 114, 128, 0.35);
+.badge.descartado {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  box-shadow: 0 0.5rem 1rem rgba(107, 114, 128, 0.3);
 }
 
 /* ==========================================
-   ACCIONES DE TABLA
+   ACCIONES
 ========================================== */
 .acciones-cell {
   display: flex;
   gap: 0.75rem;
   align-items: center;
+  justify-content: flex-end;
 }
 
 .btn-ver,
@@ -430,50 +427,44 @@ tbody td {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
-  font-size: 1.0625rem;
-  text-decoration: none;
-  transition: all 0.25s ease;
+  padding: 0.75rem 1.5rem;
   border: none;
+  border-radius: 0.625rem;
+  font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  white-space: nowrap;
+  transition: all 0.3s ease;
+  text-decoration: none;
 }
 
 .btn-ver {
-  background: var(--gold);
-  color: var(--burgundy);
-  box-shadow: 0 0.375rem 0.75rem rgba(212, 176, 86, 0.3);
+  background: var(--burgundy);
+  color: #fff;
+  box-shadow: 0 0.5rem 1rem rgba(122, 30, 44, 0.25);
 }
 
 .btn-ver:hover {
-  background: var(--burgundy);
-  color: var(--gold);
+  background: var(--gold);
+  color: var(--burgundy);
   transform: translateY(-0.125rem);
-  box-shadow: 0 0.5rem 1rem rgba(122, 30, 44, 0.3);
+  box-shadow: 0 0.75rem 1.25rem rgba(212, 176, 86, 0.25);
 }
 
 .btn-eliminar {
-  background: #dc2626;
-  color: #fff;
-  box-shadow: 0 0.375rem 0.75rem rgba(220, 38, 38, 0.3);
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  box-shadow: 0 0.5rem 1rem rgba(220, 38, 38, 0.15);
 }
 
 .btn-eliminar:hover {
-  background: #b91c1c;
+  background: #dc2626;
+  color: #fff;
   transform: translateY(-0.125rem);
-  box-shadow: 0 0.5rem 1rem rgba(220, 38, 38, 0.4);
-}
-
-.btn-ver:focus-visible,
-.btn-eliminar:focus-visible {
-  outline: 0.1875rem solid rgba(212, 176, 86, 0.6);
-  outline-offset: 0.125rem;
+  box-shadow: 0 0.75rem 1.25rem rgba(220, 38, 38, 0.25);
 }
 
 /* ==========================================
-   MODAL DETALLE - MÁS GRANDE
+   MODAL DETALLE
 ========================================== */
 .modal {
   display: none;
@@ -493,20 +484,6 @@ tbody td {
   to { opacity: 1; }
 }
 
-.modal-content {
-  background: var(--panel-cream);
-  margin: 2% auto;
-  padding: 0;
-  border: 0.0625rem solid var(--muted);
-  border-radius: var(--radius-lg);
-  width: 95%;
-  max-width: 90rem;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow-soft);
-  animation: slideDown 0.3s ease;
-}
-
 @keyframes slideDown {
   from {
     transform: translateY(-1.875rem);
@@ -518,10 +495,24 @@ tbody td {
   }
 }
 
+.modal-content {
+  background: var(--panel-cream);
+  margin: 3% auto;
+  padding: 0;
+  border: 0.0625rem solid var(--muted);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 62.5rem;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-soft);
+  animation: slideDown 0.3s ease;
+}
+
 .modal-header {
   background: var(--burgundy);
   color: var(--gold);
-  padding: 2.25rem 3rem;
+  padding: 2rem 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -530,7 +521,7 @@ tbody td {
 
 .modal-header h2 {
   margin: 0;
-  font-size: 2.25rem;
+  font-size: 2rem;
   color: var(--gold);
   font-weight: 700;
 }
@@ -647,7 +638,7 @@ tbody td {
 }
 
 /* ==========================================
-   MODAL HISTORIAL - MÁS GRANDE
+   MODAL HISTORIAL - HEADER MEJORADO
 ========================================== */
 .modal-historial {
   display: none;
@@ -676,21 +667,45 @@ tbody td {
   animation: slideDown 0.3s ease;
 }
 
+/* 🔥 HEADER ACTUALIZADO - ESTILO RESULTADOS */
 .modal-historial-header {
-  background: var(--gold);
-  color: var(--burgundy);
-  padding: 2.25rem 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 0.125rem solid var(--gold);
+  background: linear-gradient(135deg, rgba(212, 176, 86, 0.1) 0%, rgba(122, 30, 44, 0.05) 100%);
   border-radius: calc(var(--radius-lg) - 0.1875rem) calc(var(--radius-lg) - 0.1875rem) 0 0;
 }
 
 .modal-historial-header h2 {
   margin: 0;
-  font-size: 2.25rem;
+  font-size: 1.625rem;
   color: var(--burgundy);
   font-weight: 700;
+}
+
+/* 🔥 CLOSE BUTTON ACTUALIZADO - ESTILO RESULTADOS */
+.modal-historial-header .close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--burgundy);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.modal-historial-header .close:hover {
+  background: rgba(122, 30, 44, 0.1);
+  transform: scale(1);
 }
 
 .modal-historial-body {

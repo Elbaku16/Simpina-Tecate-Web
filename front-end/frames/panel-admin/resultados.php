@@ -26,6 +26,7 @@ $nombresBonitos = [
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
   <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/resultados.css">
+  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/modal-respuestas.css">
   
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
