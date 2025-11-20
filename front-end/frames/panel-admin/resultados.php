@@ -116,6 +116,14 @@ $nombresBonitos = [
               Ver respuestas de <?php echo $tipo === 'texto' ? 'texto' : 'dibujo'; ?>
             </button>
 
+            <!-- BOTONES DE EXPORTACIÓN (RESPUESTAS DE TEXTO/DIBUJO) -->
+            <div class="export-buttons">
+              <button class="btn-export btn-csv"  onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'csv')">CSV</button>
+              <button class="btn-export btn-excel"  onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'excel')">Excel</button>
+              <button class="btn-export btn-pdf"   onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'pdf')">PDF</button>
+              <button class="btn-export btn-print" onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'print')">Imprimir</button>
+            </div>
+
         <?php else: ?>
           <!-- Preguntas de opciones múltiples (opcion, multiple, ranking) -->
           <div
@@ -196,8 +204,22 @@ $nombresBonitos = [
   <script src="/SIMPINNA/front-end/scripts/admin/resultados/export-pregunta.js"></script>
   <script src="/SIMPINNA/front-end/scripts/admin/resultados/export-global.js"></script>
   <script src="/SIMPINNA/front-end/scripts/admin/resultados/modal-respuestas.js"></script>
+  
   <!-- Librerías para exportar -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- Script para botones de exportación externos -->
+  <script>
+    function abrirRespuestasYExportar(idPregunta, nivel, escuela, formato) {
+      // Primero abrir el modal y cargar datos
+      abrirRespuestas(idPregunta, nivel, escuela);
+      
+      // Esperar a que se carguen los datos (1 segundo)
+      setTimeout(function() {
+        exportarRespuestasTexto(formato);
+      }, 1000);
+    }
+  </script>
 </body>
 </html>
