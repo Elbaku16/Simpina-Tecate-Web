@@ -1,15 +1,18 @@
-// modal-respuestas.js - Gestión del modal de respuestas de texto y dibujo
+// modal-respuestas.js - Gestion del modal de respuestas de texto y dibujo
 (function() {
   'use strict';
 
   let datosActuales = [];
   let paginaActual = 1;
+  let preguntaActualId = 0;
   const RESPUESTAS_POR_PAGINA = 20;
 
   window.abrirRespuestas = function(idPregunta, nivel, escuela) {
     const modal = document.getElementById('modalRespuestas');
     const modalTitulo = document.getElementById('modalTitulo');
     const modalContenido = document.getElementById('modalContenido');
+
+    preguntaActualId = idPregunta;
 
     // Mostrar modal
     modal.classList.remove('hidden');
@@ -18,14 +21,14 @@
     // Mostrar loading
     modalContenido.innerHTML = '<div class="loading">Cargando respuestas...</div>';
 
-    // Construir URL con parámetros
+    // Construir URL con parametros
     const params = new URLSearchParams({
       accion: 'obtener',
       id_pregunta: idPregunta,
       escuela: escuela || 0
     });
 
-    // Petición AJAX
+    // Peticion AJAX
     fetch(`/SIMPINNA/back-end/routes/resultados/respuestas_texto.php?${params}`)
       .then(res => res.json())
       .then(data => {
@@ -39,7 +42,7 @@
         datosActuales = respuestas;
         paginaActual = 1;
 
-        // Actualizar título
+        // Actualizar titulo
         modalTitulo.textContent = tipo === 'dibujo' 
           ? 'Respuestas de dibujo' 
           : 'Respuestas de texto';
@@ -64,6 +67,7 @@
     document.body.style.overflow = '';
     datosActuales = [];
     paginaActual = 1;
+    preguntaActualId = 0;
   };
 
   function renderizarRespuestas(respuestas, tipo) {
@@ -83,7 +87,7 @@
       return;
     }
 
-    // Calcular paginación
+    // Calcular paginacion
     const totalRespuestas = respuestas.length;
     const totalPaginas = Math.ceil(totalRespuestas / RESPUESTAS_POR_PAGINA);
     const inicio = (paginaActual - 1) * RESPUESTAS_POR_PAGINA;
@@ -112,7 +116,7 @@
 
     html += '</div>'; // Cierra respuestas-lista
 
-    // Paginación
+    // Paginacion
     if (totalPaginas > 1) {
       html += generarPaginacion(totalPaginas);
     }
@@ -161,7 +165,7 @@
     
     const existeArchivo = resp.existe_archivo;
     const rutaDibujo = resp.ruta_dibujo || '';
-    const tamaño = resp.tamaño || '';
+    const tamano = resp.tamano || resp.tamaño || '';
 
     return `
       <div class="respuesta-card respuesta-dibujo">
@@ -186,7 +190,7 @@
         <div class="respuesta-contenido respuesta-imagen-wrapper">
           ${existeArchivo 
             ? `<img src="${rutaDibujo}" alt="Dibujo" class="respuesta-imagen" onclick="abrirImagenCompleta('${rutaDibujo}')">
-               ${tamaño ? `<span class="imagen-tamaño">${tamaño}</span>` : ''}`
+               ${tamano ? `<span class="imagen-tamano">${tamano}</span>` : ''}`
             : '<div class="imagen-no-disponible">Imagen no disponible</div>'
           }
         </div>
@@ -197,7 +201,7 @@
   function generarPaginacion(totalPaginas) {
     let html = '<div class="respuestas-paginacion">';
 
-    // Botón anterior
+    // Boton anterior
     html += `
       <button class="paginacion-btn ${paginaActual === 1 ? 'disabled' : ''}" 
               onclick="cambiarPagina(${paginaActual - 1})"
@@ -209,10 +213,10 @@
       </button>
     `;
 
-    // Números de página
+    // Numeros de pagina
     html += '<div class="paginacion-numeros">';
     
-    // Mostrar primera página
+    // Mostrar primera pagina
     if (paginaActual > 3) {
       html += `<button class="paginacion-numero" onclick="cambiarPagina(1)">1</button>`;
       if (paginaActual > 4) {
@@ -220,7 +224,7 @@
       }
     }
 
-    // Mostrar páginas cercanas
+    // Mostrar paginas cercanas
     for (let i = Math.max(1, paginaActual - 2); i <= Math.min(totalPaginas, paginaActual + 2); i++) {
       html += `
         <button class="paginacion-numero ${i === paginaActual ? 'active' : ''}" 
@@ -230,7 +234,7 @@
       `;
     }
 
-    // Mostrar última página
+    // Mostrar ultima pagina
     if (paginaActual < totalPaginas - 2) {
       if (paginaActual < totalPaginas - 3) {
         html += '<span class="paginacion-dots">...</span>';
@@ -240,7 +244,7 @@
 
     html += '</div>';
 
-    // Botón siguiente
+    // Boton siguiente
     html += `
       <button class="paginacion-btn ${paginaActual === totalPaginas ? 'disabled' : ''}" 
               onclick="cambiarPagina(${paginaActual + 1})"
@@ -274,7 +278,7 @@
   };
 
   window.eliminarRespuesta = function(idRespuesta) {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta respuesta?')) {
+    if (!confirm('¿Estas seguro de que deseas eliminar esta respuesta?')) {
       return;
     }
 
@@ -292,7 +296,7 @@
           // Remover de datosActuales
           datosActuales = datosActuales.filter(r => r.id !== idRespuesta);
           
-          // Ajustar página si es necesario
+          // Ajustar pagina si es necesario
           const totalPaginas = Math.ceil(datosActuales.length / RESPUESTAS_POR_PAGINA);
           if (paginaActual > totalPaginas && totalPaginas > 0) {
             paginaActual = totalPaginas;
@@ -302,7 +306,7 @@
           const tipo = datosActuales[0]?.es_dibujo ? 'dibujo' : 'texto';
           renderizarRespuestas(datosActuales, tipo);
           
-          // Mostrar mensaje de éxito
+          // Mostrar mensaje de exito
           mostrarMensaje('Respuesta eliminada correctamente', 'success');
         } else {
           throw new Error(data.error || 'Error al eliminar respuesta');
@@ -338,12 +342,232 @@
     });
   };
 
+  // ========================================================================
+  // FUNCIONES DE EXPORTACION
+  // ========================================================================
+
+  window.exportarRespuestasTexto = function(formato) {
+    if (!datosActuales || datosActuales.length === 0) {
+      alert('No hay respuestas para exportar');
+      return;
+    }
+
+    const tipo = datosActuales[0]?.es_dibujo ? 'dibujo' : 'texto';
+    
+    switch(formato) {
+      case 'csv':
+        exportarCSVRespuestas(datosActuales, tipo);
+        break;
+      case 'excel':
+        exportarExcelRespuestas(datosActuales, tipo);
+        break;
+      case 'pdf':
+        exportarPDFRespuestas(datosActuales, tipo);
+        break;
+      case 'print':
+        imprimirRespuestas(datosActuales, tipo);
+        break;
+    }
+  };
+
+  function exportarCSVRespuestas(respuestas, tipo) {
+    let csv = 'RESPUESTAS DE ' + (tipo === 'dibujo' ? 'DIBUJO' : 'TEXTO') + '\n';
+    csv += 'Pregunta ID: ' + preguntaActualId + '\n';
+    csv += 'Fecha de exportacion: ' + new Date().toLocaleDateString('es-MX') + '\n';
+    csv += 'Total de respuestas: ' + respuestas.length + '\n\n';
+    
+    if (tipo === 'dibujo') {
+      csv += 'Escuela,Fecha,Hora,Ruta Imagen,Tamano\n';
+      respuestas.forEach(resp => {
+        const fecha = new Date(resp.fecha);
+        const fechaStr = formatearFecha(fecha);
+        const horaStr = formatearHora(fecha);
+        const tamano = resp.tamano || resp.tamaño || 'N/A';
+        const ruta = resp.ruta_dibujo || 'N/A';
+        csv += `"${resp.escuela}","${fechaStr}","${horaStr}","${ruta}","${tamano}"\n`;
+      });
+    } else {
+      csv += 'Escuela,Fecha,Hora,Respuesta\n';
+      respuestas.forEach(resp => {
+        const fecha = new Date(resp.fecha);
+        const fechaStr = formatearFecha(fecha);
+        const horaStr = formatearHora(fecha);
+        const textoLimpio = (resp.texto || '').replace(/"/g, '""');
+        csv += `"${resp.escuela}","${fechaStr}","${horaStr}","${textoLimpio}"\n`;
+      });
+    }
+
+    descargarArchivo(csv, `respuestas_${tipo}_${Date.now()}.csv`, 'text/csv;charset=utf-8;');
+  }
+
+  function exportarExcelRespuestas(respuestas, tipo) {
+    if (typeof XLSX === 'undefined') {
+      alert('Error: Libreria XLSX no cargada');
+      return;
+    }
+
+    const wsData = [
+      ['RESPUESTAS DE ' + (tipo === 'dibujo' ? 'DIBUJO' : 'TEXTO')],
+      ['Pregunta ID: ' + preguntaActualId],
+      ['Fecha de exportacion: ' + new Date().toLocaleDateString('es-MX')],
+      ['Total de respuestas: ' + respuestas.length],
+      []
+    ];
+
+    if (tipo === 'dibujo') {
+      wsData.push(['Escuela', 'Fecha', 'Hora', 'Ruta Imagen', 'Tamano']);
+      respuestas.forEach(resp => {
+        const fecha = new Date(resp.fecha);
+        wsData.push([
+          resp.escuela,
+          formatearFecha(fecha),
+          formatearHora(fecha),
+          resp.ruta_dibujo || 'N/A',
+          resp.tamano || resp.tamaño || 'N/A'
+        ]);
+      });
+    } else {
+      wsData.push(['Escuela', 'Fecha', 'Hora', 'Respuesta']);
+      respuestas.forEach(resp => {
+        const fecha = new Date(resp.fecha);
+        wsData.push([
+          resp.escuela,
+          formatearFecha(fecha),
+          formatearHora(fecha),
+          resp.texto || ''
+        ]);
+      });
+    }
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols'] = [{ wch: 25 }, { wch: 12 }, { wch: 10 }, { wch: 50 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Respuestas');
+
+    XLSX.writeFile(wb, `respuestas_${tipo}_${Date.now()}.xlsx`);
+  }
+
+  function exportarPDFRespuestas(respuestas, tipo) {
+    if (typeof jsPDF === 'undefined' || !jsPDF.jsPDF) {
+      alert('Error: Libreria jsPDF no cargada');
+      return;
+    }
+
+    const { jsPDF } = window.jsPDF;
+    const doc = new jsPDF();
+    let y = 20;
+
+    // Titulo
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text('RESPUESTAS DE ' + (tipo === 'dibujo' ? 'DIBUJO' : 'TEXTO'), 10, y);
+    y += 10;
+
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text('Pregunta ID: ' + preguntaActualId, 10, y);
+    y += 7;
+    doc.text('Fecha: ' + new Date().toLocaleDateString('es-MX'), 10, y);
+    y += 7;
+    doc.text('Total de respuestas: ' + respuestas.length, 10, y);
+    y += 12;
+
+    respuestas.forEach((resp, idx) => {
+      if (y > 260) {
+        doc.addPage();
+        y = 20;
+      }
+
+      const fecha = new Date(resp.fecha);
+      
+      doc.setFontSize(11);
+      doc.setFont(undefined, 'bold');
+      doc.text(`Respuesta ${idx + 1}`, 10, y);
+      y += 7;
+
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Escuela: ${resp.escuela}`, 15, y);
+      y += 6;
+      doc.text(`Fecha: ${formatearFecha(fecha)} ${formatearHora(fecha)}`, 15, y);
+      y += 6;
+
+      if (tipo === 'texto') {
+        const textoLineas = doc.splitTextToSize(resp.texto || '', 180);
+        doc.text(textoLineas, 15, y);
+        y += (textoLineas.length * 6) + 8;
+      } else {
+        doc.text(`Ruta: ${resp.ruta_dibujo || 'N/A'}`, 15, y);
+        y += 6;
+        doc.text(`Tamano: ${resp.tamano || resp.tamaño || 'N/A'}`, 15, y);
+        y += 10;
+      }
+    });
+
+    doc.save(`respuestas_${tipo}_${Date.now()}.pdf`);
+  }
+
+  function imprimirRespuestas(respuestas, tipo) {
+    const w = window.open('', '', 'width=900,height=700');
+    let html = `
+      <html>
+      <head>
+        <title>Imprimir Respuestas</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          h1 { color: #7A1E2C; margin-bottom: 20px; }
+          .info { background: #FFFAF3; padding: 10px; margin-bottom: 20px; border-left: 4px solid #D4B056; }
+          .respuesta { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 8px; page-break-inside: avoid; }
+          .respuesta-header { font-weight: bold; color: #7A1E2C; margin-bottom: 8px; }
+          .respuesta-meta { color: #666; font-size: 0.9em; margin-bottom: 8px; }
+          .respuesta-texto { line-height: 1.6; }
+          @media print { body { padding: 10px; } }
+        </style>
+      </head>
+      <body>
+        <h1>Respuestas de ${tipo === 'dibujo' ? 'Dibujo' : 'Texto'}</h1>
+        <div class="info">
+          <strong>Pregunta ID:</strong> ${preguntaActualId}<br>
+          <strong>Fecha:</strong> ${new Date().toLocaleDateString('es-MX')}<br>
+          <strong>Total de respuestas:</strong> ${respuestas.length}
+        </div>
+    `;
+
+    respuestas.forEach((resp, idx) => {
+      const fecha = new Date(resp.fecha);
+      html += `
+        <div class="respuesta">
+          <div class="respuesta-header">Respuesta ${idx + 1}</div>
+          <div class="respuesta-meta">
+            <strong>Escuela:</strong> ${escapeHtml(resp.escuela)}<br>
+            <strong>Fecha:</strong> ${formatearFecha(fecha)} ${formatearHora(fecha)}
+          </div>
+      `;
+
+      if (tipo === 'texto') {
+        html += `<div class="respuesta-texto">${escapeHtml(resp.texto || '')}</div>`;
+      } else {
+        html += `
+          <div><strong>Ruta:</strong> ${escapeHtml(resp.ruta_dibujo || 'N/A')}</div>
+          <div><strong>Tamano:</strong> ${escapeHtml(resp.tamano || resp.tamaño || 'N/A')}</div>
+        `;
+      }
+
+      html += '</div>';
+    });
+
+    html += '</body></html>';
+    w.document.write(html);
+    w.document.close();
+    w.print();
+  }
+
   // Helpers
   function formatearFecha(fecha) {
     const dia = fecha.getDate().toString().padStart(2, '0');
     const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-    const año = fecha.getFullYear();
-    return `${dia}/${mes}/${año}`;
+    const ano = fecha.getFullYear();
+    return `${dia}/${mes}/${ano}`;
   }
 
   function formatearHora(fecha) {
@@ -359,6 +583,18 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  function descargarArchivo(contenido, nombreArchivo, tipo) {
+    const blob = new Blob([contenido], { type: tipo });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nombreArchivo;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
   }
 
   function mostrarMensaje(mensaje, tipo = 'info') {
