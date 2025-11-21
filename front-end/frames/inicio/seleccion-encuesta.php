@@ -54,5 +54,10 @@
   <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/footer.php'; ?>
 </footer>
 <script src="/front-end/scripts/header-menu.js"></script>
+<script>
+  // Cada vez que alguien entra a esta pantalla para elegir nivel,
+  // borramos cualquier escuela que se haya quedado guardada antes.
+  localStorage.removeItem('id_escuela_seleccionada');
+</script>
 </body>
 </html>

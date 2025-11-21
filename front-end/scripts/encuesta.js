@@ -31,7 +31,23 @@ const respuestasGlobal = {
     ranking: {},  // { idPregunta: [ {id_opcion, posicion}, ... ] }
     dibujo: {}    // { idPregunta: base64 }
 };
+/* ==========================================================
+   NUEVA FUNCIÓN: GUARDAR DIBUJOS VISIBLES
+   (Llamar antes de cambiar de página)
+========================================================== */
+function guardarDibujosPaginaActual() {
+    document.querySelectorAll('.canvas-paint').forEach(root => {
+        const idPregunta = root.dataset.idPregunta;
+        const canvas = root.querySelector('.cp-canvas');
+        // Verificamos si el usuario interactuó con el canvas (dataset.filled)
+        const filled = root.dataset.filled === '1';
 
+        if (filled && canvas) {
+            // Guardamos en el estado global
+            respuestasGlobal.dibujo[idPregunta] = canvas.toDataURL('image/png', 0.7);
+        }
+    });
+}
 /* ==========================================================
    CARGAR ENCUESTA
 ========================================================== */
@@ -138,6 +154,7 @@ function mostrarPagina() {
    NAVEGACIÓN PÁGINAS
 ========================================================== */
 btnSiguiente.addEventListener('click', () => {
+    guardarDibujosPaginaActual();
     if (paginaActual === paginas.length - 1) {
         enviar();
     } else {
@@ -147,6 +164,7 @@ btnSiguiente.addEventListener('click', () => {
 });
 
 btnAnterior.addEventListener('click', () => {
+    guardarDibujosPaginaActual();
     if (paginaActual > 0) {
         paginaActual--;
         mostrarPagina();
@@ -346,25 +364,13 @@ function validarEncuestaCompleta() {
 ========================================================== */
 function enviar() {
     console.log(' Iniciando envío de encuesta...');
-
+    guardarDibujosPaginaActual();
     // Sincronizar ranking desde módulo global, por si no lo hemos hecho
     if (window.respuestasRanking) {
         respuestasGlobal.ranking = window.respuestasRanking;
     }
 
-    // DIBUJOS: capturar lo que esté actualmente en los canvas visibles
-    // (si tienes dibujos en varias páginas habría que guardar base64 al pintar)
-    document.querySelectorAll('.canvas-paint').forEach(root => {
-        const idPregunta = root.dataset.idPregunta;
-        const canvas = root.querySelector('.cp-canvas');
-        const filled = root.dataset.filled === '1';
 
-        if (filled && canvas) {
-            const base64 = canvas.toDataURL('image/png', 0.7);
-            respuestasGlobal.dibujo[idPregunta] = base64;
-            console.log(`Dibujo recogido - Pregunta ${idPregunta}`);
-        }
-    });
 
     // Validación opcional (si quieres obligar todo contestado)
     const errores = validarEncuestaCompleta();
@@ -372,10 +378,18 @@ function enviar() {
         alert(' Hay preguntas sin responder:\n\n- ' + errores.join('\n- '));
         return;
     }
+// --- OBTENER DATOS DE SESIÓN ---
+    let idEscuela = localStorage.getItem('id_escuela_seleccionada');
+    let genero = localStorage.getItem('genero_seleccionado'); // <--- NUEVO
 
-    // Construir payload desde el estado global
+    if (!idEscuela) idEscuela = 1; 
+    if (!genero) genero = 'X'; // Valor por defecto si falla algo
+
+    // --- CONSTRUIR PAYLOAD ---
     const payload = {
         id_encuesta: idEncuesta,
+        id_escuela: parseInt(idEscuela),
+        genero: genero, 
         respuestas: {
             texto: respuestasGlobal.texto,
             opcion: respuestasGlobal.opcion,
@@ -400,41 +414,37 @@ function enviar() {
         return;
     }
 
-    console.log('🚀 Enviando al servidor...');
+    console.log('Enviando al servidor...', payload);
 
     btnSiguiente.disabled = true;
 
     fetch('/back-end/routes/encuestas/enviar-respuestas.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-        .then(response => {
-            console.log('Respuesta del servidor (raw):', response);
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Respuesta JSON:', data);
-
-            if (data.success) {
-                alert('¡Encuesta enviada exitosamente! ¡Gracias por participar!');
-                // window.location.href = '/front-end/frames/gracias.php';
-            } else {
-                alert(' Error al guardar: ' + (data.error || 'Error desconocido'));
-                console.error('Error del servidor:', data);
-                btnSiguiente.disabled = false;
-            }
-        })
-        .catch(error => {
-            console.error('Error en el envío:', error);
-            alert(' Error al enviar la encuesta. Revisa la consola para más detalles.');
+    .then(response => {
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Respuesta JSON:', data);
+        if (data.success) {
+            alert('¡Encuesta enviada exitosamente! ¡Gracias por participar!');
+            // Redirigir o limpiar
+            localStorage.removeItem('id_escuela_seleccionada');
+            localStorage.removeItem('genero_seleccionado');
+            window.location.href = '/front-end/frames/inicio/inicio.php';
+        } else {
+            alert(' Error al guardar: ' + (data.error || 'Error desconocido'));
             btnSiguiente.disabled = false;
-        });
+        }
+    })
+    .catch(error => {
+        console.error('Error en el envío:', error);
+        alert(' Error al enviar. Revisa la consola.');
+        btnSiguiente.disabled = false;
+    });
 }
 
 /* ==========================================================
