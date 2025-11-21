@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../database/conexion-db.php';
 require_once __DIR__ . '/../models/Pregunta.php';
-require_once __DIR__ . '/../database/Conexion.php';
 require_once __DIR__ . '/../helpers/DibujoHelper.php';
 
 class EncuestasController
@@ -11,7 +11,9 @@ class EncuestasController
 
     public function __construct()
     {
-        $this->db = Conexion::getConexion();
+        // Usamos la conexión clásica
+        global $conn;
+        $this->db = $conn;
     }
 
     /* ==========================================================
@@ -42,7 +44,6 @@ class EncuestasController
     ========================================================== */
     private function crearUsuarioEncuesta(int $idEncuesta, int $idEscuela): int
     {
-        // Tu tabla real NO tiene fecha_creacion — tiene fecha_inicio
         $sql = "INSERT INTO encuestas_usuarios
                 (id_encuesta, id_escuela, fecha_inicio)
                 VALUES (?, ?, NOW())";
@@ -111,19 +112,15 @@ class EncuestasController
     ========================================================== */
     public function enviarRespuestas(array $payload): array
     {
-        /* 1) ID ENCUESTA */
         $idEncuesta = (int)($payload['id_encuesta'] ?? 0);
         if ($idEncuesta === 0) {
             throw new Exception('ID de encuesta inválido');
         }
 
-        /* 2) ID ESCUELA (desde sesión) */
         $idEscuela = (int)($_SESSION['id_escuela'] ?? 1);
 
-        /* 3) Crear registro en encuestas_usuarios */
         $idUsuarioEncuesta = $this->crearUsuarioEncuesta($idEncuesta, $idEscuela);
 
-        /* 4) Obtener arrays */
         $respuestas = $payload['respuestas'] ?? [];
         $dibujos    = $payload['dibujos']    ?? [];
 
@@ -146,7 +143,7 @@ class EncuestasController
                 }
             }
 
-            /* ---------------- OPCIÓN RADIO ---------------- */
+            /* ---------------- OPCIÓN ---------------- */
             if (!empty($respuestas['opcion'])) {
                 foreach ($respuestas['opcion'] as $idPregunta => $data) {
                     $this->guardarOpcion(
@@ -197,6 +194,7 @@ class EncuestasController
                         );
                         $stmt->execute();
                         $stmt->close();
+
                         $total++;
                     }
                 }
@@ -229,60 +227,57 @@ class EncuestasController
         }
     }
 
-
     /* ==========================================================
-       GUARDAR RESPUESTAS INDIVIDUALES
+       MÉTODOS PRIVADOS DE GUARDAR
     ========================================================== */
 
-   private function guardarTexto(
-    int $idUsuarioEncuesta,
-    int $idEncuesta,
-    int $idPregunta,
-    int $idEscuela,
-    string $texto
-): void {
-    $sql = "INSERT INTO respuestas_usuario
+    private function guardarTexto(
+        int $idUsuarioEncuesta,
+        int $idEncuesta,
+        int $idPregunta,
+        int $idEscuela,
+        string $texto
+    ): void {
+        $sql = "INSERT INTO respuestas_usuario
             (id_usuario_encuesta, id_encuesta, id_pregunta, respuesta_texto, id_escuela, fecha_respuesta)
             VALUES (?, ?, ?, ?, ?, NOW())";
 
-    $stmt = $this->db->prepare($sql);
-    $stmt->bind_param("iiisi",
-        $idUsuarioEncuesta, // i
-        $idEncuesta,        // i
-        $idPregunta,        // i
-        $texto,             // s
-        $idEscuela          // i
-    );
-    $stmt->execute();
-    $stmt->close();
-}
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("iiisi",
+            $idUsuarioEncuesta,
+            $idEncuesta,
+            $idPregunta,
+            $texto,
+            $idEscuela
+        );
+        $stmt->execute();
+        $stmt->close();
+    }
 
-
-   private function guardarOpcion(
-    int $idUsuarioEncuesta,
-    int $idEncuesta,
-    int $idPregunta,
-    int $idEscuela,
-    int $idOpcion,
-    ?string $textoOtro = null
-): void {
-    $sql = "INSERT INTO respuestas_usuario
+    private function guardarOpcion(
+        int $idUsuarioEncuesta,
+        int $idEncuesta,
+        int $idPregunta,
+        int $idEscuela,
+        int $idOpcion,
+        ?string $textoOtro = null
+    ): void {
+        $sql = "INSERT INTO respuestas_usuario
             (id_usuario_encuesta, id_encuesta, id_pregunta, id_opcion, respuesta_texto, id_escuela, fecha_respuesta)
             VALUES (?, ?, ?, ?, ?, ?, NOW())";
 
-    $stmt = $this->db->prepare($sql);
-    $stmt->bind_param("iiiisi",
-        $idUsuarioEncuesta, // i
-        $idEncuesta,        // i
-        $idPregunta,        // i
-        $idOpcion,          // i
-        $textoOtro,         // s
-        $idEscuela          // i
-    );
-    $stmt->execute();
-    $stmt->close();
-}
-
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("iiiisi",
+            $idUsuarioEncuesta,
+            $idEncuesta,
+            $idPregunta,
+            $idOpcion,
+            $textoOtro,
+            $idEscuela
+        );
+        $stmt->execute();
+        $stmt->close();
+    }
 
     private function guardarDibujo(
         int $idUsuarioEncuesta,
@@ -293,7 +288,6 @@ class EncuestasController
     ): void {
         if (strlen($base64) < 50) return;
 
-        // 1) Crear registro vacío
         $sql = "INSERT INTO respuestas_usuario
                 (id_usuario_encuesta, id_encuesta, id_pregunta, id_escuela, fecha_respuesta)
                 VALUES (?, ?, ?, ?, NOW())";
@@ -310,10 +304,8 @@ class EncuestasController
         $idRespuesta = $this->db->insert_id;
         $stmt->close();
 
-        // 2) Guardar archivo
         $ruta = DibujoHelper::guardar($base64, $idRespuesta);
 
-        // 3) Actualizar ruta
         $sql = "UPDATE respuestas_usuario SET dibujo_ruta=? WHERE id_respuesta_usuario=?";
         $stmt = $this->db->prepare($sql);
         $stmt->bind_param("si", $ruta, $idRespuesta);

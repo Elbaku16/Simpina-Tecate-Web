@@ -2,15 +2,15 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
 requerir_admin();
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/ComentariosController.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/ComentariosController.php';
 
 $controller = new ComentariosController();
 
 // --- Filtros ---
-$busqueda = $_GET['busqueda'] ?? '';
-$filtroEstado = $_GET['estado'] ?? '';
-$filtroNivel = (int)($_GET['nivel'] ?? 0);
+$busqueda     = $_GET['busqueda'] ?? '';
+$filtroEstado = $_GET['estado']   ?? '';
+$filtroNivel  = (int)($_GET['nivel'] ?? 0);
 
 // --- Datos ---
 $comentarios = $controller->listar([
@@ -20,9 +20,11 @@ $comentarios = $controller->listar([
 ]);
 
 // --- Niveles para el filtro ---
-$niveles = $conn->query("SELECT id_nivel, nombre_nivel FROM niveles_educativos ORDER BY id_nivel")
-                ->fetch_all(MYSQLI_ASSOC);
+$niveles = $conn->query(
+    "SELECT id_nivel, nombre_nivel FROM niveles_educativos ORDER BY id_nivel"
+)->fetch_all(MYSQLI_ASSOC);
 
+// --- Cerrar la conexión ANTES de cargar la vista ---
 $conn->close();
 
 // --- Pasar datos a la vista ---

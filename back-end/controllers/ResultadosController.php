@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../database/Conexion.php';
+require_once __DIR__ . '/../database/conexion-db.php';
 require_once __DIR__ . '/../models/Resultados.php';
 
 class ResultadosController
@@ -10,12 +10,14 @@ class ResultadosController
 
     public function __construct()
     {
-        $this->db = Conexion::getConexion();
+        // Usar la conexión global clásica (no Singleton)
+        global $conn;
+        $this->db = $conn;
     }
 
     /**
      * ===============================================================
-     *   FUNCIÓN NUEVA: Obtener ciclos escolares a partir de las fechas
+     *   Obtener ciclos escolares detectando automáticamente por fecha
      * ===============================================================
      */
     private function obtenerCiclosEscolares(int $encuestaId): array
@@ -37,7 +39,7 @@ class ResultadosController
             $anio = (int)$row['anio'];
             $mes  = (int)$row['mes'];
 
-            // Ciclo escolar: Agosto (8) → Julio (7)
+            // Ciclo escolar (Agosto → Julio)
             if ($mes >= 8) {
                 $cicloInicio = $anio;
                 $cicloFin    = $anio + 1;
@@ -92,11 +94,9 @@ class ResultadosController
         // Filtro por escuela
         $escuelaFiltro = isset($req['escuela']) ? (int)$req['escuela'] : 0;
 
-        /**
-         * ================================
-         *   NUEVO: Filtro por ciclo escolar
-         * ================================
-         */
+        /* -------------------------
+           Filtro por ciclo escolar
+        -------------------------- */
         $cicloFiltro = $req['ciclo'] ?? '';
         $cicloInicio = null;
         $cicloFin    = null;
@@ -107,13 +107,13 @@ class ResultadosController
             $cicloFin    = (int)$cicloFin;
         }
 
-        // Listado de escuelas del nivel
+        // Escuelas del nivel
         $escuelasDelNivel = Resultados::obtenerEscuelasPorNivel($this->db, $nivelId);
 
         // Preguntas
         $preguntas = Resultados::obtenerPreguntas($this->db, $encuestaId);
 
-        // Estadísticas (con filtro por escuela)
+        // Estadísticas
         $estadisticas = Resultados::obtenerEstadisticasMixta(
             $this->db,
             $preguntas,
@@ -121,7 +121,7 @@ class ResultadosController
         );
 
         // Opciones por pregunta
-        $idsPreguntas = array_column($preguntas, 'id_pregunta');
+        $idsPreguntas        = array_column($preguntas, 'id_pregunta');
         $opcionesPorPregunta = Resultados::obtenerOpciones(
             $this->db,
             $idsPreguntas,
@@ -134,11 +134,9 @@ class ResultadosController
             '#06b6d4','#84cc16','#f97316','#e11d48','#22c55e'
         ];
 
-        /**
-         * ========================================
-         *   N U E V O — Lista de ciclos escolares
-         * ========================================
-         */
+        /* ------------------------------------------------------
+           NUEVO: ciclos escolares detectados automáticamente
+        ------------------------------------------------------- */
         $ciclosDisponibles = $this->obtenerCiclosEscolares($encuestaId);
 
         return [
@@ -149,7 +147,7 @@ class ResultadosController
             'opcionesPorPregunta' => $opcionesPorPregunta,
             'palette'             => $palette,
 
-            // 🔵 NUEVO
+            // Nuevo
             'ciclosDisponibles'   => $ciclosDisponibles,
             'cicloFiltro'         => $cicloFiltro
         ];
