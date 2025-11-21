@@ -40,7 +40,7 @@ class EncuestasController
     }
 
     /* ==========================================================
-       CREAR REGISTRO DE USUARIO ENCUESTA
+       CREAR REGISTRO DE USUARIO ENCUESTA (Sesión)
     ========================================================== */
     private function crearUsuarioEncuesta(int $idEncuesta, int $idEscuela): int
     {
@@ -108,7 +108,7 @@ class EncuestasController
     }
 
     /* ==========================================================
-       GUARDAR RESPUESTAS
+       GUARDAR RESPUESTAS (MODIFICADO PARA GÉNERO)
     ========================================================== */
     public function enviarRespuestas(array $payload): array
     {
@@ -117,8 +117,15 @@ class EncuestasController
             throw new Exception('ID de encuesta inválido');
         }
 
-        $idEscuela = (int)($_SESSION['id_escuela'] ?? 1);
+        $idEscuela = (int)($payload['id_escuela'] ?? 1);
+        
+        // 1. RECIBIR GÉNERO (Por defecto 'X' si no viene)
+        $genero = isset($payload['genero']) ? substr(trim($payload['genero']), 0, 1) : 'X';
+        if (!in_array($genero, ['M', 'F', 'X'])) {
+            $genero = 'X';
+        }
 
+        // Crear la sesión
         $idUsuarioEncuesta = $this->crearUsuarioEncuesta($idEncuesta, $idEscuela);
 
         $respuestas = $payload['respuestas'] ?? [];
@@ -137,7 +144,8 @@ class EncuestasController
                         $idEncuesta,
                         (int)$idPregunta,
                         $idEscuela,
-                        trim($texto)
+                        trim($texto),
+                        $genero // Pasamos género
                     );
                     $total++;
                 }
@@ -152,7 +160,8 @@ class EncuestasController
                         (int)$idPregunta,
                         $idEscuela,
                         (int)$data['id_opcion'],
-                        $data['texto_otro'] ?? null
+                        $data['texto_otro'] ?? null,
+                        $genero // Pasamos género
                     );
                     $total++;
                 }
@@ -168,7 +177,8 @@ class EncuestasController
                             (int)$idPregunta,
                             $idEscuela,
                             (int)$opcion['id_opcion'],
-                            null
+                            null,
+                            $genero // Pasamos género
                         );
                         $total++;
                     }
@@ -181,6 +191,8 @@ class EncuestasController
                     foreach ($lista as $item) {
                         if (!isset($item['id_opcion'], $item['posicion'])) continue;
 
+                        // Nota: Ranking no lleva género en su tabla específica por ahora, 
+                        // pero está vinculado por id_usuario_encuesta
                         $sql = "INSERT INTO respuestas_ranking
                                 (id_usuario_encuesta, id_pregunta, id_opcion, posicion)
                                 VALUES (?, ?, ?, ?)";
@@ -208,7 +220,8 @@ class EncuestasController
                         $idEncuesta,
                         (int)$idPregunta,
                         $idEscuela,
-                        $base64
+                        $base64,
+                        $genero // Pasamos género
                     );
                     $total++;
                 }
@@ -228,7 +241,7 @@ class EncuestasController
     }
 
     /* ==========================================================
-       MÉTODOS PRIVADOS DE GUARDAR
+       MÉTODOS PRIVADOS DE GUARDAR (Con Género)
     ========================================================== */
 
     private function guardarTexto(
@@ -236,19 +249,23 @@ class EncuestasController
         int $idEncuesta,
         int $idPregunta,
         int $idEscuela,
-        string $texto
+        string $texto,
+        string $genero
     ): void {
+        // Agregamos campo 'genero'
         $sql = "INSERT INTO respuestas_usuario
-            (id_usuario_encuesta, id_encuesta, id_pregunta, respuesta_texto, id_escuela, fecha_respuesta)
-            VALUES (?, ?, ?, ?, ?, NOW())";
+            (id_usuario_encuesta, id_encuesta, id_pregunta, respuesta_texto, id_escuela, genero, fecha_respuesta)
+            VALUES (?, ?, ?, ?, ?, ?, NOW())";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("iiisi",
+        // Tipos: i=int, s=string -> iiisis
+        $stmt->bind_param("iiisis",
             $idUsuarioEncuesta,
             $idEncuesta,
             $idPregunta,
             $texto,
-            $idEscuela
+            $idEscuela,
+            $genero
         );
         $stmt->execute();
         $stmt->close();
@@ -260,20 +277,24 @@ class EncuestasController
         int $idPregunta,
         int $idEscuela,
         int $idOpcion,
-        ?string $textoOtro = null
+        ?string $textoOtro = null,
+        string $genero = 'X'
     ): void {
+        // Agregamos campo 'genero'
         $sql = "INSERT INTO respuestas_usuario
-            (id_usuario_encuesta, id_encuesta, id_pregunta, id_opcion, respuesta_texto, id_escuela, fecha_respuesta)
-            VALUES (?, ?, ?, ?, ?, ?, NOW())";
+            (id_usuario_encuesta, id_encuesta, id_pregunta, id_opcion, respuesta_texto, id_escuela, genero, fecha_respuesta)
+            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("iiiisi",
+        // Tipos: iiiisis
+        $stmt->bind_param("iiiisis",
             $idUsuarioEncuesta,
             $idEncuesta,
             $idPregunta,
             $idOpcion,
             $textoOtro,
-            $idEscuela
+            $idEscuela,
+            $genero
         );
         $stmt->execute();
         $stmt->close();
@@ -284,26 +305,31 @@ class EncuestasController
         int $idEncuesta,
         int $idPregunta,
         int $idEscuela,
-        string $base64
+        string $base64,
+        string $genero
     ): void {
         if (strlen($base64) < 50) return;
 
+        // Agregamos campo 'genero'
         $sql = "INSERT INTO respuestas_usuario
-                (id_usuario_encuesta, id_encuesta, id_pregunta, id_escuela, fecha_respuesta)
-                VALUES (?, ?, ?, ?, NOW())";
+                (id_usuario_encuesta, id_encuesta, id_pregunta, id_escuela, genero, fecha_respuesta)
+                VALUES (?, ?, ?, ?, ?, NOW())";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("iiii",
+        // Tipos: iiiis
+        $stmt->bind_param("iiiis",
             $idUsuarioEncuesta,
             $idEncuesta,
             $idPregunta,
-            $idEscuela
+            $idEscuela,
+            $genero
         );
         $stmt->execute();
 
         $idRespuesta = $this->db->insert_id;
         $stmt->close();
 
+        // Guardar archivo físico
         $ruta = DibujoHelper::guardar($base64, $idRespuesta);
 
         $sql = "UPDATE respuestas_usuario SET dibujo_ruta=? WHERE id_respuesta_usuario=?";

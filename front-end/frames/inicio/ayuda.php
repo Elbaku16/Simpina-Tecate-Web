@@ -31,7 +31,7 @@
       <p><strong>Email:</strong> simpinna@tecate.gob.mx</p>
       <p class="fb-line">
         <strong>Facebook:</strong> Simpinna Tecate —
-        <a href="https://www.facebook.com/profile.php?id=61552813675496" target="_blank" rel="noopener">
+        <a href="https://www.facebook.com/simpinnatkt/" target="_blank" rel="noopener">
           Haz click para entrar al Facebook
         </a>
       </p>
