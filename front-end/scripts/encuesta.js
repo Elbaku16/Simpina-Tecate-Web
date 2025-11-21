@@ -37,7 +37,7 @@ const respuestasGlobal = {
 ========================================================== */
 async function cargarEncuesta() {
     try {
-        const resp = await fetch(`/SIMPINNA/back-end/routes/encuestas/obtener.php?nivel=${nivel}`);
+        const resp = await fetch(`/back-end/routes/encuestas/obtener.php?nivel=${nivel}`);
         if (!resp.ok) {
             throw new Error(`HTTP ${resp.status}`);
         }
@@ -404,7 +404,7 @@ function enviar() {
 
     btnSiguiente.disabled = true;
 
-    fetch('/SIMPINNA/back-end/routes/encuestas/enviar-respuestas.php', {
+    fetch('/back-end/routes/encuestas/enviar-respuestas.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -423,7 +423,7 @@ function enviar() {
 
             if (data.success) {
                 alert('¡Encuesta enviada exitosamente! ¡Gracias por participar!');
-                // window.location.href = '/SIMPINNA/front-end/frames/gracias.php';
+                // window.location.href = '/front-end/frames/gracias.php';
             } else {
                 alert(' Error al guardar: ' + (data.error || 'Error desconocido'));
                 console.error('Error del servidor:', data);

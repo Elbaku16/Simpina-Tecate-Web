@@ -13,11 +13,11 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 
   <!-- CSS -->
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/encuestas.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/progress.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/canvas-paint.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/header-responsive.css">
+  <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
+  <link rel="stylesheet" href="/front-end/assets/css/encuestas/encuestas.css">
+  <link rel="stylesheet" href="/front-end/assets/css/encuestas/progress.css">
+  <link rel="stylesheet" href="/front-end/assets/css/encuestas/canvas-paint.css">
+  <link rel="stylesheet" href="/front-end/assets/css/global/header-responsive.css">
 
   <!-- Loader CSS (simple y directo en este archivo) -->
   <style>
@@ -43,7 +43,7 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 
 <body>
 <header>
-  <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header.php'); ?>
+  <?php include($_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header.php'); ?>
 </header>
 
 <main class="encuesta-container<?= $claseAncho ?>">
@@ -73,7 +73,7 @@ $claseAncho  = ($nivel === 'primaria') ? ' encuesta-container--wide' : '';
 </main>
 
 <footer>
-  <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'); ?>
+  <?php include($_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'); ?>
 </footer>
 
 <!-- El JS pedirá las preguntas al backend -->
@@ -91,8 +91,8 @@ document.addEventListener("encuesta:lista", () => {
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script type="module" src="/SIMPINNA/front-end/scripts/encuesta.js"></script>
-<script src="/SIMPINNA/front-end/scripts/canvas/canvas-paint.mount.js"></script>
-<script src="/SIMPINNA/front-end/scripts/header-menu.js"></script>
+<script type="module" src="/front-end/scripts/encuesta.js"></script>
+<script src="/front-end/scripts/canvas/canvas-paint.mount.js"></script>
+<script src="/front-end/scripts/header-menu.js"></script>
 </body>
 </html>

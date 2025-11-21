@@ -3,7 +3,7 @@
 
     <div class="footer-logo">
       <img
-        src="/SIMPINNA/front-end/assets/img/global/tkt-pueblo-magico.png"
+        src="/front-end/assets/img/global/tkt-pueblo-magico.png"
         alt="Tecate Pueblo Mágico"
         class="logo-tecate"
       >

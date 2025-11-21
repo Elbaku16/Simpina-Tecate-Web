@@ -29,7 +29,7 @@
     });
 
     // Peticion AJAX
-    fetch(`/SIMPINNA/back-end/routes/resultados/respuestas_texto.php?${params}`)
+    fetch(`/back-end/routes/resultados/respuestas_texto.php?${params}`)
       .then(res => res.json())
       .then(data => {
         if (!data.success) {
@@ -286,7 +286,7 @@
     formData.append('accion', 'eliminar');
     formData.append('id_respuesta', idRespuesta);
 
-    fetch('/SIMPINNA/back-end/routes/resultados/respuestas_texto.php', {
+    fetch('/back-end/routes/resultados/respuestas_texto.php', {
       method: 'POST',
       body: formData
     })

@@ -8,8 +8,8 @@ if (!contenedor) {
 
 const NIVEL = contenedor?.dataset.nivel || "primaria";
 
-const API_OBTENER = `/SIMPINNA/back-end/routes/encuestas/obtener_editar.php?nivel=${encodeURIComponent(NIVEL)}`;
-const API_GUARDAR  = `/SIMPINNA/back-end/routes/encuestas/guardar.php`;
+const API_OBTENER = `/back-end/routes/encuestas/obtener_editar.php?nivel=${encodeURIComponent(NIVEL)}`;
+const API_GUARDAR  = `/back-end/routes/encuestas/guardar.php`;
 
 let preguntas = [];           // preguntas activas
 const eliminadas = new Set(); // ids de preguntas eliminadas
@@ -363,15 +363,15 @@ async function guardarCambios() {
     try {
       data = JSON.parse(txt);
     } catch {
-      console.error("❌ Respuesta NO JSON:", txt);
+      console.error(" Respuesta NO JSON:", txt);
       alert("Error: El servidor no respondió con JSON válido.\n\n" + txt);
       return;
     }
 
-    console.log("📥 RESPUESTA PARSEADA:", data);
+    console.log(" RESPUESTA PARSEADA:", data);
 
     if (data.success) {
-      alert("✅ Cambios guardados correctamente");
+      alert("Cambios guardados correctamente");
       eliminadas.clear();
 
       // Nuevo snapshot del estado "guardado"

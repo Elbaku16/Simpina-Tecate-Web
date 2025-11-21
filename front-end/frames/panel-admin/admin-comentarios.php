@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Comentarios - SIMPINNA</title>
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/comentarios.css">
+    <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="/front-end/assets/css/admin/comentarios.css">
 </head>
 <body>
-    <?php include $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header-admin.php'; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header-admin.php'; ?>
     <div class="comentarios-container">
         <!-- HEADER SECTION -->
         <div class="header-section">
             <div class="header-content">
                 <div class="header-left">
-                    <a href="/SIMPINNA/front-end/frames/panel/panel-admin.php" class="btn-back">
+                    <a href="/front-end/frames/panel/panel-admin.php" class="btn-back">
                         ← Volver
                     </a>
                     <div class="header-title-section">
@@ -88,7 +88,7 @@
                     <button type="submit" class="btn-filtrar">
                         Filtrar
                     </button>
-                    <a href="/SIMPINNA/back-end/routes/comentarios/index.php" class="btn-limpiar">
+                    <a href="/back-end/routes/comentarios/index.php" class="btn-limpiar">
                         Limpiar Filtros
                     </a>
                 </div>
@@ -163,7 +163,7 @@
                                                 Ver
                                             </button>
                                             <form method="POST" 
-                                                  action="/SIMPINNA/back-end/routes/comentarios/eliminar.php" 
+                                                  action="/back-end/routes/comentarios/eliminar.php" 
                                                   style="display:inline;"
                                                   onsubmit="return confirm('¿Estás seguro de eliminar este comentario?')">
                                                 <input type="hidden" name="id" value="<?= $c['id_contacto'] ?>">
@@ -223,7 +223,7 @@
                 </div>
 
                 <!-- CAMBIAR ESTADO -->
-                <form method="POST" action="/SIMPINNA/back-end/routes/comentarios/cambiar-estado.php">
+                <form method="POST" action="/back-end/routes/comentarios/cambiar-estado.php">
                     <input type="hidden" name="id" id="form-id">
                     <div class="estado-selector">
                         <div class="estado-selector-title">Cambiar Estado</div>
@@ -311,7 +311,7 @@
             const contenido = document.getElementById('historial-contenido');
             contenido.innerHTML = '<div class="historial-empty">Cargando historial...</div>';
 
-            fetch('/SIMPINNA/back-end/routes/comentarios/obtener-historial.php')
+            fetch('/back-end/routes/comentarios/obtener-historial.php')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.historial.length > 0) {
@@ -368,7 +368,7 @@
         });
     </script>
   <footer>
-    <?php include $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'; ?>
   </footer>
 </body>
 </html>

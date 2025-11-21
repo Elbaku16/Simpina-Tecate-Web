@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/header-responsive.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/ayuda.css">
+    <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="/front-end/assets/css/global/header-responsive.css">
+    <link rel="stylesheet" href="/front-end/assets/css/global/ayuda.css">
     <title>SIMPINNA | Ayuda</title>
 </head>
 <body>
     
 <header> 
-    <?php include($_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header.php'); ?>
+    <?php include($_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header.php'); ?>
 </header>
 <main class="ayuda-layout">
   <section class="ayuda-grid">
@@ -68,9 +68,9 @@
     </p>
 
     <div class="emergency-images">
-      <img src="/SIMPINNA/front-end/assets/img/inicio/911.png" alt="911 Emergencias" class="emg-img">
-      <img src="/SIMPINNA/front-end/assets/img/inicio/089.png" alt="089 Denuncia Anónima Baja California" class="emg-img">
-      <img src="/SIMPINNA/front-end/assets/img/global/linea de la vida.jpeg" alt="075 Línea de la Vida" class="emg-img">
+      <img src="/front-end/assets/img/inicio/911.png" alt="911 Emergencias" class="emg-img">
+      <img src="/front-end/assets/img/inicio/089.png" alt="089 Denuncia Anónima Baja California" class="emg-img">
+      <img src="/front-end/assets/img/global/linea de la vida.jpeg" alt="075 Línea de la Vida" class="emg-img">
     </div>
 
     <!-- Botón para abrir modal -->
@@ -265,7 +265,7 @@
 
 
 <footer>
-  <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer.php'; ?>
+  <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/footer.php'; ?>
 </footer>
 
 <script type="module">
@@ -273,13 +273,13 @@
         openContactModal, 
         closeContactModal, 
         closeContactModalOnOverlay 
-    } from "/SIMPINNA/front-end/scripts/ayuda/modal-ayuda.js";
+    } from "/front-end/scripts/ayuda/modal-ayuda.js";
 
     // Hacer funciones accesibles desde onclick=""
     window.openContactModal = openContactModal;
     window.closeContactModal = closeContactModal;
     window.closeContactModalOnOverlay = closeContactModalOnOverlay;
 </script>
-<script src="/SIMPINNA/front-end/scripts/header-menu.js"></script>
+<script src="/front-end/scripts/header-menu.js"></script>
 </body>
 </html>

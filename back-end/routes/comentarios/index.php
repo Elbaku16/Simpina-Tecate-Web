@@ -1,9 +1,9 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/auth/verificar-sesion.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
 requerir_admin();
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/controllers/ComentariosController.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/database/conexion-db.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/ComentariosController.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php';
 
 $controller = new ComentariosController();
 
@@ -26,4 +26,4 @@ $niveles = $conn->query("SELECT id_nivel, nombre_nivel FROM niveles_educativos O
 $conn->close();
 
 // --- Pasar datos a la vista ---
-require $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/frames/panel-admin/admin-comentarios.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/front-end/frames/panel-admin/admin-comentarios.php';

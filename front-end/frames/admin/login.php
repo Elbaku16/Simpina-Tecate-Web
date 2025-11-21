@@ -1,14 +1,14 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/auth/verificar-sesion.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
 
 // Si ya hay sesión activa → redirigir
 if (usuario_autenticado() && rol_es('admin')) {
-    header('Location: /SIMPINNA/front-end/frames/panel/panel-admin.php');
+    header('Location: /front-end/frames/panel/panel-admin.php');
     exit;
 }
 
 // El controlador genera el token CSRF
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/controllers/AuthController.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/AuthController.php';
 $auth = new AuthController();
 $csrf_token = $auth->generarTokenCSRF('login_admin');
 
@@ -21,13 +21,16 @@ $mensaje = $_GET['m'] ?? '';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIMPINNA | Panel administrativo</title>
+
+  <!-- CSS global -->
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
+  <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
+  <link rel="stylesheet" href="/front-end/assets/css/admin/admin.css">
 </head>
 
 <body>
-<?php include $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header-admin.php'; ?>
+
+<?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header-admin.php'; ?>
 
 <main class="login-container">
     <h1 class="login-title">Inicio de sesión</h1>
@@ -38,7 +41,7 @@ $mensaje = $_GET['m'] ?? '';
       </div>
     <?php endif; ?>
 
-    <form class="login-form" method="POST" action="/SIMPINNA/back-end/routes/auth/login.php">
+    <form class="login-form" method="POST" action="/back-end/routes/auth/login.php">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token); ?>">
 
       <div class="form-group">
@@ -57,7 +60,8 @@ $mensaje = $_GET['m'] ?? '';
 </main>
 
 <footer>
-    <?php include $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'; ?>
 </footer>
+
 </body>
 </html>

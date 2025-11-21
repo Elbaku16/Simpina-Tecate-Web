@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/core/bootstrap_session.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/controllers/ContactoController.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/core/bootstrap_session.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/ContactoController.php';
 
 $controller = new ContactoController();
 
@@ -11,8 +11,8 @@ $result = $controller->procesarFormulario($_POST);
 
 // Redirigir de vuelta al formulario
 if ($result['ok']) {
-    header("Location: /SIMPINNA/front-end/frames/inicio/contacto.php?ok=1");
+    header("Location: /front-end/frames/inicio/contacto.php?ok=1");
 } else {
-    header("Location: /SIMPINNA/front-end/frames/inicio/contacto.php?ok=0");
+    header("Location: /front-end/frames/inicio/contacto.php?ok=0");
 }
 exit;

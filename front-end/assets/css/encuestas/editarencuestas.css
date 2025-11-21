@@ -204,43 +204,68 @@
 }
 
 .btn-add-opcion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   background: var(--amarillo);
   color: var(--texto);
-  margin-top: .8rem;
-  padding: .7rem 1rem;
-  border-radius: .5rem;
-  font-weight: bold;
+
+  padding: 0.85rem 1.4rem;
+  margin-top: 0.8rem;
+
+  font-weight: 700;
+  font-size: 1.05rem;
+  border-radius: 0.75rem;
+
   cursor: pointer;
-  transition: .25s;
+
+  transition: background 0.25s ease,
+              transform 0.2s ease,
+              box-shadow 0.2s ease;
+
+  box-shadow: 0 0.5rem 1.2rem rgba(212, 176, 86, 0.25);
 }
 
 .btn-add-opcion:hover {
   background: var(--amarillo-light);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 0.7rem 1.45rem rgba(212, 176, 86, 0.32);
 }
 
+
 /* =======================================================
-   BOTÓN AGREGAR PREGUNTA
+   BOTÓN AGREGAR PREGUNTA (ESTILO PREMIUM)
 ======================================================= */
 
 .btn-add-pregunta {
   display: block;
   width: 100%;
+
   background: var(--primario);
   color: #fff;
-  padding: .9rem;     /* antes 1.3rem */
-  font-size: 1.15rem; /* antes 1.3rem */
+
+  padding: 1.05rem;           
+  font-size: 1.22rem;          
   font-weight: 800;
-  border-radius: .55rem;
+
+  border-radius: 0.875rem;     /* mismo estilo premium */
   cursor: pointer;
-  margin-top: 2.5rem;
-  margin-bottom: 1.2rem; 
-  transition: .3s;
+
+  margin-top: 2.8rem;
+  margin-bottom: 1.8rem;
+
+  transition: background 0.3s ease,
+              transform 0.2s ease,
+              box-shadow 0.2s ease;
+
+  box-shadow: 0 0.625rem 1.25rem rgba(122, 30, 44, 0.20);
 }
 
 .btn-add-pregunta:hover {
   background: var(--primario-light);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 0.8rem 1.45rem rgba(122, 30, 44, 0.28);
 }
 
 /* =======================================================
@@ -248,36 +273,52 @@
 ======================================================= */
 .btn-guardar,
 .btn-cancelar {
-  padding: .9rem 2rem;
-  font-size: 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
   font-weight: 700;
   border: none;
-  border-radius: .55rem;
+  border-radius: 0.875rem;     /* igual que btn-back */
   cursor: pointer;
-  transition: .3s;
-  min-width: 180px;     
+
+  transition: background 0.3s ease,
+              transform 0.2s ease,
+              box-shadow 0.2s ease;
+
+  min-width: 180px;
   text-align: center;
+
+  box-shadow: 0 0.625rem 1.25rem rgba(0,0,0,0.18);  /* sombra suave */
 }
 
+/* --- VERDE --- */
 .btn-guardar {
   background: var(--verde);
-  color: white;
+  color: #fff;
+  box-shadow: 0 0.625rem 1.25rem rgba(0, 128, 0, 0.25);
 }
 
 .btn-guardar:hover {
   background: var(--verde-light);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 0.8rem 1.45rem rgba(0, 128, 0, 0.32);
 }
 
+/* --- ROJO --- */
 .btn-cancelar {
   background: var(--rojo);
-  color: white;
+  color: #fff;
   margin-left: 1rem;
+  box-shadow: 0 0.625rem 1.25rem rgba(200, 0, 0, 0.25);
 }
 
 .btn-cancelar:hover {
   background: var(--rojo-light);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 0.8rem 1.45rem rgba(200, 0, 0, 0.32);
 }
 
 /* =======================================================
@@ -290,8 +331,9 @@
   .editor-tipo {
     width: 100%;
   }
-  .btn-guardar, .btn-cancelar {
+  .btn-guardar, .btn-cancelar, .btn-back {
     width: 100%;
     margin: .4rem 0;
+
   }
 }

@@ -49,7 +49,7 @@ function requerir_admin(): void
 
     // Validar rol
     if (!rol_es('admin')) {
-        header('Location: /SIMPINNA/front-end/frames/inicio/inicio.php');
+        header('Location: /front-end/frames/inicio/inicio.php');
         exit;
     }
 }

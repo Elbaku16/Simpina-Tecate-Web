@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/back-end/auth/verificar-sesion.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/back-end/auth/verificar-sesion.php';
 requerir_admin();
 
 // Estas variables ya vienen desde el controlador
@@ -23,19 +23,19 @@ $nombresBonitos = [
   
   <!-- Framework y estilos base -->
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/resultados.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/modal-respuestas.css">
+  <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
+  <link rel="stylesheet" href="/front-end/assets/css/admin/admin.css">
+  <link rel="stylesheet" href="/front-end/assets/css/admin/resultados.css">
+  <link rel="stylesheet" href="/front-end/assets/css/admin/modal-respuestas.css">
   
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/header-admin.php'; ?>
+  <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/header-admin.php'; ?>
 
   <div class="toolbar">
-    <a class="btn" href="/SIMPINNA/front-end/frames/panel/panel-admin.php">Volver</a>
+    <a class="btn" href="/front-end/frames/panel/panel-admin.php">Volver</a>
 
     
     <!-- BOTONES DE EXPORTACIÓN GLOBAL -->
@@ -195,15 +195,15 @@ $nombresBonitos = [
     </div>
   </div>
 
-  <?php include $_SERVER['DOCUMENT_ROOT'].'/SIMPINNA/front-end/includes/footer-admin.php'; ?>
+  <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/footer-admin.php'; ?>
 
   
   <!-- Módulos JS de resultados -->
-  <script src="/SIMPINNA/front-end/scripts/admin/resultados/helpers.js"></script>
-  <script src="/SIMPINNA/front-end/scripts/admin/resultados/graficas.js"></script>
-  <script src="/SIMPINNA/front-end/scripts/admin/resultados/export-pregunta.js"></script>
-  <script src="/SIMPINNA/front-end/scripts/admin/resultados/export-global.js"></script>
-  <script src="/SIMPINNA/front-end/scripts/admin/resultados/modal-respuestas.js"></script>
+  <script src="/front-end/scripts/admin/resultados/helpers.js"></script>
+  <script src="/front-end/scripts/admin/resultados/graficas.js"></script>
+  <script src="/front-end/scripts/admin/resultados/export-pregunta.js"></script>
+  <script src="/front-end/scripts/admin/resultados/export-global.js"></script>
+  <script src="/front-end/scripts/admin/resultados/modal-respuestas.js"></script>
   
   <!-- Librerías para exportar -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>

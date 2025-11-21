@@ -60,7 +60,7 @@ function confirmarEliminar(btn) {
 
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = "/SIMPINNA/back-end/routes/comentarios/eliminar.php";
+    form.action = "/back-end/routes/comentarios/eliminar.php";
 
     form.innerHTML = `<input type="hidden" name="id" value="${id}">`;
     document.body.appendChild(form);
@@ -74,7 +74,7 @@ function cambiarEstado(id, estado) {
 
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = "/SIMPINNA/back-end/routes/comentarios/cambiar-estado.php";
+    form.action = "/back-end/routes/comentarios/cambiar-estado.php";
 
     form.innerHTML = `
         <input type="hidden" name="id" value="${id}">

@@ -48,12 +48,7 @@
   overflow: hidden;
 }
 
-.card-amarillo:hover {
-  transform: translateY(-5px);
-  box-shadow: 
-    0 15px 40px var(--shadow-medium),
-    0 5px 15px var(--shadow-soft);
-}
+
 
 /* ======== TÍTULOS ======== */
 
