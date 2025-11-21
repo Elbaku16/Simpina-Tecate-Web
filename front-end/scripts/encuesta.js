@@ -7,7 +7,9 @@ import {
     actualizarProgresoRespuestas,
     actualizarProgresoPagina
 } from './utils/progreso.js';
-import { respuestasRanking } from './components/pregunta-ranking.js';
+
+// 👇 CORRECCIÓN 1: Importar restaurarRanking
+import { respuestasRanking, restaurarRanking } from './components/pregunta-ranking.js';
 
 let preguntas = [];
 let idEncuesta = null;
@@ -22,50 +24,44 @@ const btnAnterior = document.getElementById('btnAnterior');
 const btnSiguiente = document.getElementById('btnSiguiente');
 
 /**
- * 🧠 Estado global de respuestas (no depende del DOM de la página actual)
+ * 🧠 Estado global de respuestas
  */
 const respuestasGlobal = {
-    texto: {},    // { idPregunta: "respuesta" }
-    opcion: {},   // { idPregunta: { id_opcion, texto_opcion?, texto_otro? } }
-    multiple: {}, // { idPregunta: [ { id_opcion, texto_opcion }, ... ] }
-    ranking: {},  // { idPregunta: [ {id_opcion, posicion}, ... ] }
-    dibujo: {}    // { idPregunta: base64 }
+    texto: {},
+    opcion: {},
+    multiple: {},
+    ranking: {}, 
+    dibujo: {}
 };
+
 /* ==========================================================
-   NUEVA FUNCIÓN: GUARDAR DIBUJOS VISIBLES
-   (Llamar antes de cambiar de página)
+   GUARDAR DIBUJOS
 ========================================================== */
 function guardarDibujosPaginaActual() {
     document.querySelectorAll('.canvas-paint').forEach(root => {
         const idPregunta = root.dataset.idPregunta;
         const canvas = root.querySelector('.cp-canvas');
-        // Verificamos si el usuario interactuó con el canvas (dataset.filled)
         const filled = root.dataset.filled === '1';
 
         if (filled && canvas) {
-            // Guardamos en el estado global
             respuestasGlobal.dibujo[idPregunta] = canvas.toDataURL('image/png', 0.7);
         }
     });
 }
+
 /* ==========================================================
    CARGAR ENCUESTA
 ========================================================== */
 async function cargarEncuesta() {
     try {
         const resp = await fetch(`/back-end/routes/encuestas/obtener.php?nivel=${nivel}`);
-        if (!resp.ok) {
-            throw new Error(`HTTP ${resp.status}`);
-        }
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
         const data = await resp.json();
-
         preguntas = data.preguntas || [];
         console.log("PREGUNTAS CRUDAS DEL BACKEND:", preguntas);
 
         idEncuesta = data.id_encuesta;
-
-        // necesario para progreso.js
         window.preguntas = preguntas;
 
         preguntas.forEach(p => {
@@ -76,11 +72,9 @@ async function cargarEncuesta() {
         paginaActual = 0;
         mostrarPagina();
     } catch (error) {
-        console.error('Error al cargar encuesta:', error);
+        console.error('Error al cargar:', error);
         const loader = document.getElementById('loaderEncuesta');
-        if (loader) {
-            loader.textContent = 'Error al cargar la encuesta. Intenta de nuevo más tarde.';
-        }
+        if (loader) loader.textContent = 'Error al cargar la encuesta.';
     }
 }
 
@@ -89,7 +83,6 @@ async function cargarEncuesta() {
 ========================================================== */
 function restaurarDibujos() {
     if (!respuestasGlobal.dibujo) return;
-
     document.querySelectorAll('.canvas-paint').forEach(root => {
         const id = root.dataset.idPregunta;
         const base64 = respuestasGlobal.dibujo[id];
@@ -98,60 +91,56 @@ function restaurarDibujos() {
         const canvas = root.querySelector('.cp-canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
-
         img.onload = () => {
             const dpr = window.devicePixelRatio || 1;
-            ctx.drawImage(
-                img,
-                0, 0,
-                canvas.width / dpr,
-                canvas.height / dpr
-            );
+            ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
             root.dataset.filled = '1';
         };
-
         img.src = base64;
     });
 }
 
 function mostrarPagina() {
+    // 1. Renderizar HTML base (esto resetea el orden visual)
     renderPagina(paginas[paginaActual], preguntas, contenedor);
+    
     actualizarProgresoPagina(paginaActual, paginas);
     actualizarProgresoRespuestas();
 
+    // Botones
     if (paginaActual === 0) {
         btnAnterior.style.visibility = "hidden";
     } else {
         btnAnterior.style.visibility = "visible";
     }
 
-    if (window.initCanvasPaint) {
-        window.initCanvasPaint();
-    }
+    if (window.initCanvasPaint) window.initCanvasPaint();
+    
     restaurarDibujos();
 
+    // 👇 CORRECCIÓN 2: Restaurar el orden visual del Ranking 👇
+    const preguntasPagina = paginas[paginaActual];
+    preguntasPagina.forEach(p => {
+        if (p.tipo === 'ranking') {
+            // Llama a la función del componente que reordena el DOM usando window.respuestasRanking
+            restaurarRanking(p.id); 
+        }
+    });
+    // 👆 FIN CORRECCIÓN 👆
 
-    // Ajustar texto del botón según página
     if (paginaActual === paginas.length - 1) {
         btnSiguiente.textContent = "Enviar encuesta";
     } else {
         btnSiguiente.textContent = "Siguiente";
     }
 
-    // Restaurar estado desde respuestasGlobal para esta página
     restaurarRespuestasEnDOM();
-
-    // Notificar que ya cargó (para ocultar loader)
     document.dispatchEvent(new CustomEvent("encuesta:lista"));
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 /* ==========================================================
-   NAVEGACIÓN PÁGINAS
+   NAVEGACIÓN
 ========================================================== */
 btnSiguiente.addEventListener('click', () => {
     guardarDibujosPaginaActual();
@@ -172,224 +161,128 @@ btnAnterior.addEventListener('click', () => {
 });
 
 /* ==========================================================
-   ESCUCHAR CAMBIOS EN EL CONTENEDOR (INPUT / CHANGE)
-   → Actualiza respuestasGlobal al vuelo
+   LISTENERS
 ========================================================== */
-
-// Texto + "Otro"
 contenedor.addEventListener('input', (e) => {
     const target = e.target;
-
-    // TEXTAREA de respuesta abierta
     if (target.matches('textarea[id^="texto_"]')) {
-        const idPregunta = target.id.replace('texto_', '');
-        respuestasGlobal.texto[idPregunta] = target.value.trim();
-        return;
+        const id = target.id.replace('texto_', '');
+        respuestasGlobal.texto[id] = target.value.trim();
     }
-
-    // Campo "Otro"
     if (target.id && target.id.startsWith('otro_')) {
-        const idPregunta = target.id.replace('otro_', '');
-        const valor = target.value.trim();
-
-        if (respuestasGlobal.opcion[idPregunta]) {
-            respuestasGlobal.opcion[idPregunta].texto_otro = valor || undefined;
-        }
-        if (respuestasGlobal.multiple[idPregunta]) {
-            respuestasGlobal.multiple[idPregunta].texto_otro = valor || undefined;
-        }
+        const id = target.id.replace('otro_', '');
+        const val = target.value.trim();
+        if (respuestasGlobal.opcion[id]) respuestasGlobal.opcion[id].texto_otro = val || undefined;
+        if (respuestasGlobal.multiple[id]) respuestasGlobal.multiple[id].texto_otro = val || undefined;
     }
 });
 
-// Radios / Checkboxes
 contenedor.addEventListener('change', (e) => {
     const target = e.target;
-
-    // RADIO (opción simple)
-    if (target.matches('input[type="radio"][name^="pregunta_"]')) {
-        const nombreGrupo = target.name;              // pregunta_18
-        const idPregunta = nombreGrupo.replace('pregunta_', '');
-        const idOpcion = parseInt(target.value, 10);
-        const textoOpcion = target.dataset.texto || '';
-
-        const esOtro = textoOpcion.toLowerCase().startsWith('otro');
-        const obj = {
-            id_opcion: idOpcion,
-            texto_opcion: textoOpcion
-        };
-
+    if (target.matches('input[type="radio"]')) {
+        const id = target.name.replace('pregunta_', '');
+        const esOtro = target.dataset.texto.toLowerCase().startsWith('otro');
+        const obj = { id_opcion: parseInt(target.value), texto_opcion: target.dataset.texto };
+        
         if (esOtro) {
-            const inputOtro = document.getElementById(`otro_${idPregunta}`);
-            if (inputOtro) {
-                const otroTexto = inputOtro.value.trim();
-                if (otroTexto !== '') {
-                    obj.texto_otro = otroTexto;
-                }
-            }
+            const inp = document.getElementById(`otro_${id}`);
+            if (inp?.value.trim()) obj.texto_otro = inp.value.trim();
         }
-
-        respuestasGlobal.opcion[idPregunta] = obj;
-        return;
+        respuestasGlobal.opcion[id] = obj;
     }
-
-    // CHECKBOX (opción múltiple)
-    if (target.matches('input[type="checkbox"][name^="pregunta_"]')) {
-        const nombreGrupo = target.name;              // pregunta_19
-        const idPregunta = nombreGrupo.replace('pregunta_', '');
-
-        const seleccionados = contenedor.querySelectorAll(
-            `input[type="checkbox"][name="${nombreGrupo}"]:checked`
-        );
-
-        const lista = [];
-        seleccionados.forEach(chk => {
-            lista.push({
-                id_opcion: parseInt(chk.value, 10),
-                texto_opcion: chk.dataset.texto || ''
-            });
-        });
-
-        respuestasGlobal.multiple[idPregunta] = lista;
+    if (target.matches('input[type="checkbox"]')) {
+        const id = target.name.replace('pregunta_', '');
+        const checked = contenedor.querySelectorAll(`input[name="${target.name}"]:checked`);
+        respuestasGlobal.multiple[id] = Array.from(checked).map(c => ({
+            id_opcion: parseInt(c.value),
+            texto_opcion: c.dataset.texto
+        }));
     }
 });
 
 /* ==========================================================
-   RESTAURAR VALORES EN EL DOM SEGÚN respuestasGlobal
+   RESTAURAR VALORES DOM
 ========================================================== */
 function restaurarRespuestasEnDOM() {
-    // TEXTO
-    Object.entries(respuestasGlobal.texto).forEach(([id, valor]) => {
+    Object.entries(respuestasGlobal.texto).forEach(([id, v]) => {
         const el = document.getElementById(`texto_${id}`);
-        if (el) el.value = valor;
+        if (el) el.value = v;
     });
-
-    // OPCIÓN SIMPLE (RADIO)
-    Object.entries(respuestasGlobal.opcion).forEach(([id, data]) => {
-        if (!data || typeof data.id_opcion === 'undefined') return;
-
-        const selector = `input[type="radio"][name="pregunta_${id}"][value="${data.id_opcion}"]`;
-        const radio = document.querySelector(selector);
-        if (radio) {
-            radio.checked = true;
-        }
-
-        if (data.texto_otro !== undefined) {
-            const otro = document.getElementById(`otro_${id}`);
-            if (otro) otro.value = data.texto_otro;
+    Object.entries(respuestasGlobal.opcion).forEach(([id, v]) => {
+        if (!v?.id_opcion) return;
+        const r = document.querySelector(`input[name="pregunta_${id}"][value="${v.id_opcion}"]`);
+        if (r) r.checked = true;
+        if (v.texto_otro) {
+            const o = document.getElementById(`otro_${id}`);
+            if (o) { o.value = v.texto_otro; o.classList.remove('oculto'); }
         }
     });
-
-    // OPCIÓN MÚLTIPLE (CHECKBOX)
-    Object.entries(respuestasGlobal.multiple).forEach(([id, lista]) => {
-        if (!Array.isArray(lista)) return;
-
-        lista.forEach(op => {
-            const selector = `input[type="checkbox"][name="pregunta_${id}"][value="${op.id_opcion}"]`;
-            const chk = document.querySelector(selector);
-            if (chk) {
-                chk.checked = true;
-            }
+    Object.entries(respuestasGlobal.multiple).forEach(([id, arr]) => {
+        if (!Array.isArray(arr)) return;
+        arr.forEach(op => {
+            const c = document.querySelector(`input[name="pregunta_${id}"][value="${op.id_opcion}"]`);
+            if (c) c.checked = true;
         });
     });
-
-    // RANKING:
-    // el módulo pregunta-ranking ya debe leer/respetar respuestasRanking,
-    // aquí solo nos aseguramos de que el objeto global siga disponible.
-    if (window.respuestasRanking) {
-        respuestasGlobal.ranking = window.respuestasRanking;
-    }
 }
 
 /* ==========================================================
-   VALIDAR ENCUESTA COMPLETA (opcional)
+   VALIDAR
 ========================================================== */
 function validarEncuestaCompleta() {
-    const errores = [];
-
+    const err = [];
     preguntas.forEach(p => {
         const id = p.id;
-        const tipo = String(p.tipo).toLowerCase();
-        const etiqueta = (p.texto || '').trim() || `ID ${id}`;
+        const tipo = p.tipo.toLowerCase();
+        const label = (p.texto || '').trim() || `ID ${id}`;
 
-        if (tipo === 'texto') {
-            const respuesta = respuestasGlobal.texto[id];
-            if (!respuesta || respuesta.trim() === '') {
-                errores.push(`La pregunta "${etiqueta}" requiere una respuesta de texto.`);
-            }
-        }
-
+        if (tipo === 'texto' && !respuestasGlobal.texto[id]) err.push(`"${label}" requiere texto.`);
         if (tipo === 'opcion') {
-            const data = respuestasGlobal.opcion[id];
-            if (!data || !data.id_opcion) {
-                errores.push(`La pregunta "${etiqueta}" requiere seleccionar una opción.`);
-            } else {
-                const textoOpcion = (data.texto_opcion || '').toLowerCase();
-                const esOtro = textoOpcion.startsWith('otro');
-                if (esOtro) {
-                    const t = (data.texto_otro || '').trim();
-                    if (!t) {
-                        errores.push(`La pregunta "${etiqueta}" requiere escribir en "Otro".`);
-                    }
-                }
-            }
+            const d = respuestasGlobal.opcion[id];
+            if (!d?.id_opcion) err.push(`"${label}" requiere opción.`);
+            else if (d.texto_opcion.toLowerCase().startsWith('otro') && !d.texto_otro) err.push(`"${label}" requiere especificar "Otro".`);
         }
-
-        if (tipo === 'multiple') {
-            const lista = respuestasGlobal.multiple[id] || [];
-            if (!Array.isArray(lista) || lista.length === 0) {
-                errores.push(`La pregunta "${etiqueta}" requiere seleccionar al menos una opción.`);
-            }
-        }
-
+        if (tipo === 'multiple' && (!respuestasGlobal.multiple[id] || respuestasGlobal.multiple[id].length === 0)) err.push(`"${label}" requiere al menos una opción.`);
+        
         if (tipo === 'ranking') {
-            const lista = (respuestasGlobal.ranking && respuestasGlobal.ranking[id]) || [];
-            if (!lista || lista.length === 0) {
-                errores.push(`La pregunta "${etiqueta}" requiere ordenar los elementos.`);
-            }
+            // Validar contra window.respuestasRanking que es la fuente de verdad para ranking
+            const lista = window.respuestasRanking && window.respuestasRanking[id];
+            if (!lista || lista.length === 0) err.push(`"${label}" requiere ordenar.`);
         }
-
+        
         if (tipo === 'dibujo') {
-            const base64 = respuestasGlobal.dibujo[id];
-            if (!base64 || base64.length < 50) {
-                errores.push(`La pregunta "${etiqueta}" requiere realizar un dibujo.`);
-            }
+            const b64 = respuestasGlobal.dibujo[id];
+            if (!b64 || b64.length < 50) err.push(`"${label}" requiere dibujo.`);
         }
     });
-
-    return errores;
+    return err;
 }
 
 /* ==========================================================
-   ENVIAR ENCUESTA
+   ENVIAR
 ========================================================== */
 function enviar() {
-    console.log(' Iniciando envío de encuesta...');
+    console.log('Iniciando envío...');
     guardarDibujosPaginaActual();
-    // Sincronizar ranking desde módulo global, por si no lo hemos hecho
+
+    // Sincronizar Ranking final
     if (window.respuestasRanking) {
-        respuestasGlobal.ranking = window.respuestasRanking;
+        Object.assign(respuestasGlobal.ranking, window.respuestasRanking);
     }
 
-
-
-    // Validación opcional (si quieres obligar todo contestado)
     const errores = validarEncuestaCompleta();
     if (errores.length > 0) {
-        alert(' Hay preguntas sin responder:\n\n- ' + errores.join('\n- '));
+        alert('Faltan respuestas:\n- ' + errores.join('\n- '));
         return;
     }
-// --- OBTENER DATOS DE SESIÓN ---
-    let idEscuela = localStorage.getItem('id_escuela_seleccionada');
-    let genero = localStorage.getItem('genero_seleccionado'); // <--- NUEVO
 
-    if (!idEscuela) idEscuela = 1; 
-    if (!genero) genero = 'X'; // Valor por defecto si falla algo
+    let idEscuela = localStorage.getItem('id_escuela_seleccionada') || 1;
+    let genero = localStorage.getItem('genero_seleccionado') || 'X';
 
-    // --- CONSTRUIR PAYLOAD ---
     const payload = {
         id_encuesta: idEncuesta,
         id_escuela: parseInt(idEscuela),
-        genero: genero, 
+        genero: genero,
         respuestas: {
             texto: respuestasGlobal.texto,
             opcion: respuestasGlobal.opcion,
@@ -399,23 +292,7 @@ function enviar() {
         dibujos: respuestasGlobal.dibujo
     };
 
-    console.log('Payload completo:', payload);
-
-    const hayRespuestas =
-        Object.keys(respuestasGlobal.texto).length > 0 ||
-        Object.keys(respuestasGlobal.opcion).length > 0 ||
-        Object.keys(respuestasGlobal.multiple).length > 0 ||
-        Object.keys(respuestasGlobal.ranking).length > 0 ||
-        Object.keys(respuestasGlobal.dibujo).length > 0;
-
-    if (!hayRespuestas) {
-        alert(' Debes responder al menos una pregunta antes de enviar.');
-        console.warn('No hay respuestas para enviar');
-        return;
-    }
-
-    console.log('Enviando al servidor...', payload);
-
+    console.log('Enviando:', payload);
     btnSiguiente.disabled = true;
 
     fetch('/back-end/routes/encuestas/enviar-respuestas.php', {
@@ -423,31 +300,26 @@ function enviar() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(response => {
-        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-        return response.json();
-    })
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
     .then(data => {
-        console.log('Respuesta JSON:', data);
         if (data.success) {
             alert('¡Encuesta enviada exitosamente! ¡Gracias por participar!');
-            // Redirigir o limpiar
+            
+            // Limpieza de datos
             localStorage.removeItem('id_escuela_seleccionada');
             localStorage.removeItem('genero_seleccionado');
+            
             window.location.href = '/front-end/frames/inicio/inicio.php';
         } else {
-            alert(' Error al guardar: ' + (data.error || 'Error desconocido'));
+            alert('Error: ' + (data.error || 'Desconocido'));
             btnSiguiente.disabled = false;
         }
     })
-    .catch(error => {
-        console.error('Error en el envío:', error);
-        alert(' Error al enviar. Revisa la consola.');
+    .catch(e => {
+        console.error(e);
+        alert('Error de conexión.');
         btnSiguiente.disabled = false;
     });
 }
 
-/* ==========================================================
-   INICIO
-========================================================== */
 cargarEncuesta();
