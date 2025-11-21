@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../database/Conexion.php';
+require_once __DIR__ . '/../database/conexion-db.php';
 require_once __DIR__ . '/../models/Comentario.php';
 require_once __DIR__ . '/../models/Historial.php';
 
@@ -9,14 +9,16 @@ class ComentariosController
 
     public function __construct()
     {
-        $this->db = Conexion::getConexion();
+        // Usamos la conexión global generada en conexion-db.php
+        global $conn;
+        $this->db = $conn;
     }
 
     public function listar(array $req): array
     {
         return Comentario::listar($this->db, [
-            'estado' => $req['estado'] ?? '',
-            'nivel' => $req['nivel'] ?? 0,
+            'estado'   => $req['estado'] ?? '',
+            'nivel'    => $req['nivel'] ?? 0,
             'busqueda' => $req['busqueda'] ?? ''
         ]);
     }
@@ -28,14 +30,15 @@ class ComentariosController
 
     public function cambiarEstado(int $id, string $estado, string $usuario = 'Administrador'): bool
     {
-        if (!in_array($estado, ['pendiente','en_revision','resuelto'])) {
+        if (!in_array($estado, ['pendiente','en_revision','resuelto'], true)) {
             return false;
         }
+
         return Comentario::cambiarEstado($this->db, $id, $estado, $usuario);
     }
 
     /**
-     * Obtiene todo el historial de cambios
+     * Obtiene todo el historial de cambios.
      */
     public function obtenerHistorial(array $filtros = []): array
     {
@@ -43,7 +46,7 @@ class ComentariosController
     }
 
     /**
-     * Obtiene el historial de un comentario específico
+     * Obtiene el historial de un comentario específico.
      */
     public function obtenerHistorialComentario(int $idContacto): array
     {
@@ -51,7 +54,7 @@ class ComentariosController
     }
 
     /**
-     * Obtiene estadísticas del historial
+     * Obtiene estadísticas del historial.
      */
     public function obtenerEstadisticasHistorial(): array
     {
@@ -59,7 +62,7 @@ class ComentariosController
     }
 
     /**
-     * Cuenta el total de comentarios
+     * Cuenta el total de comentarios.
      */
     public function contarTotal(array $filtros = []): int
     {

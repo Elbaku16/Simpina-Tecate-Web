@@ -2,12 +2,14 @@
 declare(strict_types=1);
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/core/bootstrap_session.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/EncuestasController.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
 // Validar método
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $conn->close();
     echo json_encode([
         'success' => false,
         'error'   => 'Metodo no permitido'
@@ -21,6 +23,7 @@ $payload = json_decode($rawBody, true);
 
 // Validar JSON
 if (!is_array($payload)) {
+    $conn->close();
     echo json_encode([
         'success' => false,
         'error'   => 'JSON inválido'
@@ -30,6 +33,7 @@ if (!is_array($payload)) {
 
 // Validación básica
 if (!isset($payload['id_encuesta'])) {
+    $conn->close();
     echo json_encode([
         'success' => false,
         'error'   => 'Falta id_encuesta'
@@ -41,8 +45,15 @@ try {
     $controller = new EncuestasController();
     $resultado  = $controller->enviarRespuestas($payload);
 
+    // CERRAR antes de responder
+    $conn->close();
     echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
+
 } catch (Throwable $e) {
+
+    // CERRAR incluso en excepción
+    $conn->close();
+
     echo json_encode([
         'success' => false,
         'error'   => 'Error interno',

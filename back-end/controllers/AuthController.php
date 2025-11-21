@@ -4,8 +4,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/../database/conexion-db.php';
 require_once __DIR__ . '/../models/UsuarioAdmin.php';
 require_once __DIR__ . '/../auth/verificar-sesion.php';
-require_once __DIR__ . '/../database/Conexion.php';
-
 
 class AuthController
 {
@@ -13,7 +11,9 @@ class AuthController
 
     public function __construct()
     {
-        $this->db = Conexion::getConexion();
+        // Usa la conexión global generada en conexion-db.php
+        global $conn;
+        $this->db = $conn;
     }
 
     public function generarTokenCSRF(string $form): string
@@ -27,6 +27,8 @@ class AuthController
      */
     public function login(array $input): array
     {
+        global $conn; // Por si otros métodos necesitan acceso a la conexión
+
         // 1. Validar CSRF
         if (!isset($input['csrf_token']) ||
             !validar_csrf($input['csrf_token'], 'login_admin')) {

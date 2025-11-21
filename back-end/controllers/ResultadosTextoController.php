@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../database/Conexion.php';
+require_once __DIR__ . '/../database/conexion-db.php';
 require_once __DIR__ . '/../helpers/DibujoHelper.php';
 
 class ResultadosTextoController
@@ -10,7 +10,9 @@ class ResultadosTextoController
 
     public function __construct()
     {
-        $this->db = Conexion::getConexion();
+        // Usar conexión global del archivo conexion-db.php
+        global $conn;
+        $this->db = $conn;
     }
 
     /**
@@ -25,12 +27,12 @@ class ResultadosTextoController
             ];
         }
 
-        // 1) Averiguar tipo de pregunta
+        // 1) Tipo de pregunta
         $tipo = $this->obtenerTipoPregunta($idPregunta);
         $tipoNorm = $this->normalizarTipo($tipo);
-        $esDibujo = in_array($tipoNorm, ['dibujo'], true);
+        $esDibujo = ($tipoNorm === 'dibujo');
 
-        // 2) Construir consulta base
+        // 2) Consulta base
         $sql = "
             SELECT 
                 r.id_respuesta_usuario,
@@ -46,13 +48,14 @@ class ResultadosTextoController
         $types  = "i";
         $params = [$idPregunta];
 
+        // Filtro por escuela
         if ($idEscuela > 0) {
             $sql    .= " AND r.id_escuela = ?";
             $types  .= "i";
             $params[] = $idEscuela;
         }
 
-        // 3) Filtrar según si es texto o dibujo
+        // Filtro según tipo
         if ($esDibujo) {
             $sql .= " AND r.dibujo_ruta IS NOT NULL";
         } else {
@@ -69,12 +72,12 @@ class ResultadosTextoController
             ];
         }
 
-        // bind dinámico
         $stmt->bind_param($types, ...$params);
         $stmt->execute();
         $res = $stmt->get_result();
 
         $salida = [];
+
         while ($row = $res->fetch_assoc()) {
             $idRespuesta = (int)$row['id_respuesta_usuario'];
             $rutaDibujo  = $row['dibujo_ruta'] ?? null;
@@ -101,13 +104,13 @@ class ResultadosTextoController
 
         return [
             'success'       => true,
-            'tipo_pregunta' => $tipoNorm, // "texto" o "dibujo"
+            'tipo_pregunta' => $tipoNorm,
             'respuestas'    => $salida
         ];
     }
 
     /**
-     * Eliminar respuesta (y borrar dibujo si aplica)
+     * Eliminar respuesta (y el dibujo si aplica)
      */
     public function eliminar(int $idRespuesta): array
     {
@@ -118,7 +121,7 @@ class ResultadosTextoController
             ];
         }
 
-        // 1) Obtener ruta de dibujo si existe
+        // 1) Obtener ruta del dibujo
         $sql = "SELECT dibujo_ruta FROM respuestas_usuario WHERE id_respuesta_usuario = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->bind_param("i", $idRespuesta);
@@ -128,7 +131,9 @@ class ResultadosTextoController
         $stmt->close();
 
         // 2) Borrar registro
-        $stmt = $this->db->prepare("DELETE FROM respuestas_usuario WHERE id_respuesta_usuario = ? LIMIT 1");
+        $stmt = $this->db->prepare(
+            "DELETE FROM respuestas_usuario WHERE id_respuesta_usuario = ? LIMIT 1"
+        );
         $stmt->bind_param("i", $idRespuesta);
         $stmt->execute();
         $afectadas = $stmt->affected_rows;
@@ -141,13 +146,11 @@ class ResultadosTextoController
             ];
         }
 
-        // 3) Borrar dibujo del disco si existía
+        // 3) Borrar archivo del servidor
         if (!empty($rutaDibujo)) {
             try {
                 DibujoHelper::eliminar($rutaDibujo);
-
-                } catch (Throwable $e) {
-                // No romper si falla, solo avisar
+            } catch (Throwable $e) {
                 return [
                     'success' => true,
                     'warning' => 'Respuesta borrada, pero hubo un problema al eliminar el archivo de dibujo.'
@@ -160,11 +163,14 @@ class ResultadosTextoController
 
     /* ===========================================================
        Helpers privados
-       =========================================================== */
+    =========================================================== */
 
     private function obtenerTipoPregunta(int $idPregunta): string
     {
-        $stmt = $this->db->prepare("SELECT COALESCE(tipo_pregunta,'texto') FROM preguntas WHERE id_pregunta = ?");
+        $stmt = $this->db->prepare(
+            "SELECT COALESCE(tipo_pregunta,'texto') FROM preguntas WHERE id_pregunta = ?"
+        );
+
         $stmt->bind_param("i", $idPregunta);
         $stmt->execute();
         $stmt->bind_result($tipo);
@@ -189,12 +195,12 @@ class ResultadosTextoController
     {
         if (!$ruta) return null;
 
-        // Si ya parece URL absoluta o empieza con "/", regresarla tal cual
-        if (str_starts_with($ruta, 'http://') || str_starts_with($ruta, 'https://') || str_starts_with($ruta, '/')) {
+        if (str_starts_with($ruta, 'http://') ||
+            str_starts_with($ruta, 'https://') ||
+            str_starts_with($ruta, '/')) {
             return $ruta;
         }
 
-        // Si se guardó relativa al proyecto
         return '/' . ltrim($ruta, '/');
     }
 
@@ -202,7 +208,6 @@ class ResultadosTextoController
     {
         if (!$ruta) return false;
 
-        // Asumimos que se guarda como ruta relativa a la raíz del proyecto
         $abs = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($ruta, '/');
         return is_file($abs);
     }
@@ -212,17 +217,13 @@ class ResultadosTextoController
         if (!$ruta) return null;
 
         $abs = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($ruta, '/');
-        if (!is_file($abs)) {
-            return null;
-        }
+        if (!is_file($abs)) return null;
 
         $bytes = filesize($abs);
         if ($bytes === false) return null;
 
         $kb = $bytes / 1024;
-        if ($kb < 1024) {
-            return round($kb, 1) . ' KB';
-        }
+        if ($kb < 1024) return round($kb, 1) . ' KB';
 
         $mb = $kb / 1024;
         return round($mb, 2) . ' MB';

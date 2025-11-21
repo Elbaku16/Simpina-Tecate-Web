@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../database/Conexion.php';
+require_once __DIR__ . '/../database/conexion-db.php';
 require_once __DIR__ . '/../models/Pregunta.php';
 
 class EditarController
@@ -10,7 +10,9 @@ class EditarController
 
     public function __construct()
     {
-        $this->db = Conexion::getConexion();
+        // Usamos la conexión global que viene desde conexion-db.php
+        global $conn;
+        $this->db = $conn;
     }
 
     /* ============================================================
@@ -65,7 +67,7 @@ class EditarController
     }
 
     /* ============================================================
-       CAMBIAR TIPO
+       CAMBIAR TIPO DE PREGUNTA
     ============================================================ */
     public function actualizarTipo(int $id_pregunta, string $tipo): bool
     {
@@ -89,8 +91,10 @@ class EditarController
     ============================================================ */
     public function crearPregunta(int $id_encuesta): int
     {
-        $sql = "INSERT INTO preguntas (id_encuesta, texto_pregunta, tipo_pregunta, orden)
-                VALUES (?, 'Nueva pregunta', 'texto', 999)";
+        $sql = "
+            INSERT INTO preguntas (id_encuesta, texto_pregunta, tipo_pregunta, orden)
+            VALUES (?, 'Nueva pregunta', 'texto', 999)
+        ";
 
         $stmt = $this->db->prepare($sql);
         $stmt->bind_param("i", $id_encuesta);
@@ -99,11 +103,12 @@ class EditarController
     }
 
     /* ============================================================
-       OPCIONES
+       OPCIONES DE PREGUNTA
     ============================================================ */
     public function crearOpcion(int $id_pregunta): int
     {
-        $sql = "INSERT INTO opciones_respuesta (id_pregunta, texto_opcion) VALUES (?, 'Nueva opción')";
+        $sql = "INSERT INTO opciones_respuesta (id_pregunta, texto_opcion) 
+                VALUES (?, 'Nueva opción')";
         $stmt = $this->db->prepare($sql);
         $stmt->bind_param("i", $id_pregunta);
         $stmt->execute();
