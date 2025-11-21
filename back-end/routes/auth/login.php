@@ -1,9 +1,9 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/core/bootstrap_session.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/controllers/AuthController.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/core/bootstrap_session.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/AuthController.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /SIMPINNA/front-end/frames/admin/login.php?e=metodo');
+    header('Location: /front-end/frames/admin/login.php?e=metodo');
     exit;
 }
 
@@ -11,7 +11,7 @@ $controller = new AuthController();
 $res = $controller->login($_POST);
 
 if ($res['success']) {
-    header('Location: /SIMPINNA/front-end/frames/panel/panel-admin.php');
+    header('Location: /front-end/frames/panel/panel-admin.php');
     exit;
 }
 
@@ -23,6 +23,6 @@ $mensaje = match($res['error']) {
     default       => 'Ocurrió un error inesperado.'
 };
 
-header('Location: /SIMPINNA/front-end/frames/admin/login.php?m=' . urlencode($mensaje));
+header('Location: /front-end/frames/admin/login.php?m=' . urlencode($mensaje));
 exit;
 

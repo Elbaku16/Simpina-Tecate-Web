@@ -195,7 +195,7 @@ class ResultadosTextoController
         }
 
         // Si se guardó relativa al proyecto
-        return '/SIMPINNA/' . ltrim($ruta, '/');
+        return '/' . ltrim($ruta, '/');
     }
 
     private function existeArchivo(?string $ruta): bool
@@ -203,7 +203,7 @@ class ResultadosTextoController
         if (!$ruta) return false;
 
         // Asumimos que se guarda como ruta relativa a la raíz del proyecto
-        $abs = $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/' . ltrim($ruta, '/');
+        $abs = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($ruta, '/');
         return is_file($abs);
     }
 
@@ -211,7 +211,7 @@ class ResultadosTextoController
     {
         if (!$ruta) return null;
 
-        $abs = $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/' . ltrim($ruta, '/');
+        $abs = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($ruta, '/');
         if (!is_file($abs)) {
             return null;
         }

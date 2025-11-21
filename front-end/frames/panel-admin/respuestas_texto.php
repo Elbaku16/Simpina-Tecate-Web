@@ -3,10 +3,10 @@
 // Archivo unificado para obtener y eliminar respuestas de texto
 header('Content-Type: application/json; charset=utf-8');
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/auth/verificar-sesion.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
 requerir_admin();
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/connect-db/conexion-db.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/connect-db/conexion-db.php';
 
 // Determinar acción
 $accion = isset($_GET['accion']) ? trim($_GET['accion']) : (isset($_POST['accion']) ? trim($_POST['accion']) : 'obtener');

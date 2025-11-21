@@ -2,7 +2,7 @@
 declare(strict_types=1);
 $start = microtime(true);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/controllers/EncuestasController.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/EncuestasController.php';
 
 header('Content-Type: application/json; charset=utf-8');
 

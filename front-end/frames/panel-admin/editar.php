@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/auth/verificar-sesion.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
 requerir_admin();
 
 $nivel = $_GET['nivel'] ?? 'primaria';
@@ -14,20 +14,20 @@ $nivelTitulo = ucfirst($nivel);
 
     <!-- CSS global -->
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
 
     <!-- CSS del editor -->
-    <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/encuestas/editarencuestas.css">
+    <link rel="stylesheet" href="/front-end/assets/css/encuestas/editarencuestas.css">
 </head>
 
 <body>
 
-<?php include $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header-admin.php'; ?>
+<?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header-admin.php'; ?>
 
 <main class="editor-container">
     
     <h1>Editar encuesta: <?= htmlspecialchars($nivelTitulo) ?></h1>
-    <a href="/SIMPINNA/front-end/frames/panel/panel-admin.php" class="btn-back">
+    <a href="/front-end/frames/panel/panel-admin.php" class="btn-back">
     ← Volver
     </a>
     <p class="editor-sub">Modifica preguntas, opciones y orden de la encuesta seleccionada.</p>
@@ -47,11 +47,11 @@ $nivelTitulo = ucfirst($nivel);
 </main>
 
 <footer>
-    <?php include $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'; ?>
 </footer>
 
 <!-- JS del editor -->
-<script src="/SIMPINNA/front-end/scripts/editarencuesta.js" defer></script>
+<script src="/front-end/scripts/editarencuesta.js" defer></script>
 
 </body>
 </html>

@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/back-end/auth/verificar-sesion.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
 requerir_admin();
 ?>
 <!DOCTYPE html>
@@ -11,13 +11,13 @@ requerir_admin();
 
   <!-- CSS -->
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/global/layout.css">
-  <link rel="stylesheet" href="/SIMPINNA/front-end/assets/css/admin/admin.css">
+  <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
+  <link rel="stylesheet" href="/front-end/assets/css/admin/admin.css">
 </head>
 
 <body>
 
-  <?php include $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/header-admin.php'; ?>
+  <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header-admin.php'; ?>
 
   <main class="admin-encuestas">
 
@@ -40,56 +40,56 @@ requerir_admin();
 
         <!-- PREESCOLAR -->
         <div class="card-admin preescolar">
-          <img src="/SIMPINNA/front-end/assets/img/escolaridad/preescolar.png" alt="Preescolar">
+          <img src="/front-end/assets/img/escolaridad/preescolar.png" alt="Preescolar">
           <h2>Preescolar</h2>
 
-          <a href="/SIMPINNA/back-end/routes/resultados/index.php?nivel=preescolar" class="btn-ver">
+          <a href="/back-end/routes/resultados/index.php?nivel=preescolar" class="btn-ver">
             Ver resultados
           </a>
 
-          <a href="/SIMPINNA/front-end/frames/panel-admin/editar.php?nivel=preescolar" class="btn-editar">
+          <a href="/front-end/frames/panel-admin/editar.php?nivel=preescolar" class="btn-editar">
             Modificar encuesta
           </a>
         </div>
 
         <!-- PRIMARIA -->
         <div class="card-admin primaria">
-          <img src="/SIMPINNA/front-end/assets/img/escolaridad/primaria.png" alt="Primaria">
+          <img src="/front-end/assets/img/escolaridad/primaria.png" alt="Primaria">
           <h2>Primaria</h2>
 
-          <a href="/SIMPINNA/back-end/routes/resultados/index.php?nivel=primaria" class="btn-ver">
+          <a href="/back-end/routes/resultados/index.php?nivel=primaria" class="btn-ver">
             Ver resultados
           </a>
 
-          <a href="/SIMPINNA/front-end/frames/panel-admin/editar.php?nivel=primaria" class="btn-editar">
+          <a href="/front-end/frames/panel-admin/editar.php?nivel=primaria" class="btn-editar">
             Modificar encuesta
           </a>
         </div>
 
         <!-- SECUNDARIA -->
         <div class="card-admin secundaria">
-          <img src="/SIMPINNA/front-end/assets/img/escolaridad/secundaria.png" alt="Secundaria">
+          <img src="/front-end/assets/img/escolaridad/secundaria.png" alt="Secundaria">
           <h2>Secundaria</h2>
 
-          <a href="/SIMPINNA/back-end/routes/resultados/index.php?nivel=secundaria" class="btn-ver">
+          <a href="/back-end/routes/resultados/index.php?nivel=secundaria" class="btn-ver">
             Ver resultados
           </a>
 
-          <a href="/SIMPINNA/front-end/frames/panel-admin/editar.php?nivel=secundaria" class="btn-editar">
+          <a href="/front-end/frames/panel-admin/editar.php?nivel=secundaria" class="btn-editar">
             Modificar encuesta
           </a>
         </div>
 
         <!-- PREPARATORIA -->
         <div class="card-admin preparatoria">
-          <img src="/SIMPINNA/front-end/assets/img/escolaridad/preparatoria.png" alt="Preparatoria">
+          <img src="/front-end/assets/img/escolaridad/preparatoria.png" alt="Preparatoria">
           <h2>Preparatoria</h2>
 
-          <a href="/SIMPINNA/back-end/routes/resultados/index.php?nivel=preparatoria" class="btn-ver">
+          <a href="/back-end/routes/resultados/index.php?nivel=preparatoria" class="btn-ver">
             Ver resultados
           </a>
 
-          <a href="/SIMPINNA/front-end/frames/panel-admin/editar.php?nivel=preparatoria" class="btn-editar">
+          <a href="/front-end/frames/panel-admin/editar.php?nivel=preparatoria" class="btn-editar">
             Modificar encuesta
           </a>
         </div>
@@ -109,7 +109,7 @@ requerir_admin();
         <h2>Reportes y Comentarios</h2>
         <p>Revisa y gestiona los reportes enviados desde el formulario de contacto</p>
 
-        <a href="/SIMPINNA/back-end/routes/comentarios/index.php" class="btn-comentarios">
+        <a href="/back-end/routes/comentarios/index.php" class="btn-comentarios">
           Ver todos los comentarios
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -123,7 +123,7 @@ requerir_admin();
   </main>
 
   <footer>
-    <?php include $_SERVER['DOCUMENT_ROOT'] . '/SIMPINNA/front-end/includes/footer.php'; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'; ?>
   </footer>
 
 </body>

@@ -3,7 +3,7 @@
  * DibujoHelper.php
  * Helper para guardar, eliminar y gestionar archivos de dibujos
  * 
- * Ubicación: /SIMPINNA/back-end/helpers/DibujoHelper.php
+ * Ubicación: /back-end/helpers/DibujoHelper.php
  */
 
 declare(strict_types=1);
@@ -13,7 +13,7 @@ class DibujoHelper
     /**
      * Directorio base para los dibujos (relativo a DOCUMENT_ROOT)
      */
-    private const BASE_DIR = '/SIMPINNA/uploads/dibujos';
+    private const BASE_DIR = '/uploads/dibujos';
 
     /**
      * Guarda un dibujo en formato base64 como archivo PNG
@@ -70,7 +70,7 @@ class DibujoHelper
             throw new Exception("El archivo no existe después de guardarlo");
         }
 
-        // Retornar ruta relativa (desde /SIMPINNA)
+        // Retornar ruta relativa (desde )
         return self::BASE_DIR . "/$year/$month/$fileName";
     }
 

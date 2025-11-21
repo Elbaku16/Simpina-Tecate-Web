@@ -7,7 +7,7 @@ $isInicio      = ($currentScript === 'inicio.php');
 
     <div class="footer-logo">
       <img
-        src="/SIMPINNA/front-end/assets/img/global/tkt-pueblo-magico.png"
+        src="/front-end/assets/img/global/tkt-pueblo-magico.png"
         alt="Tecate Pueblo Mágico"
         class="logo-tecate"
       >
@@ -21,7 +21,7 @@ $isInicio      = ($currentScript === 'inicio.php');
 
       <?php if ($isInicio): ?>
         <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #666; text-align: center;">
-          <a href="/SIMPINNA/front-end/frames/admin/login.php" style="color: inherit; text-decoration: none;">
+          <a href="/front-end/frames/admin/login.php" style="color: inherit; text-decoration: none;">
             <i class="fa-solid fa-user-gear"></i>
             Simpinna — Acceso administrativo
           </a>
