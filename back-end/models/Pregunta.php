@@ -53,4 +53,92 @@ class Pregunta
             default             => 'texto'
         };
     }
+    public static function eliminarCompleto(mysqli $db, int $idPregunta): void
+    {
+        // 1. Eliminar respuestas de usuarios (texto/dibujos)
+        $stmt = $db->prepare("DELETE FROM respuestas_usuario WHERE id_pregunta = ?");
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $stmt->close();
+
+        // 2. Eliminar respuestas de ranking
+        $stmt = $db->prepare("DELETE FROM respuestas_ranking WHERE id_pregunta = ?");
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $stmt->close();
+
+        // 3. Eliminar opciones
+        $stmt = $db->prepare("DELETE FROM opciones_respuesta WHERE id_pregunta = ?");
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $stmt->close();
+
+        // 4. Eliminar la pregunta en sí
+        $stmt = $db->prepare("DELETE FROM preguntas WHERE id_pregunta = ?");
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    /**
+     * Crea o actualiza una pregunta
+     */
+    public static function guardar(mysqli $db, int $idEncuesta, array $datos): int
+    {
+        $id    = (int)($datos['id_pregunta'] ?? 0);
+        $texto = trim($datos['texto'] ?? "");
+        $tipo  = strtolower(trim($datos['tipo'] ?? "texto"));
+        $orden = (int)($datos['orden'] ?? 0);
+
+        // Validación básica de tipo
+        $tiposValidos = ['opcion','multiple','ranking','texto','dibujo'];
+        if (!in_array($tipo, $tiposValidos, true)) {
+            $tipo = 'texto';
+        }
+
+        if ($id > 0) {
+            // UPDATE
+            $sql = "UPDATE preguntas SET texto_pregunta=?, tipo_pregunta=?, orden=? WHERE id_pregunta=?";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("ssii", $texto, $tipo, $orden, $id);
+            $stmt->execute();
+            $stmt->close();
+            return $id;
+        } else {
+            // INSERT
+            $sql = "INSERT INTO preguntas (id_encuesta, texto_pregunta, tipo_pregunta, orden) VALUES (?, ?, ?, ?)";
+            $stmt = $db->prepare($sql);
+            $stmt->bind_param("issi", $idEncuesta, $texto, $tipo, $orden);
+            $stmt->execute();
+            $newId = $stmt->insert_id;
+            $stmt->close();
+            return $newId;
+        }
+    }
+
+    /**
+     * Reemplaza las opciones de una pregunta (Borra y crea nuevas)
+     */
+    public static function reemplazarOpciones(mysqli $db, int $idPregunta, array $opciones): void
+    {
+        // 1. Borrar anteriores
+        $stmt = $db->prepare("DELETE FROM opciones_respuesta WHERE id_pregunta=?");
+        $stmt->bind_param("i", $idPregunta);
+        $stmt->execute();
+        $stmt->close();
+
+        // 2. Insertar nuevas
+        $sql = "INSERT INTO opciones_respuesta (id_pregunta, texto_opcion) VALUES (?, ?)";
+        $stmt = $db->prepare($sql);
+
+        foreach ($opciones as $op) {
+            $texto = trim($op['texto'] ?? "");
+            if ($texto === "") continue;
+            
+            $stmt->bind_param("is", $idPregunta, $texto);
+            $stmt->execute();
+        }
+        $stmt->close();
+    }
+    
 }

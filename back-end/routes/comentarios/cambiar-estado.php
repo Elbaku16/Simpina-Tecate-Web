@@ -9,12 +9,12 @@ $id     = (int)($_POST['id'] ?? 0);
 $estado = $_POST['estado'] ?? '';
 
 // Usuario que realiza la acción
-$usuario = $_SESSION['nombre_usuario'] ?? 'Administrador';
+$usuario = $_SESSION['usuario'] ?? 'Administrador';
 
 $controller = new ComentariosController();
 $controller->cambiarEstado($id, $estado, $usuario);
 
-// Cerrar conexión ANTES de redirigir
+
 $conn->close();
 
 header("Location: /back-end/routes/comentarios/index.php");

@@ -30,7 +30,7 @@ class ContactoController
         // Honeypot
         $hp = trim($input['website'] ?? "");
         if ($hp !== "") {
-            return ['success' => false, 'errores' => ['Validación fallida.']];
+            return ['ok' => false, 'errores' => ['Validación fallida.']];
         }
 
         $nombre      = trim($input['nombre'] ?? "");
