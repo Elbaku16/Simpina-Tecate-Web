@@ -1,12 +1,12 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/core/bootstrap_session.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/AuthController.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php'; // ← Asegurar conexión
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php'; 
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    // Cerrar conexión ANTES de salir
     $conn->close();
-    header('Location: /front-end/frames/admin/login.php?e=metodo');
+    // CORRECCIÓN: Cambié 'e=metodo' por 'm=...' para que el frontend lo detecte
+    header('Location: /front-end/frames/admin/login.php?m=' . urlencode('Método no permitido'));
     exit;
 }
 
@@ -15,7 +15,7 @@ $res = $controller->login($_POST);
 
 // Si login correcto
 if ($res['success']) {
-    $conn->close(); // ← Cerrar conexión
+    $conn->close(); 
     header('Location: /front-end/frames/panel/panel-admin.php');
     exit;
 }
@@ -29,8 +29,8 @@ $mensaje = match($res['error']) {
     default       => 'Ocurrió un error inesperado.'
 };
 
-// Cerrar conexión ANTES de redirigir
 $conn->close();
 
+// Esto ya estaba bien, coincide con tu frontend
 header('Location: /front-end/frames/admin/login.php?m=' . urlencode($mensaje));
 exit;

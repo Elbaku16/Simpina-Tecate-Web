@@ -1,6 +1,7 @@
 <?php
-session_start();
-    
+
+require_once __DIR__ . '/back-end/core/bootstrap_session.php';
+
 function redirectTo(string $path): void
 {
     if (!headers_sent()) {
@@ -17,4 +18,3 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin') {
 }
 
 redirectTo('front-end/frames/inicio/inicio.php');
-
