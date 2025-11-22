@@ -107,30 +107,205 @@ main {
     flex: 1 0 auto;
 }
 
-/* ======== HEADER ======== */
+/* =========================================
+   HEADER MEJORADO V2 (Más Grande y Legible)
+   ========================================= */
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f9f5e4;
-    color: #6b2e2e;
-    padding: 1rem 3.5rem;
-    border-bottom: 0.15rem solid #cbbf9b;
-  font-family: var(--font-title);
+    background-color: #fffef9;
+    /* background-color: #fbf8eb; */
+    color: #611232;
+    
+    padding: 1rem 4%; 
+    
+    box-shadow: 0 2px 10px rgba(97, 18, 50, 0.08); 
+    border-bottom: 2px solid rgba(203, 191, 155, 0.4); 
+    
+
+    z-index: 1000;
+    
+    /* AJUSTE 2: Altura mínima mayor en lugar de altura fija, para adaptarse */
+    min-height: 105px; 
+    box-sizing: border-box;
 }
 
-.header-izq {
+/* --- Logos --- */
+.header-izq, .header-der {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    flex-shrink: 0;
 }
 
-.logo-simpinna {
-    height: 10rem;
+.logo-simpinna, .logo-gobierno {
+    /* AJUSTE 3: Logos considerablemente más grandes */
+    height: 8rem; /* Antes 3.8rem. Ahora aprox 83px */
     width: auto;
+    transition: all 0.3s ease;
 }
 
+/* --- Navegación Desktop --- */
+.header-nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.header-nav ul {
+    display: flex;
+    list-style: none;
+    /* AJUSTE 4: Más separación entre los botones más grandes */
+    gap: 0.8rem; 
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.header-nav a {
+    text-decoration: none;
+    color: #611232;
+    font-family: var(--font-body);
+    
+    /* AJUSTE 5: Texto más grande y botones "píldora" más amplios */
+    font-size: 1.25rem; /* Antes 1rem. Ahora 20px */
+    font-weight: 600;
+    padding: 0.7rem 1.5rem; /* Pills más grandes */
+    
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.header-nav a:hover {
+    background-color: rgba(97, 18, 50, 0.06);
+    color: #4a0e26;
+}
+
+.header-nav a.active {
+    background-color: #611232;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(97, 18, 50, 0.2);
+}
+
+/* --- Botón Hamburguesa (Desktop: Oculto) --- */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.hamburger-icon {
+    /* AJUSTE 6: Ícono un poco más grande para que coincida con el resto */
+    width: 34px;
+    height: 34px;
+    stroke: #611232;
+}
+
+/* =========================================
+   MENÚ MÓVIL (Overlay / Drawer)
+   ========================================= */
+
+/* El fondo oscuro detrás del menú */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(2px); /* Efecto moderno de desenfoque */
+}
+
+.menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* El panel lateral */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -280px; /* Oculto a la derecha */
+    width: 280px;
+    height: 100%;
+    background-color: #fffef9;
+    z-index: 1002;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+    transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu.active {
+    right: 0; /* Entra a la pantalla */
+}
+
+/* Cabecera del menú móvil */
+.mobile-menu-header {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    border-bottom: 1px solid rgba(97, 18, 50, 0.1);
+}
+
+.menu-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: #611232;
+}
+
+/* Lista de enlaces móvil */
+.mobile-nav ul {
+    list-style: none;
+    padding: 1.5rem;
+    margin: 0;
+}
+
+.mobile-nav li {
+    margin-bottom: 0.5rem;
+}
+
+.mobile-nav a {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Espacio entre icono y texto */
+    text-decoration: none;
+    color: #611232;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+/* Iconos SVG dentro del menú móvil */
+.mobile-nav a svg {
+    width: 22px;
+    height: 22px;
+    opacity: 0.8;
+}
+
+.mobile-nav a:hover {
+    background-color: rgba(97, 18, 50, 0.05);
+}
+
+.mobile-nav a.active {
+    background-color: rgba(97, 18, 50, 0.1);
+    color: #7A1E2C;
+    border-left: 4px solid #7A1E2C; /* Detalle visual de activo */
+}
 /* ======== PANEL ADMIN (tomado del global.css) ======== */
 
 .titulo-header {
@@ -190,185 +365,149 @@ main {
     text-decoration: none;
 }
 
-/* ======== NAV ======== */
 
-.header-nav ul {
-    display: flex;
-    list-style: none;
-    gap: 3rem;
-    margin: 0;
-    padding: 0;
+
+/* =========================================
+   FOOTER MEJORADO (Estilo Institucional Limpio)
+   ========================================= */
+
+/* Contenedor principal */
+.footer-simpinna,
+.footer-admin {
+    background-color: #F9E79F; 
+    color: #611232; /* Texto guinda institucional */
+    font-family: var(--font-body); /* Tipografía moderna */
+    padding: 2rem 5%; /* Espaciado cómodo */
+    border-top: 1px solid #611232; /* Borde superior fuerte para separar */
+    margin-top: auto; /* Empuja el footer al final si hay poco contenido */
 }
 
-.header-nav li {
-    display: inline-block;
-}
-
-.header-nav a {
-    text-decoration: none;
-    color: #6b2e2e;
-    font-size: 2rem;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.header-nav a:hover {
-    color: #a25454;
-}
-
-.header-nav a.active {
-    border-bottom: 0.2rem solid #6b2e2e;
-    color: #6b2e2e;
-    padding-bottom: 0.3rem;
-}
-
-.header-der {
+.footer-container {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto; /* Centrado del contenido */
 }
 
-.logo-gobierno {
-    height: 10rem;
+/* --- Logo Izquierdo (Pueblo Mágico) --- */
+.footer-logo {
+    flex: 0 0 auto;
+}
+
+.logo-tecate {
+    height: 9rem; /* Tamaño equilibrado */
     width: auto;
+    opacity: 0.9;
+    transition: opacity 0.3s;
 }
 
-/* ======== FOOTERS SIMPINNA ======== */
-
-/* base visual compartida */
-.footer-simpinna {
-  background-color: #dcc655;
-  color: #000;
-  font-family: "Georgia", serif;
-  padding: 1.5rem 2rem;
-  border-top: 0.2rem solid #c1ad3b;
+.logo-tecate:hover {
+    opacity: 1;
 }
 
-/* layout: logo a la izquierda, texto centrado */
-/* usamos un spacer a la derecha para equilibrar el centrado */
-.footer-simpinna .footer-container,
-.footer-admin .footer-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-
-/* bloque del logo a la izquierda */
-.footer-simpinna .footer-logo,
-.footer-admin .footer-logo {
-  flex: 0 0 90px;           /* ancho fijo para equilibrar el centrado */
-}
-
-/* imagen del logo */
-.footer-simpinna .logo-tecate,
-.footer-admin .logo-tecate {
-  height: 8rem;
-  width: auto;
-  display: block;
-}
-
-/* bloque central de texto */
-.footer-simpinna .footer-text,
-.footer-admin .footer-text {
-  flex: 1 1 auto;
-  text-align: center;       /* centrado real del copy y del enlace */
-}
-
-.footer-simpinna .footer-text p,
-.footer-admin .footer-text p {
-  margin: 0;
-  font-size: 1.3rem;
-  line-height: 1.5;
-  color: #000;
-}
-
-/* enlace solo existe en el footer público; estilos aquí no rompen el admin */
-.footer-simpinna .footer-text a {
-  display: inline-block;
-  margin-top: 0.35rem;
-  font-size: 1rem;
-  color: #333;
-  text-decoration: none;
-  transition: color 0.3s ease, transform 0.2s ease;
-}
-
-.footer-simpinna .footer-text a:hover {
-  color: #000;
-  text-decoration: underline;
-  transform: scale(1.03);
-}
-
-/* spacer a la derecha para equilibrar el layout (mismo ancho que el logo) */
-.footer-simpinna .footer-spacer,
-.footer-admin .footer-spacer {
-  flex: 0 0 90px;
-}
-
-/* --- Responsive --- */
-@media (max-width: 768px) {
-  .footer-simpinna,
-  .footer-admin {
-    padding: 1.2rem 1rem;
-  }
-
-  .footer-simpinna .footer-container,
-  .footer-admin .footer-container {
-    flex-direction: column;
-    align-items: center;
+/* --- Texto Central --- */
+.footer-text {
+    flex: 1;
     text-align: center;
-    gap: 0.8rem;
-  }
-
-  .footer-simpinna .logo-tecate,
-  .footer-admin .logo-tecate {
-    height: 6.5rem;
-  }
-
-  .footer-simpinna .footer-text p,
-  .footer-admin .footer-text p {
-    font-size: 1.1rem;
-    line-height: 1.4;
-  }
-
-  .footer-simpinna .footer-text a {
-    font-size: 0.95rem;
-  }
-
-  .footer-simpinna .footer-spacer,
-  .footer-admin .footer-spacer {
-    display: none; /* en móvil no hace falta equilibrar */
-  }
 }
-/* ======== RESPONSIVE ======== */
 
+.footer-text p {
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    font-weight: 500;
+    color: #4a1c1c; /* Café muy oscuro para lectura */
+}
+
+/* --- Enlace Admin (Discreto y elegante) --- */
+.admin-link-wrapper {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: center;
+}
+
+.footer-text a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #8a6b4e; /* Dorado oscuro sutil */
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.footer-text a i {
+    font-size: 0.9em;
+}
+
+.footer-text a:hover {
+    color: #611232;
+    background-color: rgba(97, 18, 50, 0.05);
+}
+
+/* Spacer derecho para equilibrio visual */
+.footer-spacer {
+    flex: 0 0 90px; /* Mismo ancho aprox que el logo para centrar el texto */
+    display: block;
+}
+
+/* =========================================
+   RESPONSIVE FOOTER
+   ========================================= */
 @media (max-width: 768px) {
-    .header {
-        flex-direction: column;
-        text-align: center;
-        padding: 1rem 2rem;
-    }
-
-    .header-izq, .header-der {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.8rem;
-    }
-
-    .header-nav ul {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .logo-simpinna, .logo-gobierno {
-        height: 8rem;
+    .footer-simpinna,
+    .footer-admin {
+        padding: 1.5rem;
     }
 
     .footer-container {
         flex-direction: column;
         text-align: center;
+        gap: 1.5rem;
     }
 
     .logo-tecate {
-        height: 6rem;
+        height: 4.5rem; /* Un poco más pequeño en móvil */
+    }
+
+    .footer-text p {
+        font-size: 0.95rem;
+    }
+
+    /* El spacer ya no es necesario en columna */
+    .footer-spacer {
+        display: none;
+    }
+} 
+/* ======== RESPONSIVE ======== */
+
+@media (max-width: 992px) {
+    .header {
+        padding: 0.8rem 1.5rem;
+        min-height: 85px; /* Header móvil más alto */
+    }
+
+    .header-nav {
+        display: none; 
+    }
+
+    .menu-toggle {
+        display: block;
+        margin-left: auto;
+        margin-right: 1rem;
+    }
+
+    /* AJUSTE 7: Logos móviles también más grandes */
+    .logo-simpinna {
+        height: 3.8rem; /* Antes 2.8rem */
+    }
+    
+    .logo-gobierno {
+        height: 3.2rem; /* Antes 2.5rem */
     }
 }

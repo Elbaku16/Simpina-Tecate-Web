@@ -1,6 +1,6 @@
 <?php
 $currentScript = basename($_SERVER['SCRIPT_NAME'] ?? '');
-$isInicio      = ($currentScript === 'inicio.php');
+$isInicio      = ($currentScript === 'inicio.php' || $currentScript === 'index.php');
 ?>
 <footer class="footer-simpinna">
   <div class="footer-container">
@@ -20,8 +20,8 @@ $isInicio      = ($currentScript === 'inicio.php');
       </p>
 
       <?php if ($isInicio): ?>
-        <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #666; text-align: center;">
-          <a href="/front-end/frames/admin/login.php" style="color: inherit; text-decoration: none;">
+        <div class="admin-link-wrapper">
+          <a href="/front-end/frames/admin/login.php">
             <i class="fa-solid fa-user-gear"></i>
             Simpinna — Acceso administrativo
           </a>
@@ -29,7 +29,6 @@ $isInicio      = ($currentScript === 'inicio.php');
       <?php endif; ?>
     </div>
 
-    <!-- Espaciador para equilibrar el bloque central -->
     <div class="footer-spacer" aria-hidden="true"></div>
 
   </div>
