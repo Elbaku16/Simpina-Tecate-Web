@@ -16,7 +16,6 @@
       </p>
     </div>
 
-    <!-- spacer para equilibrar el centrado -->
     <div class="footer-spacer" aria-hidden="true"></div>
 
   </div>

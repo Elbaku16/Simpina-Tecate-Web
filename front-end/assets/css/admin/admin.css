@@ -29,7 +29,86 @@ body {
 }
 
 footer { flex-shrink: 0; }
+/* =========================================
+   HEADER ADMIN (Estilo Unificado V3)
+   ========================================= */
 
+.header-admin {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fffef9;
+    /* background-color: #fbf8eb; */
+    color: #611232;
+    
+    padding: 1rem 4%; 
+    
+    box-shadow: 0 2px 10px rgba(97, 18, 50, 0.08); 
+    border-bottom: 2px solid rgba(203, 191, 155, 0.4); 
+    
+ 
+    z-index: 1000;
+    
+    /* AJUSTE 2: Altura mínima mayor en lugar de altura fija, para adaptarse */
+    min-height: 105px; 
+    box-sizing: border-box;
+}
+
+/* --- Logos (Mismo tamaño grande que el público) --- */
+.header-admin .logo-simpinna, 
+.header-admin .logo-gobierno {
+    height: 7rem; /* Aprox 83px - Presencia institucional */
+    width: auto;
+    transition: all 0.3s ease;
+}
+
+/* --- Contenedor Izquierdo (Logo + Info) --- */
+.header-admin .header-izq {
+    display: flex;
+    align-items: center;
+    gap: 2rem; /* Separación entre el logo y el texto */
+}
+
+/* --- Bloque de Texto (Título + Botón) --- */
+.admin-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.admin-title {
+    font-family: var(--font-title); /* Quicksand */
+    font-weight: 700;
+    font-size: 1.5rem; /* Texto grande y claro */
+    line-height: 1.1;
+    color: #611232;
+    margin-bottom: 0.3rem;
+}
+
+/* --- Botones de Salir / Logout --- */
+.btn-logout, .btn-exit {
+    font-family: var(--font-body);
+    font-size: 1.0rem;
+    color: #611232; /* Guinda */
+    text-decoration: none;
+    font-weight: 600;
+    opacity: 0.85;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-logout i, .btn-exit i {
+    font-size: 0.9em;
+}
+
+.btn-logout:hover, .btn-exit:hover {
+    opacity: 1;
+    color: #8a1a47; /* Un poco más brillante al pasar el mouse */
+    text-decoration: underline;
+}
 /* ==========================================
    PANEL ADMIN – CONTENEDOR
 ========================================== */
@@ -437,7 +516,24 @@ input:focus{
   margin-top:1rem;
   color: rgba(45,27,31,.75);
 }
+    .admin-icon {
+      width: 100px;
+      height: 100px;
+      display: block;
+      margin: 0 auto 1.5rem auto;
+      fill: currentColor; /* Toma el color definido abajo */
+      transition: transform 0.3s ease;
 
+
+    }
+
+
+
+    /* Colores específicos por tarjeta */
+    .card-admin.preescolar .admin-icon { color: #7acb55; } /* Verde */
+    .card-admin.primaria .admin-icon   { color: #4385f4; } /* Azul */
+    .card-admin.secundaria .admin-icon { color: #e04e4e; } /* Rojo */
+    .card-admin.preparatoria .admin-icon { color: #c7479c; } /* Magenta */
 /* ==========================================
    RESPONSIVE
 ========================================== */
@@ -454,4 +550,36 @@ input:focus{
   .card-admin{ padding: 1.6rem 1.2rem; }
   .btn-ver{ width:100%; }
   .btn-comentarios { width: 100%; }
+}
+@media (max-width: 768px) {
+    .header-admin {
+        flex-direction: column;
+        padding: 1rem 1.5rem;
+        gap: 1rem;
+        height: auto;
+        min-height: auto;
+        text-align: center;
+    }
+
+    .header-admin .header-izq {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .admin-info {
+        align-items: center; /* Centrado en móvil */
+    }
+
+    /* Reducción proporcional en móvil */
+    .header-admin .logo-simpinna {
+        height: 3.8rem;
+    }
+    
+    .header-admin .logo-gobierno {
+        height: 3.2rem;
+    }
+
+    .admin-title {
+        font-size: 1.4rem;
+    }
 }
