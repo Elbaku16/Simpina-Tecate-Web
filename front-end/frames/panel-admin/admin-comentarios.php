@@ -18,7 +18,7 @@
             <div class="header-content">
                 <div class="header-left">
                     <a href="/front-end/frames/panel/panel-admin.php" class="btn-back">
-                        ← Volver
+                        <span class="icon">↩</span> Regresar al Panel
                     </a>
                     <div class="header-title-section">
                         <div class="title-with-badge">

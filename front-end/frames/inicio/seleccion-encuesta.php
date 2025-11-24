@@ -16,11 +16,12 @@
   </header>
 
   <section class="survey-selection">
+    <div class="survey-selection__header">
+      <h3 class="title">Elige tu escolaridad</h3>
+      <h6 class="subtitle">Selecciona el nivel educativo para comenzar. Si lo necesitas, solicita apoyo a tu docente.</h6>
+    </div>
     <div class="survey-selection__wrapper">
-      <div class="survey-selection__header">
-        <h3 class="title">Elige tu escolaridad</h3>
-        <h6 class="subtitle">Selecciona el nivel educativo para comenzar. Si lo necesitas, solicita apoyo a tu docente.</h6>
-      </div>
+      
 
       <ul class="grade-grid">
 

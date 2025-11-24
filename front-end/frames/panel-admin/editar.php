@@ -12,38 +12,49 @@ $nivelTitulo = ucfirst($nivel);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIMPINNA | Editar encuesta</title>
 
-    <!-- CSS global -->
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
     <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
     <link rel="stylesheet" href="/front-end/assets/css/admin/admin.css">
-
-
-    <!-- CSS del editor -->
     <link rel="stylesheet" href="/front-end/assets/css/encuestas/editarencuestas.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
 <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header-admin.php'; ?>
 
-<main class="editor-container">
+<main class="editor-wrapper">
     
-    <h1>Editar encuesta: <?= htmlspecialchars($nivelTitulo) ?></h1>
-    <a href="/front-end/frames/panel/panel-admin.php" class="btn-back">
-    ← Volver
-    </a>
-    <p class="editor-sub">Modifica preguntas, opciones y orden de la encuesta seleccionada.</p>
+    <div class="editor-header">
+        <div class="header-texts">
+            <span class="badge-nivel">Nivel <?= htmlspecialchars($nivelTitulo) ?></span>
+            <h1>Editar Encuesta</h1>
+        </div>
+        
+        <a href="/front-end/frames/panel/panel-admin.php" class="btn-volver-premium">
+            <span class="icon">↩</span> Regresar al Panel
+        </a>
+    </div>
 
-    <!-- Contenedor dinámico -->
-    <div id="editorPreguntas" data-nivel="<?= htmlspecialchars($nivel) ?>"></div>
+    <div class="editor-card">
+        
+        <p class="editor-intro">Configura las preguntas, el orden y las opciones de respuesta que verán los usuarios.</p>
+        
+        <div id="editorPreguntas" class="preguntas-list" data-nivel="<?= htmlspecialchars($nivel) ?>"></div>
 
-    <!-- Agregar -->
-    <button id="btnAgregarPregunta" class="btn-add-pregunta">+ Agregar pregunta</button>
+        <div class="add-section">
+            <button id="btnAgregarPregunta" class="btn-add-dashed">
+                <span class="plus-icon">+</span> Agregar nueva pregunta
+            </button>
+        </div>
 
-    <!-- Acciones finales -->
-    <div class="editor-final-buttons">
-        <button id="btnGuardar" class="btn-guardar">Guardar cambios</button>
-        <button id="btnCancelar" class="btn-cancelar">Cancelar</button>
+        <hr class="divider">
+
+        <div class="editor-footer">
+            <button id="btnCancelar" class="btn-cancelar-solid">Cancelar edición</button>
+            <button id="btnGuardar" class="btn-guardar-solid">Guardar y Publicar</button>
+        </div>
     </div>
 
 </main>
@@ -52,7 +63,6 @@ $nivelTitulo = ucfirst($nivel);
     <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'; ?>
 </footer>
 
-<!-- JS del editor -->
 <script src="/front-end/scripts/editarencuesta.js" defer></script>
 
 </body>
