@@ -81,6 +81,7 @@ body {
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 0.625rem 1.25rem rgba(122, 30, 44, 0.25);
   align-self: flex-start;
+  gap: 8px;
 }
 
 .btn-back:hover {
