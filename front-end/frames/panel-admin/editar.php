@@ -15,6 +15,8 @@ $nivelTitulo = ucfirst($nivel);
     <!-- CSS global -->
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
     <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="/front-end/assets/css/admin/admin.css">
+
 
     <!-- CSS del editor -->
     <link rel="stylesheet" href="/front-end/assets/css/encuestas/editarencuestas.css">

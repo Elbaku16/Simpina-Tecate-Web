@@ -1,447 +1,372 @@
-/* Paleta SIMPINNA */
+/* ======== INICIO - DISEÑO INSTITUCIONAL MODERNO ======== */
+
 :root {
-  --vino: #6e2230;
-  --vino-hover: #8b3e3e;
-  --mostaza: #e1cc73;
-  --borde: #e6dcb7;
-  --crema: #fdfcf7;
-  --texto: #6a5746;
+  --burgundy: #611232;       /* Guinda */
+  --burgundy-dark: #4a0e26;
+  --gold: #d6bd55;           /* Dorado */
+  --cream-bg: #fbf8eb;       /* Crema suave */
+  --white: #ffffff;
+  --text-dark: #333333;
+  --text-light: #555555;
+  --border-radius: 12px;
 }
 
 /* Hero Banner */
 .hero-banner {
-  background: linear-gradient(135deg, var(--crema) 0%, #fff9f2 100%);
-  padding: 60px 20px 80px;
+  background-color: var(--cream-bg); /* Fondo crema limpio */
+  padding: clamp(4rem, 8vw, 6rem) 5%;
   position: relative;
   overflow: hidden;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
-.hero-banner::before {
+/* Elemento decorativo sutil */
+.hero-banner::after {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(225, 204, 115, 0.1));
-  pointer-events: none;
+  top: -50px; right: -50px;
+  width: 300px; height: 300px;
+  background: rgba(214, 189, 85, 0.1);
+  border-radius: 50%;
+  filter: blur(60px);
 }
 
 .hero-container {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  grid-template-columns: 1.2fr 0.8fr; /* Más espacio para texto */
+  gap: 4rem;
   align-items: center;
   position: relative;
   z-index: 1;
 }
 
-.hero-text-content {
-  padding: 20px 0;
+.hero-badge {
+  display: inline-block;
+  background-color: rgba(97, 18, 50, 0.1);
+  color: var(--burgundy);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 1rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .hero-title {
-  font-size: 3.5rem;
-  color: var(--vino);
-  font-weight: 700;
-  line-height: 1.2;
-  margin: 0 0 20px 0;
+  font-family: 'Quicksand', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  color: var(--burgundy);
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0 0 1.5rem 0;
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
-  color: var(--texto);
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1.2rem;
+  color: var(--text-light);
   line-height: 1.6;
-  margin: 0 0 30px 0;
+  margin: 0 0 2.5rem 0;
+  max-width: 600px;
 }
 
 .hero-buttons {
   display: flex;
-  gap: 16px;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
-/* ======== BOTONES UNIFICADOS CON EFECTO SHIMMER ======== */
-
-.btn-primary, .btn-secondary {
-  padding: 14px 28px;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-primary::before,
-.btn-secondary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-primary:hover::before,
-.btn-secondary:hover::before {
-  left: 100%;
-}
-
-.btn-primary {
-  background: var(--vino);
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(110, 34, 48, 0.3);
-}
-
-.btn-primary:hover {
-  background: var(--mostaza);
-  color: var(--vino);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(225, 204, 115, 0.4);
-}
-
-.btn-secondary {
-  background: #fff;
-  color: var(--vino);
-  border: 2px solid var(--mostaza);
-}
-
-.btn-secondary:hover {
-  background: var(--mostaza);
-  color: var(--vino);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(225, 204, 115, 0.3);
-}
-
+/* Imagen/Icono Hero */
 .hero-image-content {
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
 .hero-icon-group {
-  width: 23.5rem;
-  height: 23.5rem;
-  background: linear-gradient(135deg, rgba(225, 204, 115, 0.2), rgba(225, 204, 115, 0.05));
+  width: 350px;
+  height: 350px;
+  background: var(--white);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 32px rgba(110, 34, 48, 0.15);
-  border: 3px solid var(--mostaza);
+  box-shadow: 0 20px 50px rgba(97, 18, 50, 0.08);
+  border: 1px solid rgba(214, 189, 85, 0.3);
+  position: relative;
 }
 
 .hero-icon-group svg {
-  color: var(--vino);
-  filter: drop-shadow(0 2px 8px rgba(110, 34, 48, 0.2));
+  color: var(--burgundy);
+  opacity: 0.9;
 }
 
+/* --- Botones Unificados --- */
+.btn-primary {
+  background-color: var(--burgundy);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(97, 18, 50, 0.2);
+}
+.fa-solid{
+color: white;
+}
+.btn-primary:hover {
+  background-color: var(--burgundy-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(97, 18, 50, 0.3);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--burgundy);
+  border: 2px solid var(--burgundy);
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--burgundy);
+  color: white;
+}
+
+/* --- Sección Info Cards (Fondo Blanco) --- */
 .info-section {
-  padding: 80px 20px;
-  background: #fff;
+  padding: 6rem 5%;
+  background-color: var(--white);
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
+.section-header-center {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 4rem;
+}
+
+.section-header-center h2 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2.5rem;
+  color: var(--burgundy);
+  margin-bottom: 1rem;
+}
+
+.section-header-center p {
+  font-size: 1.1rem;
+  color: var(--text-light);
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .info-card {
-  background: var(--crema);
-  border: 3px solid;
-  border-image: linear-gradient(135deg, #6e2230 0%, #e1cc73 50%, #6e2230 100%) 1;
-  border-radius: 12px;
-  padding: 40px 30px;
+  background: var(--cream-bg); /* Tarjetas Crema */
+  padding: 3rem 2rem;
+  border-radius: var(--border-radius);
   text-align: center;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
+  border-top: 4px solid var(--burgundy); /* Detalle institucional */
 }
 
 .info-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(110, 34, 48, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
 .card-icon {
-  width: 80px;
-  height: 80px;
-  background: var(--vino);
+  width: 70px;
+  height: 70px;
+  background: var(--white);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 20px;
-}
-
-.card-icon svg {
-  color: #fff;
+  margin: 0 auto 1.5rem;
+  color: var(--burgundy);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 .info-card h3 {
-  font-size: 1.8rem;
-  color: var(--vino);
-  margin: 0 0 12px 0;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.5rem;
+  color: var(--burgundy);
+  margin-bottom: 1rem;
   font-weight: 700;
 }
 
 .info-card p {
-  color: var(--texto);
-  font-size: 1.1rem;
+  color: var(--text-light);
   line-height: 1.6;
-  margin: 0;
 }
 
+/* --- Sección Encuesta (Destacada) --- */
 .encuesta-section {
-  padding: 80px 20px;
-  background: linear-gradient(135deg, #fff9f2 0%, var(--crema) 100%);
+  padding: 6rem 5%;
+  background-color: var(--white); /* Blanco para limpiar */
 }
 
 .encuesta-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  gap: 4rem;
   align-items: center;
   background: #fff;
-  border: 3px solid;
-  border-image: linear-gradient(135deg, #6e2230 0%, #e1cc73 50%, #6e2230 100%) 1;
-  border-radius: 16px;
-  padding: 50px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eee;
+  border-radius: 20px;
+  padding: 4rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .encuesta-badge {
-  display: inline-block;
-  background: var(--mostaza);
-  color: var(--vino);
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 0.9rem;
+  color: var(--gold);
   font-weight: 700;
-  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
 .encuesta-left h2 {
+  font-family: 'Quicksand', sans-serif;
   font-size: 2.5rem;
-  color: var(--vino);
-  margin: 0 0 16px 0;
-  font-weight: 700;
+  color: var(--burgundy);
+  margin-bottom: 1.5rem;
 }
 
 .encuesta-left p {
-  font-size: 1.2rem;
-  color: var(--texto);
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin-bottom: 2rem;
   line-height: 1.6;
-  margin: 0 0 24px 0;
 }
 
 .encuesta-beneficios {
   list-style: none;
   padding: 0;
-  margin: 0 0 30px 0;
+  margin-bottom: 2.5rem;
 }
 
 .encuesta-beneficios li {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  font-size: 1.1rem;
-  color: var(--texto);
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dark);
 }
 
 .encuesta-beneficios svg {
-  color: var(--vino);
-  flex-shrink: 0;
-}
-
-/* ======== BOTÓN GRANDE DE ENCUESTA CON EFECTO SHIMMER ======== */
-
-.btn-encuesta-grande {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px 32px;
-  background: var(--vino);
-  color: #fff;
-  border-radius: 10px;
-  font-size: 1.2rem;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(110, 34, 48, 0.3);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-encuesta-grande::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-encuesta-grande:hover::before {
-  left: 100%;
-}
-
-.btn-encuesta-grande:hover {
-  background: var(--mostaza);
-  color: var(--vino);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(225, 204, 115, 0.4);
+  color: var(--gold);
 }
 
 .encuesta-icon-wrapper {
-  width: 280px;
-  height: 280px;
-  background: linear-gradient(135deg, rgba(110, 34, 48, 0.05), rgba(225, 204, 115, 0.15));
-  border-radius: 20px;
+  background: var(--cream-bg);
+  border-radius: 50%;
+  width: 300px;
+  height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  border: 3px solid var(--mostaza);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  color: var(--burgundy);
+  position: relative;
 }
 
-.encuesta-icon-wrapper svg {
-  color: var(--vino);
-  filter: drop-shadow(0 2px 8px rgba(110, 34, 48, 0.2));
+/* Decoración circular */
+.encuesta-icon-wrapper::before {
+  content: '';
+  position: absolute;
+  width: 100%; height: 100%;
+  border: 2px dashed var(--gold);
+  border-radius: 50%;
+  animation: spin 20s linear infinite;
 }
 
-.ayuda-section {
-  padding: 60px 20px;
-  background: var(--vino);
-}
+@keyframes spin { 100% { transform: rotate(360deg); } }
 
-.ayuda-box {
+/* --- CTA Ayuda (Franja Guinda) --- */
+.ayuda-cta-section {
+  background-color: var(--burgundy);
+  padding: 4rem 5%;
   text-align: center;
-  color: #fff;
+  color: white;
 }
 
-.ayuda-box h2 {
-  font-size: 2.5rem;
-  margin: 0 0 16px 0;
-  font-weight: 700;
-  color: #fff;
+.ayuda-cta-box h2 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  color:#ffffff;
 }
 
-.ayuda-box p {
+.ayuda-cta-box p {
   font-size: 1.2rem;
-  margin: 0 0 30px 0;
-  opacity: 0.95;
-  max-width: 700px;
+  opacity: 0.9;
+  margin-bottom: 2.5rem;
+  max-width: 600px;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* ======== BOTÓN AYUDA CON EFECTO SHIMMER ======== */
-
-.btn-ayuda {
+.btn-outline-white {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 32px;
-  background: #fff;
-  color: var(--vino);
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 700;
+  gap: 0.5rem;
+  padding: 1rem 2.5rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50px;
+  color: white;
   text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  position: relative;
-  overflow: hidden;
 }
 
-.btn-ayuda::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(225, 204, 115, 0.3), transparent);
-  transition: left 0.5s ease;
+.btn-outline-white:hover {
+  background-color: white;
+  color: var(--burgundy);
+  border-color: white;
 }
 
-.btn-ayuda:hover::before {
-  left: 100%;
-}
-
-.btn-ayuda:hover {
-  background: var(--mostaza);
-  color: var(--vino);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(225, 204, 115, 0.4);
-}
-
-@media (max-width: 968px) {
+/* --- Responsive --- */
+@media (max-width: 992px) {
   .hero-container,
   .encuesta-content {
     grid-template-columns: 1fr;
-    gap: 40px;
+    text-align: center;
+    gap: 3rem;
   }
-
-  .hero-title {
-    font-size: 2.5rem;
+  
+  .hero-buttons,
+  .encuesta-beneficios li {
+    justify-content: center;
   }
-
-  .hero-subtitle {
-    font-size: 1.2rem;
-  }
-
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .encuesta-content {
-    padding: 30px;
-  }
-
-  .encuesta-left h2 {
-    font-size: 2rem;
+  
+  .hero-icon-group {
+    width: 280px; height: 280px;
   }
 }
 
-@media (max-width: 600px) {
-  .hero-banner {
-    padding: 40px 20px;
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .ayuda-box h2 {
-    font-size: 1.8rem;
-  }
+@media (max-width: 768px) {
+  .hero-title { font-size: 2.5rem; }
+  .encuesta-content { padding: 2rem; }
+  .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
 }

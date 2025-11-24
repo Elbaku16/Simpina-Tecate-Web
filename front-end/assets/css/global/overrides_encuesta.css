@@ -25,7 +25,7 @@ body {
   flex-direction: column;
   min-height: 100vh;
   font-family: 'Montserrat', 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
-  background: var(--cream);
+  background: white;
   color: var(--text-dark);
 }
 
@@ -42,12 +42,14 @@ footer { flex-shrink: 0; }
   display: flex;
   align-items: center;
   padding: clamp(2rem, 5vw, 4rem) 1.5rem;
+  
 }
 
 /* Contenedor principal (versión previa) */
 .container.escolaridad {
   flex: 1 0 auto;
   padding: 2rem 5rem 10vh !important;
+
 }
 
 /* Wrapper visual (tarjeta grande) */
@@ -55,7 +57,7 @@ footer { flex-shrink: 0; }
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
-  background: rgba(255, 255, 255, 0.7);
+  background: #fbf8eb;
   border-radius: 28px;
   box-shadow: 0 20px 48px rgba(58, 42, 37, 0.1);
   padding: clamp(2rem, 4vw, 3rem);
@@ -134,7 +136,7 @@ footer { flex-shrink: 0; }
 }
 
 .grade-item {
-  background: #fffaf0;
+  background: white;
   border-radius: 24px;
   border: 3px solid;
   box-shadow: var(--card-shadow);
