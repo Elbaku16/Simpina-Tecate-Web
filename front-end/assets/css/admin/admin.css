@@ -30,7 +30,7 @@ body {
 
 footer { flex-shrink: 0; }
 /* =========================================
-   HEADER ADMIN (Estilo Unificado V3)
+   HEADER ADMIN & ALINEACIÓN
    ========================================= */
 
 .header-admin {
@@ -38,77 +38,145 @@ footer { flex-shrink: 0; }
     justify-content: space-between;
     align-items: center;
     background-color: #fffef9;
-    /* background-color: #fbf8eb; */
     color: #611232;
-    
-    padding: 1rem 4%; 
-    
-    box-shadow: 0 2px 10px rgba(97, 18, 50, 0.08); 
-    border-bottom: 2px solid rgba(203, 191, 155, 0.4); 
-    
- 
+    padding: 1rem 4%;
+    box-shadow: 0 2px 10px rgba(97, 18, 50, 0.08);
+    border-bottom: 2px solid rgba(203, 191, 155, 0.4);
+    position: relative;
     z-index: 1000;
-    
-    /* AJUSTE 2: Altura mínima mayor en lugar de altura fija, para adaptarse */
-    min-height: 105px; 
+    min-height: 105px;
     box-sizing: border-box;
 }
 
-/* --- Logos (Mismo tamaño grande que el público) --- */
+/* --- Logos Grandes --- */
 .header-admin .logo-simpinna, 
 .header-admin .logo-gobierno {
-    height: 7rem; /* Aprox 83px - Presencia institucional */
+    height: 7rem;
     width: auto;
     transition: all 0.3s ease;
 }
 
-/* --- Contenedor Izquierdo (Logo + Info) --- */
+/* --- Contenedor Izquierdo --- */
 .header-admin .header-izq {
     display: flex;
     align-items: center;
-    gap: 2rem; /* Separación entre el logo y el texto */
+    gap: 2rem;
+    position: relative;
+    z-index: 2;
 }
 
-/* --- Bloque de Texto (Título + Botón) --- */
+/* --- Bloque de Info (Usuario + Botón) --- */
 .admin-info {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+    gap: 0.3rem;
 }
 
-.admin-title {
-    font-family: var(--font-title); /* Quicksand */
+/* 1. Nombre de Usuario */
+.user-label {
+    font-family: var(--font-body);
     font-weight: 700;
-    font-size: 1.5rem; /* Texto grande y claro */
-    line-height: 1.1;
+    font-size: 1.1rem;
     color: #611232;
-    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    text-transform: capitalize;
+    /* IMPORTANTE: Asegura que no tenga padding extraño */
+    padding: 0; 
 }
 
-/* --- Botones de Salir / Logout --- */
+/* 2. Botones (Salir/Logout) */
 .btn-logout, .btn-exit {
     font-family: var(--font-body);
-    font-size: 1.0rem;
-    color: #611232; /* Guinda */
+    font-size: 0.95rem;
+    color: #611232;
     text-decoration: none;
     font-weight: 600;
     opacity: 0.85;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
     transition: all 0.2s ease;
-}
-
-.btn-logout i, .btn-exit i {
-    font-size: 0.9em;
+    
+    /* --- LA CORRECCIÓN DE ALINEACIÓN --- */
+    /* Quitamos el padding izquierdo para que se alinee con el texto de arriba */
+    padding-left: 0 !important; 
+    margin-left: 0 !important;
 }
 
 .btn-logout:hover, .btn-exit:hover {
     opacity: 1;
-    color: #8a1a47; /* Un poco más brillante al pasar el mouse */
+    color: #8a1a47;
     text-decoration: underline;
 }
+
+/* 3. Iconos: Ancho Fijo para Alineación Vertical */
+.user-label i, 
+.btn-logout i, 
+.btn-exit i {
+    width: 26px;        /* Ancho fijo igual para todos */
+    text-align: center; /* Icono centrado en su espacio */
+    margin-right: 0.5rem; 
+    font-size: 1rem;
+    display: inline-block;
+}
+
+/* --- Título Central --- */
+.header-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    text-align: center;
+}
+
+.center-title {
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 2rem;
+    margin: 0;
+    color: #611232;
+    white-space: nowrap;
+}
+
+/* --- Derecha --- */
+.header-admin .header-der {
+    position: relative;
+    z-index: 2;
+}
+
+/* --- Responsive --- */
+@media (max-width: 992px) {
+    .header-admin {
+        flex-direction: column;
+        padding: 1.5rem 1rem;
+        gap: 1rem;
+        height: auto;
+    }
+    .header-center {
+        position: static;
+        transform: none;
+        order: -1;
+        margin-bottom: 0.5rem;
+    }
+    .center-title { font-size: 1.6rem; }
+    .header-admin .header-izq {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .admin-info { align-items: center; }
+    
+    /* En móvil centramos los iconos y el texto */
+    .btn-logout, .btn-exit { padding-left: 0; }
+    
+    .header-admin .logo-simpinna, 
+    .header-admin .logo-gobierno {
+        height: 4.5rem;
+    }
+}
+
 /* ==========================================
    PANEL ADMIN – CONTENEDOR
 ========================================== */
@@ -441,6 +509,7 @@ main.admin-encuestas {
 /* ==========================================
    LOGIN ADMIN – CONTENEDOR Y FORMULARIO
 ========================================== */
+
 .login-container {
   flex: 1 0 auto;
   display: flex;
@@ -448,10 +517,41 @@ main.admin-encuestas {
   align-items: center;
   justify-content: center;
   padding: clamp(3rem, 5vw, 6rem) 1.5rem 8vh;
-  gap: 1.5rem;
+  gap: 1rem; /* Reducido ligeramente para acercar el botón de regreso */
   text-align: center;
 }
 
+/* --- NUEVO: Botón de Regresar (Alineado con el formulario) --- */
+.login-back-wrapper {
+  width: min(750px, 95%); /* Mismo ancho que el formulario */
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.btn-back-home {
+  text-decoration: none;
+  color: var(--burgundy); /* Usa el color guinda de tus variables */
+  font-family: var(--font-body, sans-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  padding: 0.5rem 0;
+}
+
+.btn-back-home:hover {
+  color: var(--gold); /* Efecto dorado al pasar el mouse */
+  transform: translateX(-4px); /* Pequeña animación hacia la izquierda */
+}
+
+.btn-back-home i {
+  font-size: 1rem;
+}
+
+/* --- Título del Login --- */
 .login-title {
   font-size: clamp(2.4rem, 4vw, 2.8rem);
   font-weight: 700;
@@ -460,6 +560,7 @@ main.admin-encuestas {
   margin: 0.5rem 0 1.5rem;
 }
 
+/* --- Tarjeta del Formulario --- */
 .login-form {
   width: min(750px, 95%);
   background: var(--panel-cream);
@@ -470,52 +571,80 @@ main.admin-encuestas {
   text-align: left;
 }
 
-.form-group{ margin-bottom: 1.15rem; }
+.form-group { 
+  margin-bottom: 1.15rem; 
+}
 
-label{
-  display:block;
-  font-weight:700;
-  font-size:1.5rem;
-  margin-bottom:.45rem;
+label {
+  display: block;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: .45rem;
   color: var(--text-dark);
 }
 
-input{
-  width:100%;
-  padding:.8rem .9rem;
-  border:1px solid rgba(0,0,0,.18);
-  border-radius:.5rem;
-  font-size:1.3rem;
+input {
+  width: 100%;
+  padding: .8rem .9rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: .5rem;
+  font-size: 1.3rem;
   transition: border-color .25s ease, box-shadow .25s ease;
   background: #fff;
+  box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
 }
-input:focus{
-  outline:none;
+
+input:focus {
+  outline: none;
   border-color: var(--gold);
   box-shadow: 0 0 0 3px rgba(212,176,86,.25);
 }
 
-/* Botón principal login */
-.btn-login{
-  display:inline-flex; align-items:center; justify-content:center;
-  background: var(--burgundy); color:#fff;
-  border:none; border-radius:10px;
-  padding:.85rem 1.6rem;
-  font-size:1.4rem; font-weight:700;
-  letter-spacing:.02rem; cursor:pointer;
+/* --- Botón Principal (Iniciar Sesión) --- */
+.btn-login {
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center;
+  background: var(--burgundy); 
+  color: #fff;
+  border: none; 
+  border-radius: 10px;
+  padding: .85rem 1.6rem;
+  font-size: 1.4rem; 
+  font-weight: 700;
+  letter-spacing: .02rem; 
+  cursor: pointer;
   transition: background .3s, transform .15s, box-shadow .3s;
   box-shadow: 0 10px 20px rgba(122,30,44,.25);
+  width: 100%; /* Opcional: hace que el botón ocupe todo el ancho */
+  margin-top: 1rem;
 }
-.btn-login:hover{ background: var(--gold); color: var(--burgundy); transform: translateY(-1px); box-shadow: 0 14px 28px rgba(212,176,86,.28); }
-.btn-login:active{ transform: scale(.98); }
-.btn-login:focus-visible{ outline:3px solid rgba(212,176,86,.6); outline-offset:2px; }
 
-.login-note{
-  text-align:center;
-  font-size:.95rem;
-  margin-top:1rem;
+.btn-login:hover { 
+  background: var(--gold); 
+  color: var(--burgundy); 
+  transform: translateY(-1px); 
+  box-shadow: 0 14px 28px rgba(212,176,86,.28); 
+}
+
+.btn-login:active { 
+  transform: scale(.98); 
+}
+
+.btn-login:focus-visible { 
+  outline: 3px solid rgba(212,176,86,.6); 
+  outline-offset: 2px; 
+}
+
+/* --- Nota al pie del formulario --- */
+.login-note {
+  text-align: center;
+  font-size: .95rem;
+  margin-top: 1.5rem;
   color: rgba(45,27,31,.75);
 }
+
+/* TARJETAS EN ADMIN */
     .admin-icon {
       width: 100px;
       height: 100px;

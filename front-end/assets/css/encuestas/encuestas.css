@@ -1,109 +1,113 @@
 /* ============================================================
-   ENCUESTAS — DISEÑO NUEVO, AMPLIO Y PROFESIONAL
-   Tipo Google Forms / Typeform
+   ENCUESTA UNIFICADO - ESTILO INSTITUCIONAL (Corregido)
    ============================================================ */
 
 :root {
-  --color-texto: #3a1a1a;
-  --color-primario: #7a1e2c;
-  --color-bg: #ffffff;
-  --color-bg-alt: #faf7ef;
-  --color-borde: #e3d5b9;
+  --burgundy: #611232;
+  --gold: #d6bd55;
+  --cream-bg: #fbf8eb;  
+  --white: #ffffff;     
+  --text-dark: #333333;
+  --border-color: #e0e0e0;
 }
 
-/* ====================== CONTENEDOR PRINCIPAL ====================== */
-
-
-.encuesta-container {
-  width: 95%;
-  max-width: 1400px;
-  margin: 3rem auto 6rem;
-  padding: 3rem 4rem;
+/* === Layout Base === */
+main {
+  background-color: var(--white);
   min-height: 80vh;
-
-  background: var(--color-bg);
-  border-radius: 1.5rem;
-  border: 1px solid var(--color-borde);
-  box-shadow: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.08);
-
-  font-family: "Open Sans", Arial, sans-serif;
-  color: var(--color-texto);
-
-  /* ⭐ LETRA MÁS GRANDE */
-  font-size: 1.25rem;      
-  line-height: 1.65;
+  padding: 3rem 5%;
 }
 
+.encuesta-wrap {
+  /* AJUSTE 1: Contenedor más ancho */
+  max-width: 1250px; 
+  margin: 0 auto;
+}
 
-/* ====================== TITULO ====================== */
+/* === Tarjeta Principal === */
+.encuesta-card {
+  background-color: var(--cream-bg);
+  border-radius: 16px;
+  /* Padding generoso */
+  padding: 3rem 4rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+  border-top: 6px solid var(--burgundy);
+}
 
-.encuesta-container h1 {
-  text-align: center;
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  color: var(--color-primario);
+/* === Nuevo Header Interno (Título + Progreso) === */
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; /* Alinear abajo */
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.header-titles h1 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2.5rem;
+  color: var(--burgundy);
   font-weight: 800;
-  margin-bottom: 2rem;
+  margin: 0;
+  line-height: 1.1;
 }
 
-/* ====================== PROGRESO ====================== */
-
-.encuesta-progress {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 0.8rem;
+/* Estilo de Progreso (Limpio y a la derecha) */
+.header-progress {
+  min-width: 200px;
+  text-align: right;
 }
 
-.badge-page {
-  background: #fff2dc;
-  padding: .5rem 1.2rem;
-  border-radius: 999px;
-  font-size: 1.1rem;
-  border: 1px solid var(--color-borde);
+.progress-text {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #666;
+  margin-bottom: 0.5rem;
 }
 
-.progress-wrap {
+.progress-track {
   width: 100%;
-  height: 0.9rem;
-  background: #f1e7d0;
-  border-radius: 999px;
+  height: 8px;
+  background-color: #e0e0e0; /* Gris claro */
+  border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 2rem;
 }
 
-#progressFill {
+.progress-fill {
   height: 100%;
-  width: 0;
-  background: var(--color-primario);
-  transition: width 0.25s ease-in-out;
+  background: var(--burgundy);
+  width: 0%;
+  transition: width 0.4s ease;
 }
 
-/* ====================== PREGUNTAS ====================== */
-
-#contenedorPreguntas {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-  visibility: hidden;
+.card-divider {
+  border: 0;
+  height: 1px;
+  background: rgba(97, 18, 50, 0.15);
+  margin-bottom: 3rem;
 }
 
-#contenedorPreguntas.visible {
-  visibility: visible;
-}
-
+/* === Preguntas === */
 .pagina-encuesta {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 3rem;
+  animation: slideUp 0.4s ease-out;
 }
+
+@keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
 .pregunta h3 {
-  font-size: clamp(1.45rem, 2.3vw, 2rem);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.6rem;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
   font-weight: 700;
-  margin-bottom: 1rem;
 }
 
-/* ====================== OPCIONES ====================== */
-
+/* === Opciones (Radio/Checkbox) === */
 .opciones {
   display: flex;
   flex-direction: column;
@@ -111,263 +115,331 @@
 }
 
 .opciones label {
-  background: var(--color-bg-alt);
-  border: 1px solid var(--color-borde);
-  padding: 1.4rem 1.6rem;
-  border-radius: 1rem;
+  background: var(--white);
+  border: 1px solid #d0d0d0;
+  padding: 1.2rem 1.5rem;
+  border-radius: 10px;
   cursor: pointer;
-
-  /* ⭐ LETRA MÁS GRANDE */
-  font-size: 1.35rem;
-
+  font-size: 1.15rem;
   display: flex;
   align-items: center;
-  gap: 1.3rem;
-
-  transition: background 0.2s, transform 0.15s;
+  gap: 1.2rem;
+  transition: all 0.2s ease;
 }
 
 .opciones label:hover {
-  background: #f3ebdb;
-  transform: translateY(-3px);
+  border-color: var(--gold);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .opciones input[type="radio"],
 .opciones input[type="checkbox"] {
-  transform: scale(1.7);
-  accent-color: var(--color-primario);
+  width: 1.5rem;
+  height: 1.5rem;
+  accent-color: var(--burgundy);
+  cursor: pointer;
 }
+
+/* Input Otro */
 .input-otro {
-  width: 100%;
-  margin-top: 0.8rem;
-  padding: 1rem 1.2rem;
-
-  font-size: 1.25rem;
-  font-family: "Open Sans", sans-serif;
-  color: var(--color-texto);
-
-  border: 1px solid var(--color-borde);
-  border-radius: 0.8rem;
-  background: #ffffff;
-
-  display: block;
-  transition: all 0.25s ease;
+  width: 100%; margin-top: 1rem; padding: 1rem;
+  border: 1px solid #ccc; border-radius: 8px;
+  font-family: 'Open Sans', sans-serif; font-size: 1.1rem;
 }
+.input-otro:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(214, 189, 85, 0.2); }
+.oculto { display: none; }
 
-.input-otro:focus {
-  outline: none;
-  border-color: var(--color-primario);
-  box-shadow: 0 0 0 4px rgba(122, 30, 44, 0.15);
-}
-
-/* Oculto (mantenemos tu clase) */
-.oculto {
-  display: none !important;
-}
-
-/* ====================== TEXTO ABIERTO ====================== */
-
+/* Textarea */
 textarea {
-  width: 100%;
-  min-height: 10rem;
-  padding: 1.4rem;
-
-  /* ⭐ LETRA MÁS GRANDE */
-  font-size: 1.3rem;
-
-  border-radius: 0.8rem;
-  border: 1px solid var(--color-borde);
-  resize: none;
+  width: 100%; min-height: 160px; padding: 1.2rem;
+  border: 1px solid #ccc; border-radius: 8px;
+  font-family: 'Open Sans', sans-serif; font-size: 1.1rem;
+  resize: vertical; background: var(--white);
 }
+textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(214, 189, 85, 0.2); }
 
-textarea:focus {
-  outline: none;
-  border-color: var(--color-primario);
-  box-shadow: 0 0 0 4px rgba(122, 30, 44, 0.18);
-}
 
-/* Estilos para el Ranking con Botones */
-
+/* === AJUSTE 2: RANKING (Corregido) === */
 .ranking-item {
-    /* Aseguramos flexbox para alinear */
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Espacia texto a la izq y botones a la der */
-    gap: 1rem;
-    padding: 1rem;
-    background: #fff;
-    border: 1px solid #e3d5b9;
-    border-left: 0.4rem solid #7a1e2c; /* Color primario */
-    border-radius: 0.7rem;
-    margin-bottom: 0.8rem;
-    transition: background 0.2s;
+  background: var(--white);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #d0d0d0;
+  border-left: 6px solid var(--gold); /* Acento lateral */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: background 0.2s;
 }
 
 .ranking-item:hover {
-    background: #faf7ef;
+  background: #fffdf5;
 }
 
+/* AJUSTE 4: Números bonitos */
 .ranking-numero {
-    background: #f6f1df;
-    color: #3a1a1a;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-weight: bold;
-    flex-shrink: 0; /* Que no se aplaste */
+  background: var(--burgundy);
+  color: white;
+  width: 36px; 
+  height: 36px;
+  border-radius: 50%;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  flex-shrink: 0; /* Evita que se aplaste */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .ranking-texto {
-    flex-grow: 1; /* Ocupa todo el espacio disponible */
-    font-weight: 500;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  flex-grow: 1; /* Ocupa todo el espacio posible */
+  line-height: 1.4;
 }
 
+/* AJUSTE: Botones siempre a la derecha */
 .ranking-actions {
-    display: flex;
-    gap: 5px;
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto; /* ESTO EMPUJA LOS BOTONES AL FINAL */
+  flex-shrink: 0;
 }
 
 .btn-rank {
-    width: 36px;
-    height: 36px;
-    border: 1px solid #ccc;
-    background: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    color: #555;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 42px; /* Más grandes y clicables */
+  height: 42px;
+  border: 1px solid #ccc; 
+  background: white;
+  border-radius: 8px; 
+  cursor: pointer;
+  color: #555; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s;
 }
 
-.btn-rank:hover {
-    background: #7a1e2c;
-    color: #fff;
-    border-color: #7a1e2c;
+.btn-rank:hover:not(:disabled) { 
+  background: var(--burgundy); 
+  color: white; 
+  border-color: var(--burgundy);
 }
 
 .btn-rank:disabled {
-    opacity: 0.2;
-    cursor: default;
-    background: #eee;
-    color: #aaa;
-    border-color: #eee;
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: #f0f0f0;
 }
 
-/* Ajuste móvil */
-@media (max-width: 480px) {
-    .btn-rank {
-        width: 44px; /* Botones más grandes para dedos */
-        height: 44px;
-    }
-}
-
-/* ====================== BOTONES ====================== */
-
+/* === Botones Navegación === */
 .acciones-encuesta {
+  margin-top: 4rem;
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  margin-top: 3rem;
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0,0,0,0.05);
 }
 
-.acciones-encuesta button {
-  flex: 1;
-  padding: 1.2rem;
-  font-size: 1.4rem;
+.btn-nav {
+  padding: 1rem 3rem;
+  font-size: 1.2rem;
   font-weight: 700;
-
-  border: none;
-  border-radius: 0.8rem;
-  background: var(--color-primario);
-  color: #fff;
-
+  border-radius: 50px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: all 0.3s;
+  border: none;
 }
 
-.acciones-encuesta button:hover:not(:disabled) {
-  background: #9d2b45;
-  transform: scale(1.03);
+.btn-prev {
+  background: transparent;
+  border: 2px solid var(--burgundy);
+  color: var(--burgundy);
+}
+.btn-prev:hover { background: #fff0f0; }
+
+.btn-next {
+  background: var(--burgundy);
+  color: white;
+  min-width: 200px;
+}
+.btn-next:hover {
+  background: #4a0e26;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(97, 18, 50, 0.2);
 }
 
-.acciones-encuesta button:disabled {
-  opacity: .5;
-  cursor: default;
+/* === Canvas Paint === */
+.canvas-paint { width: 100%; margin-top: 1rem; }
+.canvas-paint .paleta {
+  background: var(--white);
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center;
 }
-/* =========================================
-   MODAL DE SELECCIÓN DE ESCUELA
-   ========================================= */
+.canvas-paint .cp-canvas {
+  width: 100%; height: 450px; /* Más alto */
+  background: white;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* === Modal Escuela === */
 .modal-overlay {
-    position: fixed;
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%;
-    background: rgba(0,0,0,0.85); /* Fondo oscuro para enfoque */
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    z-index: 9999;
-    backdrop-filter: blur(5px);
+  position: fixed; 
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7); 
+  z-index: 2000;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  backdrop-filter: blur(4px);
 }
 
-.modal-content {
-    background: white; 
-    padding: 2rem; 
-    border-radius: 12px; 
-    width: 90%; 
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
-    text-align: center; 
-    animation: fadeIn 0.3s ease;
-    position: relative;
+.modal-card {
+  background: var(--white);
+  /* CAMBIO: Quitamos padding global para que el header toque los bordes */
+  padding: 0; 
+  
+  border-radius: 16px;
+  width: 90%; 
+  max-width: 500px; 
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+  border: 1px solid #eee;
+  overflow: hidden; /* Mantiene las esquinas redondeadas con el header */
 }
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #aaa;
-    cursor: pointer;
-    line-height: 1;
-    transition: color 0.2s;
+
+/* Botón de cerrar estilizado */
+.modal-close {
+  position: absolute; 
+  top: 1rem; 
+  right: 1rem;
+  background: var(--white); 
+  border: none; 
+  width: 40px; height: 40px; border-radius: 50%;
+  font-size: 2rem; 
+  cursor: pointer; 
+  color: var(--burgundy);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1; 
+  z-index: 10;
 }
-.close-btn:hover {
-    color: #7a1e2c; /* Tu color primario (tinto) */
+
+.modal-close:hover {
+  background: #f0f0f0;
 }
-.btn-primary{
-  background: #7A1E2C;
+
+/* Header Institucional (Fondo Crema) */
+.modal-header { 
+  background-color: var(--cream-bg); 
+  text-align: center; 
+  /* Aumentamos el padding arriba y abajo para que no se sienta apretado */
+  padding: 3rem 2rem 2.5rem; 
+  border-bottom: 4px solid var(--burgundy); 
+  display:flex ;
+  flex-direction: column;
+}
+
+.modal-header h3 { 
+  font-family: 'Quicksand', sans-serif; 
+  color: var(--burgundy); 
+  font-size: 2rem; 
+  margin: 0 0 0.5rem 0; 
+  font-weight: 800; 
+}
+
+.modal-header p { 
+  color: #555; 
+  margin: 0; 
+  font-size: 1.1rem; 
+  line-height: 1.4;
+}
+
+/* Cuerpo del modal (Donde van los inputs) */
+.modal-body {
+  padding: 2.5rem 2.5rem 1.5rem; /* Padding específico aquí */
+}
+
+.form-group { 
+  margin-bottom: 1.8rem; 
+}
+
+.form-group label { 
+  display: block; 
+  font-weight: 700; 
+  margin-bottom: 0.8rem; 
+  color: var(--text-dark); 
+  font-size: 1.15rem;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.select-wrapper select { 
+  width: 100%; 
+  padding: 1rem; 
+  border-radius: 10px; 
+  border: 1px solid #ccc; 
+  background: #fff; 
+  font-size: 1.1rem; 
+  font-family: 'Open Sans', sans-serif;
+  cursor: pointer;
+}
+
+.select-wrapper select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(214, 189, 85, 0.2);
+}
+
+/* Pie del modal (Botón) */
+.modal-actions {
+  padding: 0 2.5rem 2.5rem; /* Padding inferior */
+}
+
+.btn-full { 
+  width: 100%; 
+  padding: 1.2rem; 
+  font-size: 1.2rem; 
+  border-radius: 50px; /* Píldora */
+  background: var(--burgundy); 
   color: white; 
-  border:none; 
-  padding: 10px 20px; 
-  border-radius: 5px; 
-  cursor:pointer;
+  border: none; 
+  font-weight: 700; 
+  cursor: pointer; 
+  transition: 0.3s; 
+  box-shadow: 0 4px 15px rgba(97, 18, 50, 0.2);
 }
 
-@keyframes fadeIn { 
-    from { opacity: 0; transform: translateY(-20px); } 
-    to { opacity: 1; transform: translateY(0); } 
+.btn-full:hover:not(:disabled) { 
+  background: #4a0e26; 
+  transform: translateY(-2px);
 }
-/* ====================== RESPONSIVE ====================== */
 
+.btn-full:disabled { 
+  background: #e0e0e0; 
+  color: #999;
+  cursor: not-allowed; 
+  box-shadow: none;
+}
+/* === Responsive === */
 @media (max-width: 768px) {
-
-  .encuesta-container {
-    padding: 2rem 1.5rem;
-  }
-
-  .acciones-encuesta {
-    flex-direction: column;
-  }
-
-  .acciones-encuesta button {
-    font-size: 1.25rem;
-  }
+  .encuesta-card { padding: 2rem 1.5rem; }
+  .card-header-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .header-progress { width: 100%; text-align: left; }
+  .acciones-encuesta { flex-direction: column-reverse; }
+  .btn-nav { width: 100%; }
+  .canvas-paint .cp-canvas { height: 300px; }
+  .ranking-item { flex-wrap: wrap; gap: 1rem; }
+  .ranking-actions { width: 100%; justify-content: flex-end; }
 }

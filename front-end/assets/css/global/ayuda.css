@@ -1,527 +1,387 @@
-/* ======== AYUDA - DISEÑO MODERNO ======== */
+/* ======== AYUDA - DISEÑO INSTITUCIONAL (Texto Grande y Legible) ======== */
 
 :root {
-  --burgundy: #6b2e2e;
-  --burgundy-dark: #611232;
+  --burgundy: #611232;
   --gold: #d6bd55;
-  --gold-border: #cbbf9b;
-  --cream: #f9f5e4;
-  --warm-white: #fffef9;
-  --shadow-soft: rgba(107, 46, 46, 0.1);
-  --shadow-medium: rgba(107, 46, 46, 0.15);
+  --cream-bg: #fbf8eb; /* Fondo para las tarjetas */
+  --white: #ffffff;    /* Fondo para la página */
+  --text-dark: #333333;
 }
 
+/* Layout General (Fondo Blanco) */
 .ayuda-layout {
-  background: linear-gradient(135deg, #fffef9 0%, #faf7f0 100%);
-  padding: 3rem 1.5rem 4rem;
-  min-height: calc(100vh - 200px);
+  background-color: var(--white);
+  padding: 3rem 5% 5rem;
+  min-height: calc(100vh - 100px);
 }
 
-.ayuda-grid {
-  max-width: 1200px;
+.ayuda-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.ayuda-header h1 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  color: var(--burgundy);
+  font-weight: 800;
+  margin-bottom: 0.8rem;
+}
+
+.ayuda-header p {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1.2rem; /* Texto introductorio más grande */
+  color: #555;
+  max-width: 65ch;
   margin: 0 auto;
+}
+
+/* Grid de Tarjetas */
+.ayuda-container {
   display: grid;
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); /* Tarjetas un poco más anchas */
+  gap: 3rem;
+  max-width: 1250px;
+  margin: 0 auto 5rem;
 }
 
-@media (min-width: 900px) {
-  .ayuda-grid {
-    grid-template-columns: 1.2fr 1fr;
-    align-items: start;
-  }
-}
-
-/* ======== TARJETAS ======== */
-
-.card-amarillo {
-  background: linear-gradient(135deg, #ffffff 0%, #fffef9 100%);
-  border: 3px solid;
-  border-image: linear-gradient(135deg, #6b2e2e 0%, #d6bd55 50%, #6b2e2e 100%) 1;
-  border-radius: 20px;
-  padding: 2.5rem;
-  color: var(--burgundy);
-  box-shadow: 
-    0 10px 30px var(--shadow-soft),
-    0 1px 8px var(--shadow-medium);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-
-
-/* ======== TÍTULOS ======== */
-
-.card-title {
-  font-family: 'Quicksand', sans-serif;
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
-  margin: 0 0 1.5rem;
-  line-height: 1.3;
-  font-weight: 800;
-  color: var(--burgundy-dark);
-  text-shadow: 0 2px 4px rgba(107, 46, 46, 0.1);
-}
-
-.card-subtitle {
-  font-family: 'Quicksand', sans-serif;
-  margin: 0 0 1rem;
-  font-weight: 800;
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
-  line-height: 1.3;
-  color: var(--burgundy);
-  border-bottom: 3px solid var(--gold);
-  padding-bottom: 0.5rem;
-  display: inline-block;
-}
-
-.card-amarillo p {
-  margin: 0 0 1rem;
-  line-height: 1.7;
-  font-size: 1.05rem;
-  color: #4a1c1c;
-}
-
-.card-amarillo p:last-child {
-  margin-bottom: 0;
-}
-
-.card-amarillo strong {
-  color: var(--burgundy);
-  font-weight: 700;
-}
-
-/* ======== LÍNEA DE FACEBOOK ======== */
-
-.fb-line {
-  background: linear-gradient(135deg, #fff9f2 0%, #fef5e7 100%);
-  border-left: 4px solid var(--gold);
-  padding: 1rem 1.25rem;
-  border-radius: 10px;
-  margin: 1.25rem 0;
-  box-shadow: 0 2px 8px rgba(214, 189, 85, 0.15);
-}
-
-.fb-line a {
-  color: var(--burgundy);
-  font-weight: 600;
-  text-decoration: none;
-  border-bottom: 2px solid transparent;
-  transition: all 0.3s ease;
-  display: inline-block;
-}
-
-.fb-line a:hover {
-  color: var(--burgundy-dark);
-  border-bottom-color: var(--gold);
-  transform: translateX(3px);
-}
-
-/* ======== ACENTO DESTACADO ======== */
-
-.accent {
-  background: linear-gradient(135deg, #fffefb 0%, #fff8e1 100%);
-  border: 2px dashed var(--gold);
-  border-radius: 12px;
-  padding: 1.25rem 1.5rem;
-  font-weight: 600;
-  margin: 1.5rem 0;
-  box-shadow: 
-    inset 0 2px 4px rgba(214, 189, 85, 0.1),
-    0 4px 12px rgba(214, 189, 85, 0.15);
-  position: relative;
-}
-
-.accent::before {
-  position: absolute;
-  top: -12px;
-  left: 20px;
-  background: white;
-  padding: 0 8px;
-  font-size: 1.2rem;
-}
-
-.accent strong {
-  color: var(--burgundy-dark);
-}
-
-/* ======== SECCIÓN DE EMERGENCIA ======== */
-
-.emergency-cta {
-  max-width: 1200px;
-  margin: 3rem auto 0;
-  padding: 2.5rem 1.5rem;
-  text-align: center;
-  background: linear-gradient(135deg, #ffffff 0%, var(--cream) 100%);
-  border-radius: 20px;
-  border: 3px solid;
-  border-image: linear-gradient(135deg, #6b2e2e 0%, #d6bd55 50%, #6b2e2e 100%) 1;
-  box-shadow: 
-    0 10px 30px var(--shadow-soft),
-    0 1px 8px var(--shadow-medium);
-}
-
-.emergency-text {
-  margin: 0 0 2rem;
-  font-weight: 700;
-  font-size: clamp(1.1rem, 2vw, 1.3rem);
-  line-height: 1.5;
-  color: var(--burgundy);
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.emergency-images {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
-  align-items: center;
-}
-
-.emg-img {
-  display: block;
-  max-width: 240px;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  border-radius: 15px;
-  background: white;
-  padding: 1.5rem;
-  border: 3px solid var(--gold-border);
-  box-shadow: 
-    0 8px 20px rgba(107, 46, 46, 0.12),
-    0 2px 6px rgba(107, 46, 46, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.emg-img:hover {
-  transform: scale(1.08);
-  box-shadow: 
-    0 12px 30px rgba(107, 46, 46, 0.18),
-    0 4px 10px rgba(107, 46, 46, 0.12);
-}
-
-/* ======== BOTÓN PARA MÁS NÚMEROS ======== */
-
-.btn-more-numbers {
-  margin-top: 2.5rem;
-  padding: 1rem 2rem;
-  background: var(--burgundy);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(107, 46, 46, 0.3);
-  position: relative;
-  overflow: hidden;
-  font-family: 'Quicksand', sans-serif;
-}
-
-.btn-more-numbers::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-more-numbers:hover::before {
-  left: 100%;
-}
-
-.btn-more-numbers:hover {
-  background: var(--gold);
-  color: var(--burgundy);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(214, 189, 85, 0.4);
-}
-
-/* ======== MODAL DE CONTACTOS ======== */
-
-.contact-modal {
-  display: none;
-  position: fixed;
-  z-index: 9999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.modal-content {
-  background: linear-gradient(135deg, #ffffff 0%, #fffef9 100%);
-  border-radius: 24px;
-  border: 3px solid;
-  border-image: linear-gradient(135deg, #6b2e2e 0%, #d6bd55 50%, #6b2e2e 100%) 1;
-  max-width: 1000px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 2.5rem;
-  position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: modalFadeIn 0.3s ease-out;
-}
-
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-30px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--burgundy);
-  color: #fff;
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 1.8rem;
-  line-height: 1;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-close:hover {
-  background: var(--gold);
-  color: var(--burgundy);
-  transform: rotate(90deg);
-}
-
-.modal-title {
-  font-family: 'Quicksand', sans-serif;
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  color: var(--burgundy-dark);
-  margin: 0 0 2rem;
-  text-align: center;
-  font-weight: 800;
-  padding-bottom: 1rem;
-  border-bottom: 3px solid var(--gold);
-}
-
-.contact-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.contact-card {
-  background: #fff;
-  border: 2px solid;
-  border-radius: 16px;
-  padding: 1.5rem;
-  text-align: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.contact-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.contact-icon {
-  margin-bottom: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.contact-icon svg {
+/* TARJETAS DE INFORMACIÓN */
+.info-card {
+  background-color: var(--cream-bg);
+  border-radius: 1rem;
+  padding: 3rem; /* Más espacio interno */
+  border: 1px solid #e0e0e0;
+  border-top: 6px solid var(--burgundy);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
   transition: transform 0.3s ease;
 }
 
-.contact-card:hover .contact-icon svg {
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(97, 18, 50, 0.12);
+}
+
+.card-header h2 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2rem; /* Título de tarjeta más grande */
+  color: var(--burgundy);
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+}
+
+.divider {
+  height: 4px;
+  width: 60px;
+  background-color: rgba(97, 18, 50, 0.15);
+  margin-bottom: 2rem;
+}
+
+/* Items de Información */
+.info-item {
+  display: flex;
+  gap: 1.2rem;
+  margin-bottom: 1.8rem;
+  align-items: flex-start;
+}
+
+.icon-box {
+  background-color: white;
+  color: var(--burgundy);
+  width: 48px; /* Icono más grande */
+  height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.icon-box svg { width: 24px; height: 24px; }
+
+/* AUMENTO DE TEXTO AQUÍ */
+.info-item strong { 
+  display: block; 
+  font-size: 1.15rem; /* Etiquetas más grandes */
+  color: var(--burgundy); 
+  margin-bottom: 0.3rem; 
+}
+
+.info-item p { 
+  margin: 0; 
+  font-size: 1.15rem; /* Contenido más grande */
+  color: #444; 
+  line-height: 1.5; 
+}
+
+.btn-social {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%; padding: 1rem;
+  background-color: white; border: 1px solid #ddd; border-radius: 10px;
+  color: #333; text-decoration: none; font-weight: 700;
+  transition: all 0.2s;
+  font-size: 1.1rem; /* Botón más grande */
+}
+.btn-social:hover { border-color: #1877f2; color: #1877f2; background-color: #f8faff; }
+
+/* Tarjeta Comunidad */
+.text-body { 
+  line-height: 1.7; 
+  color: #444; 
+  margin-bottom: 1.8rem; 
+  font-size: 1.2rem; /* Texto de cuerpo aumentado */
+}
+
+.quote-box {
+  background-color: white; border-left: 5px solid var(--gold);
+  padding: 1.8rem; 
+  text-align: center; 
+  margin: 2rem 0;
+  font-style: italic; color: var(--burgundy); 
+  font-size: 1.25rem; /* Cita más grande */
+  border-radius: 0 10px 10px 0;
+}
+
+.hashtag-pill {
+  display: inline-block; background-color: var(--burgundy); color: white;
+  padding: 0.6rem 1.5rem; border-radius: 50px; 
+  font-size: 1rem; 
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* SECCIÓN EMERGENCIA */
+.emergency-strip {
+  background-color: #fff5f5; 
+  border-radius: 1.2rem;
+  max-width: 1000px; /* Sección más ancha */
+  margin: 0 auto;
+  padding: 3.5rem;
+  text-align: center;
+  border: 1px solid #ffe0e0;
+}
+
+.emergency-header h3 {
+  margin: 0 0 0.8rem 0;
+  color: #c62828;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+}
+
+.emergency-header p {
+  margin-bottom: 2.5rem;
+  color: #666;
+  font-size: 1.2rem;
+}
+
+/* Imágenes de emergencia */
+.emergency-images {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.emg-img {
+  height: 13rem; 
+  width: auto;
+  transition: transform 0.3s;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  background: white;
+  padding: 0.6rem;
+}
+
+.emg-img:hover {
+  transform: scale(1.05);
+}
+
+.btn-directory {
+  background: transparent; border: 2px solid var(--burgundy); color: var(--burgundy);
+  padding: 1.1rem 2.8rem; border-radius: 50px; font-weight: 700;
+  cursor: pointer; transition: all 0.3s; 
+  font-size: 1.2rem; /* Botón más grande */
+}
+.btn-directory:hover { background: var(--burgundy); color: white; }
+
+/* --- MODAL OPTIMIZADO (Header Fijo + Scroll Interno + Compacto) --- */
+
+.contact-modal {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.6); z-index: 2000;
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(3px);
+}
+.contact-modal.active { display: flex; }
+
+.modal-container {
+  background: var(--white);
+  border-radius: 1rem;
+  width: 95%; 
+  max-width: 1000px; 
+  
+  /* Altura fija máxima para asegurar que quepa en la pantalla */
+  height: 90vh; 
+  max-height: 90vh;
+  
+  /* Flexbox vertical para fijar header y footer */
+  display: flex;
+  flex-direction: column;
+  
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+  overflow: hidden; /* Importante para recortar las esquinas */
+}
+
+.modal-close {
+  position: absolute; top: 1rem; right: 1rem;
+  border: none; background: white; width: 40px; height: 40px;
+  border-radius: 50%; font-size: 2rem; cursor: pointer; color: var(--burgundy);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10;
+  line-height: 1;
+}
+
+/* Header FIJO al tope */
+.modal-header {
+  text-align: center;
+  background-color: var(--cream-bg);
+  padding: 2rem; /* Reducido un poco */
+  border-bottom: 3px solid var(--gold);
+  flex-shrink: 0; /* Evita que se aplaste */
+
+}
+
+.modal-header h2 {
+  color: var(--burgundy);
+  font-family: 'Quicksand', sans-serif;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  padding-right: 2rem; /* Espacio para la X de cerrar */
+}
+
+/* Cuerpo SCROLLEABLE */
+.directory-grid {
+  padding: 2rem;
+  overflow-y: auto; 
+  flex-grow: 1; 
+  
+  display: grid;
+  /* Aumentamos el ancho mínimo de tarjeta para que no se vean tan angostas */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  margin:1rem;
+  /* CAMBIO: Aumentamos el gap (antes 1.2rem) para más separación */
+  gap: 2rem; 
+}
+
+.dir-group h4 {
+  color: #888;
+  font-size: 0.9rem; /* Un poco más grande */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 1.5rem 0 1rem 0;
+  border-bottom: 2px solid #eee;
+  display: block;
+  padding-bottom: 4px;
+  font-weight: 700;
+}
+.dir-group:first-child h4 { margin-top: 0; }
+
+/* Tarjetas con HOVER */
+.dir-card {
+  background: #f9f9f9;
+  padding: 1.2rem; /* Un poco más de relleno interno */
+  border-radius: 10px;
+  border: 1px solid #eee;
+  display: flex; 
+  flex-direction: column;
+  margin:1rem;
+  /* CAMBIO: Transición suave para el efecto hover */
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* CAMBIO: Efecto Hover (Levantar + Sombra + Borde Dorado) */
+.dir-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  border-color: var(--gold);
+  background-color: #fffdf5; /* Fondo crema muy sutil al hover */
+  z-index: 1;
+}
+
+.dir-card.emergency {
+  background: #fff0f0;
+  border-color: #ffcdd2;
+}
+
+/* Hover específico para emergencia (Borde Rojo) */
+.dir-card.emergency:hover {
+  border-color: #ef5350;
+  background-color: #ffebee;
+}
+
+.d-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Más separación entre icono y numero */
+  margin-bottom: 0.3rem;
+}
+
+.contact-icon svg {
+  width: 24px; 
+  height: 24px; 
+  color: var(--burgundy);
+  transition: transform 0.3s ease;
+}
+
+/* Animación del icono al hacer hover en la tarjeta */
+.dir-card:hover .contact-icon svg {
   transform: scale(1.1);
 }
 
-/* Colores de iconos por categoría */
-.contact-card.emergency .contact-icon svg {
-  stroke: #e74c3c;
-}
-
-.contact-card.mental-health .contact-icon svg {
-  stroke: #27ae60;
-}
-
-.contact-card.municipal .contact-icon svg {
-  stroke: #3498db;
-}
-
-.contact-card.services .contact-icon svg {
-  stroke: #f39c12;
-}
-
-.contact-card.social .contact-icon svg {
-  stroke: #9b59b6;
-}
-
-.contact-card.dif .contact-icon svg {
-  stroke: #e91e63;
-}
-
-.contact-card h3 {
-  font-family: 'Quicksand', sans-serif;
-  font-size: 1.4rem;
+.d-num {
+  font-size: 1.3rem; /* Números un poco más grandes */
   font-weight: 800;
-  margin: 0 0 0.5rem;
   color: var(--burgundy);
 }
 
-.contact-subtitle {
-  font-weight: 700;
+.d-title {
   font-size: 1rem;
-  margin: 0 0 0.5rem;
-  color: var(--burgundy-dark);
+  font-weight: 700;
+  color: #333;
+  line-height: 1.3;
+  display: block;
+  margin-top: 0.2rem;
 }
 
-.contact-detail {
-  font-size: 0.9rem;
-  margin: 0.25rem 0;
-  color: #666;
-  line-height: 1.5;
+.dir-card small {
+  font-size: 0.85rem; 
+  color: #666; 
+  margin-top: 0.5rem; 
+  line-height: 1.4;
 }
 
-/* Colores por categoría */
-.contact-card.emergency {
-  border-color: #e74c3c;
-}
-
-.contact-card.mental-health {
-  border-color: #27ae60;
-}
-
-.contact-card.municipal {
-  border-color: #3498db;
-}
-
-.contact-card.services {
-  border-color: #f39c12;
-}
-
-.contact-card.social {
-  border-color: #9b59b6;
-}
-
-.contact-card.dif {
-  border-color: #e91e63;
-}
-
+/* Footer FIJO al fondo */
 .modal-footer {
   text-align: center;
-  font-size: 1rem;
-  color: var(--burgundy);
-  font-weight: 600;
+  padding: 1.5rem;
   margin: 0;
-  padding-top: 1.5rem;
-  border-top: 2px dashed var(--gold);
+  font-style: italic;
+  color: #666;
+  background: #fafafa;
+  border-top: 1px solid #eee;
+  font-size: 1.05rem;
+  flex-shrink: 0;
 }
-
-/* ======== RESPONSIVE ======== */
 
 @media (max-width: 768px) {
-  .ayuda-layout {
-    padding: 2rem 1rem 3rem;
-  }
-
-  .card-amarillo {
-    padding: 1.75rem;
-  }
-
-  .card-title {
-    font-size: 1.6rem;
-  }
-
-  .card-subtitle {
-    font-size: 1.4rem;
-  }
-
-  .emergency-cta {
-    padding: 2rem 1rem;
-  }
-
-  .emg-img {
-    max-width: 200px;
-  }
-
-  .modal-content {
-    padding: 2rem 1.5rem;
-    max-height: 85vh;
-  }
-
-  .contact-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .modal-title {
-    font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .ayuda-grid {
-    gap: 1.5rem;
-  }
-
-  .card-amarillo {
-    padding: 1.5rem;
-  }
-
-  .emergency-images {
-    gap: 1.5rem;
-  }
-
-  .emg-img {
-    max-width: 280px;
-  }
-
-  .btn-more-numbers {
-    width: 100%;
-    font-size: 1rem;
-    padding: 0.9rem 1.5rem;
-  }
-
-  .modal-content {
-    padding: 1.5rem 1rem;
-    border-radius: 16px;
-  }
-
-  .modal-close {
-    width: 36px;
-    height: 36px;
-    font-size: 1.5rem;
-  }
-
-  .contact-card {
-    padding: 1.25rem;
-  }
-
-  .contact-icon svg {
-    width: 40px;
-    height: 40px;
-  }
+  .ayuda-container { grid-template-columns: 1fr; }
+  .emergency-images { flex-direction: column; align-items: center; gap: 1.5rem; }
+  .emg-img { height: auto; width: 160px; }
+  
+  /* Ajuste modal móvil */
+  .directory-grid { grid-template-columns: 1fr; padding: 1.5rem; gap: 1.5rem; }
+  .modal-header h2 { font-size: 1.5rem; }
 }

@@ -1,336 +1,226 @@
-/* ======== CONTACTO - DISEÑO MODERNO ======== */
+/* ======== CONTACTO - DISEÑO INSTITUCIONAL AMPLIO ======== */
 
 :root {
-  --burgundy: #6b2e2e;
-  --burgundy-dark: #611232;
-  --burgundy-hover: #8b3e3e;
-  --gold: #d6bd55;
-  --gold-border: #cbbf9b;
-  --cream: #f9f5e4;
-  --warm-white: #fffef9;
-  --shadow-soft: rgba(107, 46, 46, 0.1);
-  --shadow-medium: rgba(107, 46, 46, 0.15);
-  --shadow-strong: rgba(107, 46, 46, 0.25);
+  --burgundy: #611232;       
+  --gold: #d6bd55;           
+  --cream-bg: #fbf8eb;       
+  --text-dark: #333333;
+  --border-color: #e0e0e0;
+  --focus-shadow: rgba(214, 189, 85, 0.25);
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-/* ======== LAYOUT PRINCIPAL ======== */
-
+/* --- Layout --- */
 .contacto-layout {
-  background: linear-gradient(135deg, #fffef9 0%, #faf7f0 100%);
-  padding: 3rem 1.5rem 4rem;
-  min-height: calc(100vh - 200px);
+  background-color: #ffffff;
+  /* Padding generoso arriba y abajo */
+  padding: 4rem clamp(1rem, 3vw, 2rem) 6rem;
+  min-height: calc(100vh - 200px); 
 }
 
 .contacto-wrap {
-  max-width: 900px;
+  /* AJUSTE 1: ANCHO MÁS GRANDE */
+  /* Subimos de 75rem a 90rem (aprox 1440px) para pantallas grandes */
+  width: 92%; 
+  max-width: 90rem; 
   margin: 0 auto;
 }
 
-/* ======== ENCABEZADOS ======== */
+/* --- Encabezado de Sección --- */
+.contacto-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
 
 .contacto-title {
   font-family: 'Quicksand', sans-serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  color: var(--burgundy-dark);
-  margin: 0 0 0.75rem;
-  font-weight: 800;
-  line-height: 1.2;
-  text-shadow: 0 2px 4px rgba(107, 46, 46, 0.1);
-  position: relative;
-  display: inline-block;
-}
-
-.contacto-title::after {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 0;
-  width: 60%;
-  height: 4px;
-  background: linear-gradient(90deg, var(--burgundy) 0%, var(--gold) 100%);
-  border-radius: 2px;
+  font-size: clamp(2.2rem, 4vw, 3.2rem); /* Título un poco más grande */
+  color: var(--burgundy);
+  font-weight: 700;
+  margin: 0 0 0.8rem;
 }
 
 .contacto-subtitle {
+  font-family: 'Open Sans', sans-serif;
   font-size: 1.15rem;
-  margin: 1.5rem 0 2rem;
-  color: #4a1c1c;
+  color: #555;
   line-height: 1.6;
-  max-width: 700px;
+  max-width: 50rem; /* Texto un poco más ancho para balancear */
+  margin: 0 auto;
 }
 
-/* ======== TARJETA DEL FORMULARIO ======== */
-
+/* --- Tarjeta del Formulario --- */
 .card-form {
-  background: linear-gradient(135deg, #ffffff 0%, #fffef9 100%);
-  border: 3px solid;
-  border-image: linear-gradient(135deg, #6b2e2e 0%, #d6bd55 50%, #6b2e2e 100%) 1;
-  border-radius: 20px;
-  padding: 2.5rem;
-  box-shadow: 
-    0 10px 30px var(--shadow-soft),
-    0 1px 8px var(--shadow-medium);
-  position: relative;
-  overflow: hidden;
+  background: var(--cream-bg);
+  border-radius: 1rem; 
+  
+  /* AJUSTE 2: MÁS ALTURA Y ESPACIO INTERNO */
+  /* Mucho más aire: 4rem arriba/abajo, 5rem a los lados en PC */
+  padding: clamp(2.5rem, 5vw, 4.5rem) clamp(2rem, 5vw, 6rem);
+  
+  box-shadow: 0 1rem 2.5rem rgba(97, 18, 50, 0.08);
+  border-top: 0.5rem solid var(--burgundy); 
 }
 
-/* ======== CAMPOS DEL FORMULARIO ======== */
+/* --- Grid System --- */
+.form-row {
+  display: grid;
+  /* Grid que se adapta, pero prefiere 2 columnas en PC */
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); 
+  gap: 2rem; /* Más espacio entre columnas */
+  margin-bottom: 2rem;
+}
 
 .field {
-  display: grid;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 2rem; /* Más separación entre filas */
 }
 
-.field label {
-  font-weight: 700;
-  font-size: 1.05rem;
-  color: var(--burgundy);
+.form-row .field { margin-bottom: 0; } 
+
+label {
   font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem; /* Texto de etiqueta un poco más grande */
+  color: var(--burgundy);
+}
+
+.optional {
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: #888;
 }
 
 .required {
   color: #c62828;
-  font-weight: 700;
-  margin-left: 0.2rem;
+  margin-left: 0.25rem;
 }
 
-.field input,
-.field textarea,
-.field select {
+/* --- Inputs y Selects --- */
+.input-wrapper {
+  position: relative;
+}
+
+input, select, textarea {
   width: 100%;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 0.9rem 1.1rem;
-  font-size: 1rem;
+  background: #ffffff;
+  border: 0.1rem solid var(--border-color);
+  border-radius: 0.6rem;
+  
+  /* Inputs más altos y cómodos */
+  padding: 1rem 1.2rem; 
+  font-size: 1.05rem;
+  
   font-family: 'Open Sans', sans-serif;
-  transition: all 0.3s ease;
-  outline: none;
-  background: white;
-  color: #333;
-}
-
-.field select {
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b2e2e' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 12px;
+  color: var(--text-dark);
+  transition: all 0.2s ease;
   appearance: none;
-  padding-right: 2.5rem;
 }
 
-.field input:hover,
-.field textarea:hover,
-.field select:hover {
-  border-color: #c0c0c0;
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23611232' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1.2rem center;
+  padding-right: 3rem;
 }
 
-.field input:focus,
-.field textarea:focus,
-.field select:focus {
+input:focus, select:focus, textarea:focus {
+  outline: none;
   border-color: var(--gold);
-  box-shadow: 
-    0 0 0 4px rgba(214, 189, 85, 0.15),
-    0 2px 8px rgba(214, 189, 85, 0.2);
-  background: #fffef9;
+  box-shadow: 0 0 0 0.3rem var(--focus-shadow);
 }
 
-.field select:disabled {
-  background-color: #f5f5f5;
-  cursor: not-allowed;
-  color: #999;
-  opacity: 0.7;
-}
-
-.field textarea {
+/* AJUSTE 3: ÁREA DE TEXTO MÁS ALTA */
+textarea {
   resize: vertical;
-  min-height: 120px;
-  font-family: 'Open Sans', sans-serif;
-  line-height: 1.6;
+  min-height: 12rem; /* Esto estira la tarjeta verticalmente */
 }
-
-/* ======== HINTS ======== */
 
 .hint {
-  margin: 0.35rem 0 0;
   font-size: 0.9rem;
   color: #666;
-  line-height: 1.4;
-  font-style: italic;
+  margin-top: 0.4rem;
 }
 
-/* ======== BOTONES ======== */
-
+/* --- Botón --- */
 .actions {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   display: flex;
-  gap: 1rem;
-  justify-content: flex-start;
-  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .btn-primary {
+  background-color: var(--burgundy);
+  color: white;
+  border: none;
+  padding: 1rem 3rem; /* Botón más grande */
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 4rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 1rem 2.5rem;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
-  color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
-  font-family: 'Quicksand', sans-serif;
-  border: none;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 
-    0 4px 15px var(--shadow-medium),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-primary:hover::before {
-  left: 100%;
+  box-shadow: 0 0.3rem 0.8rem rgba(97, 18, 50, 0.2);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 
-    0 6px 20px var(--shadow-strong),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  background: linear-gradient(135deg, var(--burgundy-hover) 0%, var(--burgundy) 100%);
+  background-color: #4a0e26;
+  transform: translateY(-0.2rem);
+  box-shadow: 0 0.5rem 1rem rgba(97, 18, 50, 0.3);
 }
 
-.btn-primary:active {
-  transform: translateY(0);
-  box-shadow: 
-    0 2px 8px var(--shadow-medium),
-    inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* ======== ALERTAS ======== */
-
+/* --- Alertas --- */
 .alert {
-  padding: 1.25rem 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 1.75rem;
-  border: 2px solid;
+  display: flex;
+  gap: 1rem;
+  padding: 1.2rem;
+  border-radius: 0.6rem;
+  margin-bottom: 2.5rem;
   font-size: 1rem;
-  line-height: 1.6;
-}
-
-.alert strong {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+  line-height: 1.5;
 }
 
 .alert.success {
-  background: linear-gradient(135deg, #f0fff5 0%, #e8f5e9 100%);
-  border-color: #66bb6a;
+  background-color: #e8f5e9;
+  border: 1px solid #a5d6a7;
   color: #1b5e20;
 }
 
-.alert.success::before {
-  content: '✓ ';
-  font-weight: bold;
-  font-size: 1.3rem;
-  margin-right: 0.5rem;
-}
-
 .alert.error {
-  background: linear-gradient(135deg, #fff6f6 0%, #ffebee 100%);
-  border-color: #ef5350;
-  color: #c62828;
+  background-color: #ffebee;
+  border: 1px solid #ef9a9a;
+  color: #b71c1c;
 }
 
-.alert.error::before {
-  content: '⚠ ';
-  font-weight: bold;
-  font-size: 1.3rem;
-  margin-right: 0.5rem;
+.alert-icon {
+  font-size: 1.4rem;
 }
 
-.alert ul {
-  margin: 0.5rem 0 0 1.5rem;
-  padding: 0;
-}
+/* Honeypot */
+.hp { display: none; }
 
-.alert li {
-  margin: 0.3rem 0;
-}
-
-/* ======== HONEYPOT ======== */
-
-.hp {
-  position: absolute;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ======== RESPONSIVE ======== */
-
+/* --- Responsive --- */
 @media (max-width: 768px) {
-  .contacto-layout {
-    padding: 2rem 1rem 3rem;
-  }
-
+  .contacto-wrap { width: 100%; }
+  
   .card-form {
-    padding: 1.75rem;
+    padding: 2rem 1.5rem; /* Padding normal en celular */
+    border-radius: 0; /* Opcional: borde recto en móvil para aprovechar espacio */
   }
-
-  .contacto-title {
-    font-size: 2rem;
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
-
-  .contacto-subtitle {
-    font-size: 1.05rem;
+  
+  .form-row .field {
+    margin-bottom: 1.5rem;
   }
-
-  .btn-primary {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .card-form {
-    padding: 1.5rem;
-  }
-
-  .field {
-    margin-bottom: 1.25rem;
-  }
-
-  .field input,
-  .field textarea,
-  .field select {
-    padding: 0.8rem 1rem;
-    font-size: 0.95rem;
-  }
-
-  .contacto-title::after {
-    width: 50%;
-  }
+  
+  .actions { justify-content: stretch; }
+  .btn-primary { width: 100%; justify-content: center; }
 }

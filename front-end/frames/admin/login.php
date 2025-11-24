@@ -20,9 +20,7 @@ $mensaje = $_GET['m'] ?? '';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIMPINNA | Panel administrativo</title>
-
-  <!-- CSS global -->
+  <title>SIMPINNA | Inicio de sesión</title> 
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
   <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
   <link rel="stylesheet" href="/front-end/assets/css/admin/admin.css">
@@ -31,9 +29,13 @@ $mensaje = $_GET['m'] ?? '';
 <body>
 
 <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header-admin.php'; ?>
-
 <main class="login-container">
-    <h1 class="login-title">Inicio de sesión</h1>
+    
+    <div class="login-back-wrapper">
+        <a href="/front-end/frames/inicio/inicio.php" class="btn-back-home" title="Regresar al inicio">
+            <i class="fa-solid fa-arrow-left-long"></i> Regresar
+        </a>
+    </div>
 
     <?php if (!empty($mensaje)): ?>
       <div class="alert alert-danger" role="alert" style="margin-bottom: 1.5rem;">
@@ -60,7 +62,7 @@ $mensaje = $_GET['m'] ?? '';
 </main>
 
 <footer>
-    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer-admin.php'; ?>
 </footer>
 
 </body>

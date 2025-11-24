@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
     <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
     <link rel="stylesheet" href="/front-end/assets/css/admin/comentarios.css">
+    <link rel="stylesheet" href="/front-end/assets/css/admin/admin.css">
+
 </head>
 <body>
     <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header-admin.php'; ?>

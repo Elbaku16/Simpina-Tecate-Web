@@ -4,30 +4,43 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 $esAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin';
-$usuarioActivo = $esAdmin && isset($_SESSION['usuario']) ? $_SESSION['usuario'] : null;
+
+// Lógica de nombre de usuario (solo para admins logueados)
+$textoUsuario = 'Administrador';
+if ($esAdmin) {
+    if (isset($_SESSION['nombre_completo']) && !empty($_SESSION['nombre_completo'])) {
+        $textoUsuario = $_SESSION['nombre_completo']; 
+    } elseif (isset($_SESSION['usuario']) && !empty($_SESSION['usuario'])) {
+        $textoUsuario = $_SESSION['usuario'];
+    }
+}
 
 $currentScript = $_SERVER['SCRIPT_NAME'] ?? '';
 $isLoginPage = (strpos($currentScript, '/frames/admin/login.php') !== false);
+$tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
 ?>
 
 <header class="header header-admin">
+  
   <div class="header-izq">
     <img src="/front-end/assets/img/global/logo-simpinna.png"
          alt="Logo SIMPINNA" class="logo-simpinna">
 
     <div class="admin-info">
-      <span class="admin-title">Panel Administrativo</span>
-
       <?php if ($esAdmin): ?>
+        <span class="user-label">
+            <i class="fa-solid fa-user"></i> 
+            <?php echo htmlspecialchars($textoUsuario); ?>
+        </span>
         <a href="/back-end/routes/auth/logout.php" class="btn-logout">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
         </a>
-      <?php elseif ($isLoginPage): ?>
-        <a href="/front-end/frames/inicio/inicio.php" class="btn-exit">
-            <i class="fa-solid fa-door-open"></i> Salir
-        </a>
       <?php endif; ?>
-    </div>
+      </div>
+  </div>
+
+  <div class="header-center">
+      <h1 class="center-title"><?php echo $tituloCentral; ?></h1>
   </div>
 
   <div class="header-der">

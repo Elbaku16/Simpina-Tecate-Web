@@ -1,6 +1,5 @@
 <?php
-// Estado opcional para mostrar mensaje después de enviar el formulario.
-// La ruta /back-end/routes/contacto/enviar.php redirige de vuelta con ?ok=1 o ?ok=0.
+// Estado opcional para mostrar mensaje
 $ok = $_GET['ok'] ?? null;
 ?>
 <!DOCTYPE html>
@@ -8,34 +7,11 @@ $ok = $_GET['ok'] ?? null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPINNA | Contáctanos</title>
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
     <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
     <link rel="stylesheet" href="/front-end/assets/css/global/header-responsive.css">
     <link rel="stylesheet" href="/front-end/assets/css/global/contacto.css">
-    <style>
-      .required { color: #d32f2f; font-weight: 700; }
-      select {
-        width: 100%;
-        border: 1.5px solid #d7d7d7;
-        border-radius: 8px;
-        padding: 12px 14px;
-        font-size: 16px;
-        transition: border-color .15s ease, box-shadow .15s ease;
-        outline: none;
-        background: #fff;
-        cursor: pointer;
-      }
-      select:focus {
-        border-color: var(--gold-brd, #d6bd55);
-        box-shadow: 0 0 0 3px rgba(214,189,85,.25);
-      }
-      select:disabled {
-        background: #f5f5f5;
-        cursor: not-allowed;
-        color: #999;
-      }
-    </style>
-    <title>SIMPINNA | Contáctanos</title>
 </head>
 
 <body>
@@ -45,19 +21,32 @@ $ok = $_GET['ok'] ?? null;
 
 <main class="contacto-layout">
   <section class="contacto-wrap">
-    <h1 class="contacto-title">Contáctanos</h1>
-    <p class="contacto-subtitle">
-      Por favor llena el siguiente formulario con los datos de la situación que deseas reportar.
-    </p>
+    
+    <div class="contacto-header">
+        <h1 class="contacto-title">Reportes y Contacto</h1>
+        <p class="contacto-subtitle">
+          Tu voz es importante. Utiliza este espacio para reportar situaciones o solicitar apoyo. 
+          Tus datos serán tratados con confidencialidad.
+        </p>
+    </div>
 
     <div class="card-form">
+      
       <?php if ($ok === '1'): ?>
         <div class="alert success" role="status">
-          ¡Gracias! Tu mensaje será analizado y respondido por las autoridades correspondientes.
+            <div class="alert-icon">✓</div>
+            <div class="alert-content">
+                <strong>¡Reporte enviado!</strong>
+                Tu mensaje ha sido recibido y será atendido por las autoridades correspondientes.
+            </div>
         </div>
       <?php elseif ($ok === '0'): ?>
         <div class="alert error" role="alert">
-          Ocurrió un problema al guardar tu reporte. Por favor intenta nuevamente.
+            <div class="alert-icon">✕</div>
+            <div class="alert-content">
+                <strong>Error de envío</strong>
+                Hubo un problema técnico. Por favor intenta nuevamente más tarde.
+            </div>
         </div>
       <?php endif; ?>
 
@@ -66,41 +55,50 @@ $ok = $_GET['ok'] ?? null;
             id="contactoForm"
             novalidate>
         
-        <!-- Honeypot anti-bots -->
         <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp">
 
-        <div class="field">
-          <label for="nombre">Nombre (opcional)</label>
-          <input id="nombre" name="nombre" type="text"
-                 value=""
-                 placeholder="Escribe tu nombre">
-          <small class="hint">Si no proporcionas un nombre, tu reporte será anónimo.</small>
+        <div class="field full-width">
+          <label for="nombre">Nombre completo <span class="optional">(Opcional)</span></label>
+          <div class="input-wrapper">
+              <i class="input-icon user-icon"></i>
+              <input id="nombre" name="nombre" type="text" placeholder="Ej: María González">
+          </div>
+          <small class="hint">Si lo dejas en blanco, el reporte será anónimo.</small>
         </div>
 
-        <div class="field">
-          <label for="nivel">Nivel educativo <span class="required">*</span></label>
-          <select id="nivel" name="nivel" required>
-            <option value="0">Cargando niveles...</option>
-          </select>
+        <div class="form-row">
+            <div class="field">
+              <label for="nivel">Nivel educativo <span class="required">*</span></label>
+              <div class="input-wrapper">
+                  <select id="nivel" name="nivel" required>
+                    <option value="0">Selecciona un nivel...</option>
+                  </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="escuela">Escuela <span class="required">*</span></label>
+              <div class="input-wrapper">
+                  <select id="escuela" name="escuela" required disabled>
+                    <option value="0">Selecciona nivel primero</option>
+                  </select>
+              </div>
+            </div>
         </div>
 
-        <div class="field">
-          <label for="escuela">Escuela <span class="required">*</span></label>
-          <select id="escuela" name="escuela" required disabled>
-            <option value="0">Primero selecciona un nivel</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="comentarios">Describe la situación <span class="required">*</span></label>
-          <textarea id="comentarios" name="comentarios" rows="6" required
-                    placeholder="Describe detalladamente la situación que deseas reportar..."></textarea>
-          <small class="hint">Es importante que describas con detalle la situación para poder ayudarte mejor.</small>
+        <div class="field full-width">
+          <label for="comentarios">Descripción de la situación <span class="required">*</span></label>
+          <textarea id="comentarios" name="comentarios" rows="5" required
+                    placeholder="Cuéntanos qué sucedió, dónde y cuándo..."></textarea>
         </div>
 
         <div class="actions">
-          <button class="btn-primary" type="submit">Enviar reporte</button>
+          <button class="btn-primary" type="submit">
+             Enviar reporte
+             <svg style="width:20px; height:20px; margin-left:8px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
         </div>
+
       </form>
     </div>
   </section>
@@ -110,10 +108,8 @@ $ok = $_GET['ok'] ?? null;
   <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/footer.php'; ?>
 </footer>
 
-
 <script src="/front-end/scripts/contacto/contacto.js"></script>
 <script src="/front-end/scripts/header-menu.js"></script>
-
 
 </body>
 </html>
