@@ -306,6 +306,33 @@ main {
     color: #7A1E2C;
     border-left: 4px solid #7A1E2C; /* Detalle visual de activo */
 }
+/* ======== RESPONSIVE ======== */
+
+@media (max-width: 992px) {
+    .header {
+        padding: 0.8rem 1.5rem;
+        min-height: 85px; /* Header móvil más alto */
+    }
+
+    .header-nav {
+        display: none; 
+    }
+
+    .menu-toggle {
+        display: block;
+        margin-left: auto;
+        margin-right: 1rem;
+    }
+
+    /* AJUSTE 7: Logos móviles también más grandes */
+    .logo-simpinna {
+        height: 3.8rem; /* Antes 2.8rem */
+    }
+    
+    .logo-gobierno {
+        height: 3.2rem; /* Antes 2.5rem */
+    }
+}
 /* ======== PANEL ADMIN (tomado del global.css) ======== */
 
 .titulo-header {
@@ -484,30 +511,3 @@ main {
         display: none;
     }
 } 
-/* ======== RESPONSIVE ======== */
-
-@media (max-width: 992px) {
-    .header {
-        padding: 0.8rem 1.5rem;
-        min-height: 85px; /* Header móvil más alto */
-    }
-
-    .header-nav {
-        display: none; 
-    }
-
-    .menu-toggle {
-        display: block;
-        margin-left: auto;
-        margin-right: 1rem;
-    }
-
-    /* AJUSTE 7: Logos móviles también más grandes */
-    .logo-simpinna {
-        height: 3.8rem; /* Antes 2.8rem */
-    }
-    
-    .logo-gobierno {
-        height: 3.2rem; /* Antes 2.5rem */
-    }
-}
