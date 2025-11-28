@@ -2,6 +2,12 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
 requerir_admin();
 
+// RESTRICCIÓN ADICIONAL: Solo si tiene el permiso de modificar
+if (!tiene_permiso('modificar_encuesta')) {
+    header('Location: /front-end/frames/panel/panel-admin.php');
+    exit;
+}
+
 $nivel = $_GET['nivel'] ?? 'primaria';
 $nivelTitulo = ucfirst($nivel);
 ?>
