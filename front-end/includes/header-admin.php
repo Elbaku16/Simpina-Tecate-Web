@@ -21,22 +21,22 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
 ?>
 
 <header class="header header-admin">
-  
   <div class="header-izq">
-    <img src="/front-end/assets/img/global/logo-simpinna.png"
-         alt="Logo SIMPINNA" class="logo-simpinna">
-
+    <img src="/front-end/assets/img/global/logo-simpinna.png" alt="Logo SIMPINNA" class="logo-simpinna">
+    
     <div class="admin-info">
       <?php if ($esAdmin): ?>
-        <span class="user-label">
-            <i class="fa-solid fa-user"></i> 
-            <?php echo htmlspecialchars($textoUsuario); ?>
-        </span>
-        <a href="/back-end/routes/auth/logout.php" class="btn-logout">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
-        </a>
+        <div class="admin-badge">
+            <span class="user-label">
+                <i class="fa-solid fa-user-circle"></i> 
+                <?php echo htmlspecialchars($textoUsuario); ?>
+            </span>
+            <a href="/back-end/routes/auth/logout.php" class="btn-logout">
+                <i class="fa-solid fa-sign-out-alt"></i> Salir
+            </a>
+        </div>
       <?php endif; ?>
-      </div>
+    </div>
   </div>
 
   <div class="header-center">
@@ -44,8 +44,7 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
   </div>
 
   <div class="header-der">
-    <img src="/front-end/assets/img/global/gobierno-logo.png"
-         alt="Logo Gobierno Tecate" class="logo-gobierno">
+    <img src="/front-end/assets/img/global/gobierno-logo.png" alt="Logo Gobierno Tecate" class="logo-gobierno">
   </div>
   
   <script src="https://kit.fontawesome.com/cba4ea3b6f.js" crossorigin="anonymous"></script>
