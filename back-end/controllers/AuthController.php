@@ -77,7 +77,7 @@ class AuthController
 
         $_SESSION['uid']          = $usuarioEntidad->getId();
         $_SESSION['usuario']      = $usuarioEntidad->getUsuario();
-        $_SESSION['rol']          = 'admin';
+        $_SESSION['rol']          = $usuarioEntidad->getRol(); // <-- Obtenemos el Rol
         $_SESSION['nombre_completo'] = $usuarioEntidad->getNombre();
         $_SESSION['last_activity'] = time();
 

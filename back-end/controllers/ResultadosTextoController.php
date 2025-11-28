@@ -18,7 +18,12 @@ class ResultadosTextoController
     /**
      * Obtener respuestas de una pregunta (texto o dibujo)
      */
-    public function obtener(int $idPregunta, int $idEscuela = 0, string $cicloEscolar = ''): array
+    public function obtener(
+        int $idPregunta, 
+        int $idEscuela = 0, 
+        string $cicloEscolar = '', 
+        string $generoFiltro = '' // <--- NUEVO FILTRO DE GÉNERO
+    ): array
     {
         if ($idPregunta <= 0) {
             return [
@@ -55,7 +60,23 @@ class ResultadosTextoController
             $params[] = $idEscuela;
         }
 
-        // Filtro según tipo
+        // Filtro por género <--- INICIO CAMBIO
+        if (!empty($generoFiltro)) {
+            $sql    .= " AND r.genero = ?";
+            $types  .= "s";
+            $params[] = $generoFiltro;
+        }
+        // Filtro por ciclo escolar
+        if (!empty($cicloEscolar) && strpos($cicloEscolar, '-') !== false) {
+            list($inicio, $fin) = explode('-', $cicloEscolar);
+            $sql     .= " AND YEAR(r.fecha_respuesta) >= ? AND YEAR(r.fecha_respuesta) < ?";
+            $types   .= 'ii';
+            $params[] = (int)$inicio; 
+            $params[] = (int)$fin;
+        }
+        // <--- FIN CAMBIO
+
+        // Filtro según tipo (texto o dibujo)
         if ($esDibujo) {
             $sql .= " AND r.dibujo_ruta IS NOT NULL";
         } else {
@@ -72,7 +93,13 @@ class ResultadosTextoController
             ];
         }
 
-        $stmt->bind_param($types, ...$params);
+        // Usar la función de PHP 8.1+ para unpacking de arrays o la función call_user_func_array para versiones anteriores
+        if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
+            $stmt->bind_param($types, ...$params);
+        } else {
+            call_user_func_array([$stmt, 'bind_param'], array_merge([$types], $params));
+        }
+
         $stmt->execute();
         $res = $stmt->get_result();
 

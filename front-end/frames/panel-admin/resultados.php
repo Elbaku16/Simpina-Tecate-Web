@@ -98,8 +98,8 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
         <label class="filtro-label" for="genero-filter">Género:</label>
         <select name="genero" id="genero-filter" class="filtro-select">
           <option value="" <?php echo ($generoFiltro ?? '') === '' ? 'selected' : ''; ?>>Todos</option>
-          <option value="M" <?php echo ($generoFiltro ?? '') === 'M' ? 'selected' : ''; ?>>Niño (Hombre)</option>
-          <option value="F" <?php echo ($generoFiltro ?? '') === 'F' ? 'selected' : ''; ?>>Niña (Mujer)</option>
+          <option value="M" <?php echo ($generoFiltro ?? '') === 'M' ? 'selected' : ''; ?>>Hombre</option>
+          <option value="F" <?php echo ($generoFiltro ?? '') === 'F' ? 'selected' : ''; ?>>Mujer</option>
           <option value="O" <?php echo ($generoFiltro ?? '') === 'O' ? 'selected' : ''; ?>>Otro</option>
           <option value="X" <?php echo ($generoFiltro ?? '') === 'X' ? 'selected' : ''; ?>>Prefiero no decir</option>
         </select>

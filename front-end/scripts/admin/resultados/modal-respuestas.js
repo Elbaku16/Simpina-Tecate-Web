@@ -7,12 +7,29 @@
   let preguntaActualId = 0;
   const RESPUESTAS_POR_PAGINA = 20;
 
+  // Función para obtener los valores de los filtros actuales
+  function obtenerFiltrosActivos() {
+      // Lee los valores de los elementos de filtro en el DOM
+      const escuelaFilter = document.getElementById('escuela-filter');
+      const generoFilter = document.getElementById('genero-filter');
+      const cicloFilter = document.getElementById('ciclo-filter');
+
+      return {
+          escuela: escuelaFilter ? parseInt(escuelaFilter.value) : 0,
+          genero: generoFilter ? generoFilter.value : '',
+          ciclo: cicloFilter ? cicloFilter.value : ''
+      };
+  }
+
   window.abrirRespuestas = function(idPregunta, nivel, escuela) {
     const modal = document.getElementById('modalRespuestas');
     const modalTitulo = document.getElementById('modalTitulo');
     const modalContenido = document.getElementById('modalContenido');
 
     preguntaActualId = idPregunta;
+    
+    // Capturar filtros activos
+    const filtros = obtenerFiltrosActivos(); // <--- CAPTURA LOS FILTROS ACTUALES
 
     // Mostrar modal
     modal.classList.remove('hidden');
@@ -21,11 +38,13 @@
     // Mostrar loading
     modalContenido.innerHTML = '<div class="loading">Cargando respuestas...</div>';
 
-    // Construir URL con parametros
+    // Construir URL con parametros, incluyendo los filtros de Género y Ciclo
     const params = new URLSearchParams({
       accion: 'obtener',
       id_pregunta: idPregunta,
-      escuela: escuela || 0
+      escuela: filtros.escuela, // Usa el filtro de escuela capturado
+      genero: filtros.genero,   // <--- AÑADIDO FILTRO DE GÉNERO
+      ciclo: filtros.ciclo      // <--- AÑADIDO FILTRO DE CICLO
     });
 
     // Peticion AJAX
@@ -97,12 +116,10 @@
     // Construir HTML
     let html = `
       <div class="respuestas-container">
-        <!-- Contador -->
         <div class="respuestas-contador">
           Mostrando ${inicio + 1} - ${fin} de ${totalRespuestas} respuesta${totalRespuestas !== 1 ? 's' : ''}
         </div>
 
-        <!-- Lista de respuestas -->
         <div class="respuestas-lista">
     `;
 

@@ -1,0 +1,249 @@
+/* ========================================================
+   usuarios.css - Estilos para Gestión de Usuarios
+   Armonizado con admin.css y comentarios.css
+   ======================================================== */
+
+:root {
+  --cream: #FDFCF7;
+  --panel-cream: #FFFAF3;
+  --burgundy: #7A1E2C;
+  --gold: #D4B056;
+  --text-dark: #2D1B1F;
+  --muted: rgba(212, 176, 86, 0.25);
+  --shadow-soft: 0 1.25rem 2.5rem rgba(45, 27, 31, 0.15);
+  --shadow-card: 0 0.875rem 1.875rem rgba(58, 42, 37, 0.18);
+  --radius-lg: 1.75rem;
+  --radius-md: 1.375rem;
+  --radius-sm: 1.125rem;
+}
+
+/* === Contenedor Principal (Hereda de admin.css) === */
+.usuarios-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: clamp(2.5rem, 5vw, 5rem) 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 3vw, 3rem);
+}
+
+/* === Botón Regresar al Panel (Estilo btn-back de comentarios) === */
+.btn-back-panel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2rem;
+    background: var(--burgundy);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 0.875rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 0.625rem 1.25rem rgba(122, 30, 44, 0.25);
+    align-self: flex-start;
+    gap: 8px;
+    margin-bottom: 2rem; /* Separación de la tarjeta */
+}
+
+.btn-back-panel:hover {
+    background: var(--gold);
+    color: var(--burgundy);
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.75rem 1.375rem rgba(212, 176, 86, 0.25);
+}
+
+/* === Tarjeta de Creación de Usuario === */
+.form-crear-usuario {
+    background: var(--panel-cream);
+    border: 1px solid var(--muted);
+    border-top: 6px solid var(--burgundy); /* Indicador de sección principal */
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-soft);
+}
+
+.form-crear-usuario h2 {
+    margin-top: 0;
+    font-size: clamp(1.6rem, 2.5vw, 1.8rem);
+    font-weight: 700;
+    color: var(--burgundy);
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(122, 30, 44, 0.1);
+    margin-bottom: 2rem;
+}
+
+/* === Estilos de Formulario (Armonizado con filtros) === */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.form-crear-usuario input,
+.form-crear-usuario select {
+    padding: 1rem 1.25rem;
+    border: 0.125rem solid var(--gold);
+    border-radius: 0.875rem;
+    font-size: 1.125rem;
+    background: #fff;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    width: 100%;
+}
+
+.form-crear-usuario input:focus,
+.form-crear-usuario select:focus {
+    outline: none;
+    border-color: var(--burgundy);
+    box-shadow: 0 0 0 0.25rem rgba(122, 30, 44, 0.15);
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* === Botón Crear === */
+.btn-crear-usuario {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 1.2rem 2.5rem;
+    border-radius: 0.875rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    border: none;
+    cursor: pointer;
+    background: var(--burgundy);
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 0.625rem 1.25rem rgba(122, 30, 44, 0.25);
+}
+
+.btn-crear-usuario:hover {
+    background: var(--gold);
+    color: var(--burgundy);
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.75rem 1.5rem rgba(212, 176, 86, 0.3);
+}
+
+/* === Encabezado de la Tabla === */
+.usuarios-container > h2 {
+    font-size: clamp(1.6rem, 2.5vw, 1.8rem);
+    font-weight: 700;
+    color: var(--burgundy);
+    margin-bottom: 1.5rem;
+}
+
+/* === Tabla de Usuarios === */
+.tabla-usuarios-wrapper {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    box-shadow: 0 0.625rem 1.5rem rgba(58, 42, 37, 0.12);
+    border: 1px solid var(--muted);
+}
+
+.usuarios-tabla {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.usuarios-tabla thead {
+    background: var(--burgundy);
+}
+
+.usuarios-tabla th {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 1.125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
+    color: var(--gold);
+    border: none;
+}
+
+.usuarios-tabla tbody td {
+    padding: 1.25rem 1.25rem;
+    color: var(--text-dark);
+    font-size: 1.125rem;
+    border-bottom: 1px solid rgba(212, 176, 86, 0.15);
+}
+
+.usuarios-tabla tbody tr:hover {
+    background: rgba(212, 176, 86, 0.08);
+}
+
+/* === Botón Eliminar === */
+.btn-eliminar-usuario {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.625rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+    box-shadow: 0 0.5rem 1rem rgba(220, 38, 38, 0.15);
+}
+
+.btn-eliminar-usuario:hover {
+    background: #dc2626;
+    color: #fff;
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.75rem 1.25rem rgba(220, 38, 38, 0.25);
+}
+
+/* === Mensajes === */
+.error-message {
+    padding: 1rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #991b1b;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .usuarios-container {
+        padding: 1rem 1rem 2rem;
+        gap: 1.5rem;
+    }
+    .form-crear-usuario {
+        padding: 1.5rem;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .btn-crear-usuario {
+        font-size: 1.1rem;
+    }
+    .usuarios-tabla th, .usuarios-tabla td {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+}

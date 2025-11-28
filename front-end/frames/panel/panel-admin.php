@@ -87,9 +87,11 @@ requerir_admin();
             Ver resultados
           </a>
 
+          <?php if (tiene_permiso('modificar_encuesta')): ?>
           <a href="/front-end/frames/panel-admin/editar.php?nivel=preescolar" class="btn-editar">
             Modificar encuesta
           </a>
+          <?php endif; ?>
         </div>
 
         <div class="card-admin primaria">
@@ -119,10 +121,12 @@ requerir_admin();
           <a href="/back-end/routes/resultados/index.php?nivel=primaria" class="btn-ver">
             Ver resultados
           </a>
-
+          
+          <?php if (tiene_permiso('modificar_encuesta')): ?>
           <a href="/front-end/frames/panel-admin/editar.php?nivel=primaria" class="btn-editar">
             Modificar encuesta
           </a>
+          <?php endif; ?>
         </div>
 
         <div class="card-admin secundaria">
@@ -165,9 +169,11 @@ requerir_admin();
             Ver resultados
           </a>
 
+          <?php if (tiene_permiso('modificar_encuesta')): ?>
           <a href="/front-end/frames/panel-admin/editar.php?nivel=secundaria" class="btn-editar">
             Modificar encuesta
           </a>
+          <?php endif; ?>
         </div>
 
         <div class="card-admin preparatoria">
@@ -181,9 +187,11 @@ requerir_admin();
             Ver resultados
           </a>
 
+          <?php if (tiene_permiso('modificar_encuesta')): ?>
           <a href="/front-end/frames/panel-admin/editar.php?nivel=preparatoria" class="btn-editar">
             Modificar encuesta
           </a>
+          <?php endif; ?>
         </div>
 
       </div>
@@ -209,7 +217,28 @@ requerir_admin();
           </svg>
         </a>
       </div>
-    </section>
+      
+      <?php if (rol_es('admin')): ?>
+      <div class="comentarios-box" style="margin-top: 1.5rem; text-align: center;">
+        <div class="comentarios-icon" style="background: linear-gradient(135deg, #4A0E26, #2D1B1F);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
+        <h2>Administrar Credenciales</h2>
+        <p>Crea, modifica o elimina las cuentas de acceso al panel administrativo (Solo Admin Total)</p>
+
+        <a href="/front-end/frames/panel-admin/usuarios.php" class="btn-comentarios">
+            Gestionar Usuarios
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </a>
+      </div>
+      <?php endif; ?>
+      </section>
 
   </main>
 

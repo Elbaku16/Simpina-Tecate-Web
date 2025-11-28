@@ -7,15 +7,17 @@ class UsuarioAdmin
     private int $id;
     private string $usuario;
     private string $passwordHash;
-    private string $nombre; // 1. Nueva propiedad
+    private string $nombre;
+    private string $rol; // 1. Nueva propiedad para el rol
 
-    // 2. Actualizamos el constructor para recibir el nombre
-    private function __construct(int $id, string $usuario, string $passwordHash, string $nombre)
+    // 2. Actualizamos el constructor para recibir el rol
+    private function __construct(int $id, string $usuario, string $passwordHash, string $nombre, string $rol)
     {
         $this->id = $id;
         $this->usuario = $usuario;
         $this->passwordHash = $passwordHash;
         $this->nombre = $nombre;
+        $this->rol = $rol; // Asignación del rol
     }
 
     /** Factory que crea entidad desde DB */
@@ -25,16 +27,16 @@ class UsuarioAdmin
             (int) $row['id_admin'],
             (string) $row['usuario'],
             (string) $row['password'],
-            // 3. Extraemos el nombre de la fila de la DB.
-            // Si la columna 'nombre' está vacía, usa 'Administrador' por defecto.
-            (string) ($row['nombre'] ?? 'Administrador') 
+            (string) ($row['nombre'] ?? 'Administrador'), 
+            // 3. Extraemos el rol. Por defecto 'admin' si no existe (compatibilidad).
+            (string) ($row['rol'] ?? 'admin') 
         );
     }
 
     /** Obtiene admin por username, o null si no existe */
     public static function findByUsername(mysqli $conn, string $usuario): ?UsuarioAdmin
     {
-        // SELECT * traerá la columna 'nombre' automáticamente si existe en la tabla
+        // Aseguramos que la consulta seleccione también el campo 'rol' (asumo que se añade en el SQL)
         $sql = "SELECT * FROM usuarios_admin WHERE usuario = ? LIMIT 1";
         $stmt = $conn->prepare($sql);
 
@@ -60,7 +62,6 @@ class UsuarioAdmin
     /** Getters de la entidad */
     public function getId(): int { return $this->id; }
     public function getUsuario(): string { return $this->usuario; }
-    
-    // 4. El método que el AuthController necesita
     public function getNombre(): string { return $this->nombre; }
+    public function getRol(): string { return $this->rol; } // 4. Nuevo Getter para el Rol
 }
