@@ -20,8 +20,10 @@ try {
             $idPregunta   = (int)($_GET['id_pregunta'] ?? 0);
             $idEscuela    = (int)($_GET['escuela'] ?? 0);
             $cicloEscolar = $_GET['ciclo'] ?? '';
+            $generoFiltro = $_GET['genero'] ?? ''; // <--- AGREGADO
 
-            $respuesta = $controller->obtener($idPregunta, $idEscuela, $cicloEscolar);
+            // Llamada al controlador con el nuevo parámetro
+            $respuesta = $controller->obtener($idPregunta, $idEscuela, $cicloEscolar, $generoFiltro); // <--- AGREGADO
 
             // CERRAR conexión antes de enviar JSON
             $conn->close();
