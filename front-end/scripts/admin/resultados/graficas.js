@@ -47,26 +47,16 @@
     });
   }
 
-  ns.toggleLegend = function (preguntaId) {
+ns.toggleLegend = function (preguntaId) {
     const btn = document.getElementById("toggle-" + preguntaId);
     const legend = document.getElementById("legend-" + preguntaId);
+    
     if (!btn || !legend) return;
 
-    const isCollapsed = legend.classList.contains("collapsed");
-
-    if (isCollapsed) {
-      legend.classList.remove("collapsed");
-      legend.classList.add("expanded");
-      btn.classList.add("active");
-      btn.innerHTML =
-        '<span>Ocultar leyenda</span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>';
-    } else {
-      legend.classList.add("collapsed");
-      legend.classList.remove("expanded");
-      btn.classList.remove("active");
-      btn.innerHTML =
-        '<span>Ver leyenda</span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>';
-    }
+    // Solo alternamos clases. El navegador es MUY rápido haciendo esto.
+    legend.classList.toggle("collapsed"); 
+    legend.classList.toggle("expanded");
+    btn.classList.toggle("active");
   };
 
   document.addEventListener("DOMContentLoaded", initCharts);

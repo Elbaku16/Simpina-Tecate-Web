@@ -263,11 +263,17 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
               <canvas id="chart-<?php echo $pid; ?>"></canvas>
             </div>
 
-            <button class="toggle-legend"
-                    onclick="SimpinnaResultados.toggleLegend(<?php echo $pid; ?>)"
-                    id="toggle-<?php echo $pid; ?>">
-              <span>Ver leyenda</span>
-            </button>
+     <button class="toggle-legend"
+        onclick="SimpinnaResultados.toggleLegend(<?php echo $pid; ?>)"
+        id="toggle-<?php echo $pid; ?>">
+  
+  <span class="text-ver">Ver leyenda</span>
+  <span class="text-ocultar">Ocultar leyenda</span>
+  
+  <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+  </svg>
+</button>
 
             <div class="legend collapsed" id="legend-<?php echo $pid; ?>">
               <?php if (empty($lista)): ?>
@@ -312,7 +318,51 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
       </div>
     </div>
   </div>
+<template id="template-card-texto">
+  <div class="respuesta-card">
+    <div class="respuesta-header">
+      <div class="respuesta-info">
+        <span class="respuesta-escuela"></span>
+        <span class="respuesta-fecha-hora"></span>
+      </div>
+      <button class="respuesta-eliminar" title="Eliminar respuesta">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="respuesta-contenido">
+      <p class="texto-respuesta"></p>
+    </div>
+  </div>
+</template>
 
+<template id="template-card-dibujo">
+  <div class="respuesta-card respuesta-dibujo">
+    <div class="respuesta-header">
+      <div class="respuesta-info">
+        <span class="respuesta-escuela"></span>
+        <span class="respuesta-fecha-hora"></span>
+      </div>
+      <button class="respuesta-eliminar" title="Eliminar respuesta">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="respuesta-contenido respuesta-imagen-wrapper">
+      <img src="" alt="Dibujo" class="respuesta-imagen">
+      <span class="imagen-tamano"></span>
+      <div class="imagen-no-disponible hidden">Imagen no disponible</div>
+    </div>
+  </div>
+</template>            
   <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/footer-admin.php'; ?>
 
   
