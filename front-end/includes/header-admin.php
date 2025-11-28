@@ -1,8 +1,24 @@
 <?php
-if (session_status() !== PHP_SESSION_ACTIVE) session_start();
-$esAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin';
-$textoUsuario = $esAdmin ? ($_SESSION['nombre_completo'] ?? $_SESSION['usuario'] ?? 'Administrador') : '';
-$tituloCentral = (strpos($_SERVER['SCRIPT_NAME'] ?? '', 'login.php') !== false) ? 'Inicio de sesión' : 'Panel Administrativo';
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+// Lógica de tu compañero: Verificar si existe CUALQUIER rol, no solo admin
+$esUsuarioAdmin = isset($_SESSION['rol']);
+
+// Lógica de nombre de usuario
+$textoUsuario = 'Administrador';
+if ($esUsuarioAdmin) {
+    if (isset($_SESSION['nombre_completo']) && !empty($_SESSION['nombre_completo'])) {
+        $textoUsuario = $_SESSION['nombre_completo']; 
+    } elseif (isset($_SESSION['usuario']) && !empty($_SESSION['usuario'])) {
+        $textoUsuario = $_SESSION['usuario'];
+    }
+}
+
+$currentScript = $_SERVER['SCRIPT_NAME'] ?? '';
+$isLoginPage = (strpos($currentScript, '/frames/admin/login.php') !== false);
+$tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
 ?>
 
 <header class="header header-admin">
@@ -10,14 +26,14 @@ $tituloCentral = (strpos($_SERVER['SCRIPT_NAME'] ?? '', 'login.php') !== false) 
   <div class="header-izq">
     <img src="/front-end/assets/img/global/logo-simpinna.png" alt="Logo SIMPINNA" class="logo-simpinna">
     
-    <?php if ($esAdmin): ?>
+    <?php if ($esUsuarioAdmin): ?>
     <div class="admin-info-desktop">
         <span class="user-label">
-            <i class="fa-solid fa-user-circle"></i> 
+            <i class="fa-solid fa-user"></i> 
             <?php echo htmlspecialchars($textoUsuario); ?>
         </span>
         <a href="/back-end/routes/auth/logout.php" class="btn-logout">
-            <i class="fa-solid fa-sign-out-alt"></i> Salir
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
         </a>
     </div>
     <?php endif; ?>
@@ -56,14 +72,14 @@ $tituloCentral = (strpos($_SERVER['SCRIPT_NAME'] ?? '', 'login.php') !== false) 
       <h2 class="mobile-title"><?php echo $tituloCentral; ?></h2>
       <hr class="mobile-divider">
 
-      <?php if ($esAdmin): ?>
+      <?php if ($esUsuarioAdmin): ?>
         <div class="mobile-user-info">
             <span class="mobile-user-name">
-                <i class="fa-solid fa-user-circle"></i> 
+                <i class="fa-solid fa-user"></i> 
                 <?php echo htmlspecialchars($textoUsuario); ?>
             </span>
             <a href="/back-end/routes/auth/logout.php" class="mobile-btn-logout">
-                <i class="fa-solid fa-sign-out-alt"></i> Cerrar Sesión
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
             </a>
         </div>
       <?php endif; ?>
@@ -76,8 +92,12 @@ $tituloCentral = (strpos($_SERVER['SCRIPT_NAME'] ?? '', 'login.php') !== false) 
 document.addEventListener('DOMContentLoaded', () => {
     const toggle = (id) => document.getElementById(id);
     const toggleMenu = () => {
-        toggle('mobileMenu').classList.toggle('active');
-        toggle('menuOverlay').classList.toggle('active');
+        const menu = toggle('mobileMenu');
+        const overlay = toggle('menuOverlay');
+        if(menu && overlay) {
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
     };
     ['menuToggle', 'menuClose', 'menuOverlay'].forEach(id => {
         if(toggle(id)) toggle(id).addEventListener('click', toggleMenu);

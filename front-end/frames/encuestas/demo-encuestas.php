@@ -109,8 +109,8 @@ $nivelTitulo = ucfirst($nivel);
             <div class="select-wrapper">
                 <select id="selectGeneroModal">
                     <option value="">-- Selecciona --</option>
-                    <option value="M">Niño (Hombre)</option>
-                    <option value="F">Niña (Mujer)</option>
+                    <option value="M">Hombre</option>
+                    <option value="F">Mujer</option>
                     <option value="O">Otro</option>
                     <option value="X">Prefiero no decirlo</option>
                     
