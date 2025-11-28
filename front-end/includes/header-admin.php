@@ -3,11 +3,12 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-$esAdmin = isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin';
+// Anteriormente solo verificaba si era el rol 'admin'. Ahora verifica si CUALQUIER rol está presente.
+$esUsuarioAdmin = isset($_SESSION['rol']);
 
 // Lógica de nombre de usuario (solo para admins logueados)
 $textoUsuario = 'Administrador';
-if ($esAdmin) {
+if ($esUsuarioAdmin) { 
     if (isset($_SESSION['nombre_completo']) && !empty($_SESSION['nombre_completo'])) {
         $textoUsuario = $_SESSION['nombre_completo']; 
     } elseif (isset($_SESSION['usuario']) && !empty($_SESSION['usuario'])) {
@@ -27,7 +28,7 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
          alt="Logo SIMPINNA" class="logo-simpinna">
 
     <div class="admin-info">
-      <?php if ($esAdmin): ?>
+      <?php if ($esUsuarioAdmin): ?>
         <span class="user-label">
             <i class="fa-solid fa-user"></i> 
             <?php echo htmlspecialchars($textoUsuario); ?>
