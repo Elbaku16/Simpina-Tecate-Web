@@ -2,14 +2,18 @@
 (function (global) {
   const ns = (global.SimpinnaResultados = global.SimpinnaResultados || {});
 
-  /* ------------------------ Filtro actual ------------------------ */
+  /* ------------------------ Filtro actual (ACTUALIZADO) ------------------------ */
   ns.obtenerFiltroInfo = function () {
     const urlParams = new URLSearchParams(window.location.search);
     const nivel = urlParams.get("nivel") || "No especificado";
     const escuela = parseInt(urlParams.get("escuela") || "0", 10);
+    // Captura de los nuevos filtros
+    const ciclo = urlParams.get("ciclo") || "Todos";
+    const genero = urlParams.get("genero") || "Todos";
 
     let filtroText = `Nivel: ${ns.escapeHtml(nivel)}`;
 
+    // Filtro Escuela
     if (escuela > 0) {
       const selectEscuela = document.getElementById("escuela-filter");
       const nombreEscuela =
@@ -20,6 +24,22 @@
       filtroText += ` | Escuela: ${ns.escapeHtml(nombreEscuela)}`;
     } else {
       filtroText += " | Escuela: Todas las escuelas";
+    }
+
+    // Filtro Género (Mostrar el valor legible si no es "Todos")
+    if (genero !== 'Todos' && genero !== '') {
+        const selectGenero = document.getElementById("genero-filter");
+        const nombreGenero =
+            selectGenero && selectGenero.selectedIndex >= 0
+                ? selectGenero.options[selectGenero.selectedIndex].text
+                : genero;
+
+        filtroText += ` | Género: ${ns.escapeHtml(nombreGenero)}`;
+    }
+
+    // Filtro Ciclo (Mostrar el valor si no es "Todos")
+    if (ciclo !== 'Todos' && ciclo !== '') {
+        filtroText += ` | Ciclo: ${ns.escapeHtml(ciclo)}`;
     }
 
     return filtroText;
@@ -53,9 +73,9 @@
   };
 
   /* ------------------------ Toggle Leyenda ------------------------ */
-  ns.toggleLegend = function (preguntaId) {
-    const btn = document.getElementById("toggle-" + preguntaId);
-    const legend = document.getElementById("legend-" + preguntaId);
+  ns.toggleRankingLegend = function (preguntaId) {
+    const btn = document.getElementById("toggle-ranking-" + preguntaId);
+    const legend = document.getElementById("ranking-restantes-" + preguntaId);
 
     if (!btn || !legend) return;
 
@@ -66,13 +86,13 @@
     btn.classList.toggle("active", collapsed);
 
     btn.innerHTML = collapsed
-      ? `<span>Ocultar leyenda</span>
+      ? `<span>Ocultar más posiciones</span>
          <svg xmlns="http://www.w3.org/2000/svg" fill="none" 
          viewBox="0 0 24 24" stroke="currentColor">
            <path stroke-linecap="round" stroke-linejoin="round"
            stroke-width="2" d="M5 15l7-7 7 7"/>
          </svg>`
-      : `<span>Ver leyenda</span>
+      : `<span>Ver más posiciones</span>
          <svg xmlns="http://www.w3.org/2000/svg" fill="none" 
          viewBox="0 0 24 24" stroke="currentColor">
            <path stroke-linecap="round" stroke-linejoin="round"
@@ -82,5 +102,7 @@
 
   /* Exponer para HTML */
   global.toggleLegend = ns.toggleLegend;
+  // Exponer la nueva función para el ranking
+  global.SimpinnaResultados.toggleRankingLegend = ns.toggleRankingLegend;
 
 })(window);
