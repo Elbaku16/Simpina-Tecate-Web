@@ -264,48 +264,7 @@
   max-width: 100%;
 }
 
-/* === BOTÓN TOGGLE LEYENDA === */
-.toggle-legend {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: linear-gradient(135deg, var(--gold) 0%, #E1CC73 100%);
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--burgundy);
-  transition: all 0.3s ease;
-  width: 100%;
-  position: relative;
-  z-index: 1;
-}
 
-.toggle-legend:hover {
-  background: linear-gradient(135deg, var(--burgundy) 0%, #5a1520 100%);
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(122, 30, 44, 0.2);
-}
-
-.toggle-legend.active {
-  background: linear-gradient(135deg, var(--burgundy) 0%, #5a1520 100%);
-  color: #fff;
-}
-
-.toggle-legend svg {
-  width: 14px;
-  height: 14px;
-  transition: transform 0.3s ease;
-  stroke-width: 3;
-}
-
-.toggle-legend.active svg {
-  transform: rotate(180deg);
-}
 
 /* === LEYENDA DESPLEGABLE === */
 .legend {
@@ -379,7 +338,9 @@
   justify-content: center;
   position: relative;
   z-index: 1;
-  margin-top: 4px;
+
+  /* CAMBIO CLAVE: Usa margin-top: auto para empujar al fondo */
+  margin-top: auto; 
 }
 
 .btn-export {
@@ -426,17 +387,18 @@
 /* === ICONO DE DOCUMENTO === */
 .encuesta-icon-container {
   width: 100%;
+  height: 232px; 
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; /* Alineación vertical */
   padding: 12px;
   position: relative;
   z-index: 1;
 }
 
 .encuesta-icon {
-  width: 70px;
-  height: 70px;
+  width: 190px; 
+  height: 190px;
   background: linear-gradient(135deg, var(--burgundy), rgba(122, 30, 44, 0.8));
   border-radius: 50%;
   display: flex;
@@ -447,8 +409,9 @@
 }
 
 .encuesta-icon svg {
-  width: 36px;
-  height: 36px;
+  /* Mantenemos el tamaño grande del SVG */
+  width: 60px;
+  height: 60px;
   stroke-width: 1.5;
 }
 
@@ -804,4 +767,220 @@
     width: 30px;
     height: 30px;
   }
+}
+
+.ranking-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(253, 252, 247, 0.9) 100%);
+  border: 2px dashed var(--gold);
+  border-radius: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.ranking-item-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 16px;
+  position: relative;
+}
+
+.ranking-posicion-num {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--burgundy);
+  min-width: 30px;
+  text-align: right;
+}
+
+.ranking-barra-wrap {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.ranking-texto {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+  line-height: 1.3;
+}
+
+.ranking-barra {
+  height: 18px;
+  border-radius: 4px;
+  background: var(--burgundy);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transition: width 0.5s ease;
+  min-width: 1%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-promedio {
+  color: white;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding-right: 8px;
+  white-space: nowrap;
+}
+
+.ranking-header {
+  display: flex;
+  padding: 0 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--muted);
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+}
+
+.ranking-header .ranking-label:first-child {
+  min-width: 30px;
+  text-align: right;
+  margin-right: 10px;
+}
+.ranking-header .ranking-label:last-child {
+  flex-grow: 1;
+}
+
+/* Ajuste para móvil: hacer las barras más compactas */
+@media (max-width: 768px) {
+  .ranking-item-bar {
+    padding: 4px 8px;
+  }
+}
+/* htdocs/front-end/assets/css/admin/resultados.css */
+
+/* ... (tus estilos existentes) ... */
+
+/* Estilos para el contenedor de elementos de ranking restantes */
+.ranking-restantes {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.ranking-restantes.expanded {
+    max-height: 1000px; /* Suficientemente grande para contener todos los elementos */
+    transition: max-height 0.5s ease-in;
+}
+
+/* Estilos para el botón de toggle (similar a la leyenda de la gráfica) */
+.toggle-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+    padding: 8px 15px;
+    border: 1px solid var(--golden-rod-secondary);
+    border-radius: 8px;
+    background-color: var(--golden-rod-secondary);
+    color: var(--burgundy);
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: 600;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all 0.2s ease-in-out;
+}
+
+.toggle-legend:hover {
+    background-color: var(--burgundy);
+    color: white;
+    border-color: var(--burgundy);
+}
+
+.toggle-legend svg {
+    /* REMOVED: width, height, margin-left, transform */
+    display: none; /* Asegurar que no se muestre el SVG */
+}
+
+
+.toggle-legend.active {
+    background-color: var(--burgundy);
+    color: white;
+    border-color: var(--burgundy);
+}
+
+/* Puedes reusar o adaptar los estilos para .legend y .legend-item si aplica */
+.legend.collapsed {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.legend.expanded {
+    max-height: 500px; /* Ajusta según sea necesario */
+    transition: max-height 0.5s ease-in;
+}
+
+/* REGLAS PARA UNIFICAR BOTONES TOGGLE AL ESTILO ROJO/GUINDA (manteniendo el ancho completo) */
+.toggle-legend, .ranking-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: var(--burgundy); /* Fondo Guinda */
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 12px 24px rgba(122, 30, 44, 0.25);
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    width: 100%; /* Ocupa el ancho completo como los otros botones */
+    margin-top: 12px; /* Espacio para separar de la gráfica/ranking */
+}
+
+.toggle-legend:hover, .ranking-toggle-btn:hover {
+    background: var(--gold); /* Efecto hover amarillo */
+    color: var(--burgundy);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 28px rgba(212, 176, 86, 0.28);
+}
+
+/* OCULTAR SVG/ICONO DENTRO DE ESTOS BOTONES */
+.toggle-legend svg, 
+.ranking-toggle-btn svg {
+    display: none; 
+}
+
+
+/* Asegurar que el botón de Ver Respuestas (el original) no se rompa */
+.btn-ver-respuestas {
+    /* Mantener los estilos de .btn-ver-respuestas que ya tenías */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: var(--burgundy);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 12px 24px rgba(122, 30, 44, 0.25);
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    /* Remover width: 100% si lo deseas solo para los de exportación */
 }
