@@ -17,7 +17,7 @@ class ResultadosController
 
     /**
      * ===============================================================
-     *   Obtener ciclos escolares detectando automáticamente por fecha
+     * Obtener ciclos escolares detectando automáticamente por fecha
      * ===============================================================
      */
     private function obtenerCiclosEscolares(int $encuestaId): array
@@ -91,20 +91,22 @@ class ResultadosController
             throw new Exception("No se encontró encuesta para este nivel");
         }
 
-        // Filtro por escuela
+        // 1. Filtro por escuela (Original)
         $escuelaFiltro = isset($req['escuela']) ? (int)$req['escuela'] : 0;
+        
+        // 2. Filtro por género (NUEVO)
+        $generoFiltro = $req['genero'] ?? '';
+        if (!in_array($generoFiltro, ['M', 'F', 'O', 'X'])) { 
+            $generoFiltro = ''; 
+        }
 
-        /* -------------------------
-           Filtro por ciclo escolar
-        -------------------------- */
+        /* 3. Filtro por ciclo escolar (NUEVO) */
         $cicloFiltro = $req['ciclo'] ?? '';
-        $cicloInicio = null;
-        $cicloFin    = null;
+        $cicloRango = null; 
 
         if ($cicloFiltro && strpos($cicloFiltro, '-') !== false) {
-            list($cicloInicio, $cicloFin) = explode('-', $cicloFiltro);
-            $cicloInicio = (int)$cicloInicio;
-            $cicloFin    = (int)$cicloFin;
+            list($inicio, $fin) = explode('-', $cicloFiltro);
+            $cicloRango = [(int)$inicio, (int)$fin]; 
         }
 
         // Escuelas del nivel
@@ -113,11 +115,13 @@ class ResultadosController
         // Preguntas
         $preguntas = Resultados::obtenerPreguntas($this->db, $encuestaId);
 
-        // Estadísticas
+        // Estadísticas (PASANDO LOS NUEVOS FILTROS)
         $estadisticas = Resultados::obtenerEstadisticasMixta(
             $this->db,
             $preguntas,
-            $escuelaFiltro
+            $escuelaFiltro,
+            $generoFiltro, 
+            $cicloRango    
         );
 
         // Opciones por pregunta
@@ -138,18 +142,38 @@ class ResultadosController
            NUEVO: ciclos escolares detectados automáticamente
         ------------------------------------------------------- */
         $ciclosDisponibles = $this->obtenerCiclosEscolares($encuestaId);
+        
+        // Obtener el total de respuestas para mostrarlo en la cabecera
+        $totalRespuestas = 0;
+        // Se busca la pregunta con más respuestas (normalmente la primera opción/múltiple)
+        foreach ($preguntas as $p) {
+            $pid = (int)$p['id_pregunta'];
+            $tipo = strtolower(trim($p['tipo_pregunta']));
+            
+            if ($tipo !== 'texto' && $tipo !== 'dibujo' && isset($estadisticas[$pid])) {
+                $sum = 0;
+                if ($tipo === 'ranking') {
+                    foreach ($estadisticas[$pid] as $data) {
+                        $sum += $data['total'] ?? 0;
+                    }
+                } else {
+                    $sum = array_sum($estadisticas[$pid]);
+                }
+                $totalRespuestas = max($totalRespuestas, $sum);
+            }
+        }
 
         return [
             'nivelNombre'         => $nivelNombre,
             'escuelaFiltro'       => $escuelaFiltro,
+            'generoFiltro'        => $generoFiltro, // <-- NUEVO
             'escuelasDelNivel'    => $escuelasDelNivel,
             'preguntas'           => $preguntas,
             'opcionesPorPregunta' => $opcionesPorPregunta,
             'palette'             => $palette,
-
-            // Nuevo
             'ciclosDisponibles'   => $ciclosDisponibles,
-            'cicloFiltro'         => $cicloFiltro
+            'cicloFiltro'         => $cicloFiltro,
+            'totalRespuestas'     => $totalRespuestas // <-- NUEVO
         ];
     }
 }
