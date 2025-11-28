@@ -875,96 +875,108 @@
     transition: max-height 0.5s ease-in;
 }
 
-/* Estilos para el botón de toggle (similar a la leyenda de la gráfica) */
-.toggle-legend {
+/* ==========================================================================
+   ESTILOS UNIFICADOS PARA BOTONES TOGGLE (Leyenda y Ranking)
+   ========================================================================== */
+
+/* 1. Estilo Base (Color Guinda, ancho completo) */
+.toggle-legend, 
+.ranking-toggle-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 15px;
-    padding: 8px 15px;
-    border: 1px solid var(--golden-rod-secondary);
-    border-radius: 8px;
-    background-color: var(--golden-rod-secondary);
-    color: var(--burgundy);
-    cursor: pointer;
-    font-size: 0.95em;
-    font-weight: 600;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    transition: all 0.2s ease-in-out;
-}
-
-.toggle-legend:hover {
-    background-color: var(--burgundy);
-    color: white;
-    border-color: var(--burgundy);
-}
-
-.toggle-legend svg {
-    /* REMOVED: width, height, margin-left, transform */
-    display: none; /* Asegurar que no se muestre el SVG */
-}
-
-
-.toggle-legend.active {
-    background-color: var(--burgundy);
-    color: white;
-    border-color: var(--burgundy);
-}
-
-/* Puedes reusar o adaptar los estilos para .legend y .legend-item si aplica */
-.legend.collapsed {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-}
-
-.legend.expanded {
-    max-height: 500px; /* Ajusta según sea necesario */
-    transition: max-height 0.5s ease-in;
-}
-
-/* REGLAS PARA UNIFICAR BOTONES TOGGLE AL ESTILO ROJO/GUINDA (manteniendo el ancho completo) */
-.toggle-legend, .ranking-toggle-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 10px; /* Espacio entre texto e icono */
     padding: 10px 16px;
     border-radius: 10px;
     background: var(--burgundy); /* Fondo Guinda */
     color: #fff;
-    text-decoration: none;
+    border: 1px solid transparent; /* Para evitar saltos si se agrega borde luego */
+    
     font-weight: 600;
     font-size: 0.9rem;
-    box-shadow: 0 12px 24px rgba(122, 30, 44, 0.25);
-    transition: all 0.3s ease;
-    border: none;
+    text-decoration: none;
     cursor: pointer;
+    
+    width: 100%; /* Ocupa el ancho completo */
+    margin-top: 12px;
+    
     position: relative;
     z-index: 1;
-    width: 100%; /* Ocupa el ancho completo como los otros botones */
-    margin-top: 12px; /* Espacio para separar de la gráfica/ranking */
+    box-shadow: 0 12px 24px rgba(122, 30, 44, 0.25);
+    transition: all 0.3s ease;
 }
 
-.toggle-legend:hover, .ranking-toggle-btn:hover {
-    background: var(--gold); /* Efecto hover amarillo */
+/* 2. Efecto Hover (Dorado) */
+.toggle-legend:hover, 
+.ranking-toggle-btn:hover {
+    background: var(--gold);
     color: var(--burgundy);
     transform: translateY(-2px);
     box-shadow: 0 16px 28px rgba(212, 176, 86, 0.28);
 }
 
-/* OCULTAR SVG/ICONO DENTRO DE ESTOS BOTONES */
+/* ==========================================================================
+   LÓGICA DE VISUALIZACIÓN (OPTIMIZACIÓN DE RENDIMIENTO)
+   ========================================================================== */
+
+/* 3. El icono (SVG) - IMPORTANTE: Quitamos el display:none */
 .toggle-legend svg, 
 .ranking-toggle-btn svg {
-    display: none; 
+    display: block; /* Aseguramos que se vea */
+    width: 20px;    /* Tamaño fijo */
+    height: 20px;
+    transition: transform 0.3s ease; /* La magia de la animación suave */
 }
 
+/* 4. Rotación del icono cuando está activo */
+.toggle-legend.active svg,
+.ranking-toggle-btn.active svg {
+    transform: rotate(180deg);
+}
 
-/* Asegurar que el botón de Ver Respuestas (el original) no se rompa */
+/* 5. Intercambio de texto (Sin innerHTML) */
+
+/* Por defecto: Ocultamos el texto de "Ocultar" */
+.toggle-legend .text-ocultar,
+.ranking-toggle-btn .text-ocultar {
+    display: none;
+}
+
+/* Cuando tiene la clase .active (agregada por JS): */
+/* Ocultamos "Ver" y mostramos "Ocultar" */
+.toggle-legend.active .text-ver,
+.ranking-toggle-btn.active .text-ver {
+    display: none;
+}
+
+.toggle-legend.active .text-ocultar,
+.ranking-toggle-btn.active .text-ocultar {
+    display: inline;
+}
+
+/* ==========================================================================
+   ESTILOS PARA EL CONTENEDOR DESPLEGABLE (LEYENDA)
+   ========================================================================== */
+.legend.collapsed {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0; /* Añadido para efecto fade */
+    margin-top: 0;
+    padding: 0;
+    transition: all 0.3s ease-out;
+}
+
+.legend.expanded {
+    max-height: 1000px; /* Suficiente para contenido largo */
+    opacity: 1;
+    margin-top: 10px;
+    transition: all 0.5s ease-in;
+}
+
+/* ==========================================================================
+   BOTÓN VER RESPUESTAS (Mantenemos tu estilo original)
+   ========================================================================== */
 .btn-ver-respuestas {
-    /* Mantener los estilos de .btn-ver-respuestas que ya tenías */
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -982,5 +994,10 @@
     cursor: pointer;
     position: relative;
     z-index: 1;
-    /* Remover width: 100% si lo deseas solo para los de exportación */
+}
+
+.btn-ver-respuestas:hover {
+    background: var(--gold);
+    color: var(--burgundy);
+    transform: translateY(-2px);
 }

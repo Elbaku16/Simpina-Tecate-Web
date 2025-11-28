@@ -89,130 +89,124 @@
     preguntaActualId = 0;
   };
 
-  function renderizarRespuestas(respuestas, tipo) {
+ function renderizarRespuestas(respuestas, tipo) {
     const modalContenido = document.getElementById('modalContenido');
+    modalContenido.innerHTML = ''; // Limpiar contenido previo
     
     if (respuestas.length === 0) {
       modalContenido.innerHTML = `
         <div class="empty-state">
-          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 11H3v2h6v-2z"/>
-            <path d="M21 11h-6v2h6v-2z"/>
-            <circle cx="12" cy="12" r="10"/>
-          </svg>
           <p>No hay respuestas para mostrar</p>
         </div>
       `;
       return;
     }
 
-    // Calcular paginacion
+    // Calcular paginación
     const totalRespuestas = respuestas.length;
     const totalPaginas = Math.ceil(totalRespuestas / RESPUESTAS_POR_PAGINA);
     const inicio = (paginaActual - 1) * RESPUESTAS_POR_PAGINA;
     const fin = Math.min(inicio + RESPUESTAS_POR_PAGINA, totalRespuestas);
     const respuestasPagina = respuestas.slice(inicio, fin);
 
-    // Construir HTML
-    let html = `
-      <div class="respuestas-container">
-        <div class="respuestas-contador">
-          Mostrando ${inicio + 1} - ${fin} de ${totalRespuestas} respuesta${totalRespuestas !== 1 ? 's' : ''}
-        </div>
+    // Crear contenedor
+    const contenedorLista = document.createElement('div');
+    contenedorLista.className = 'respuestas-container';
 
-        <div class="respuestas-lista">
-    `;
+    // Agregar contador
+    const contador = document.createElement('div');
+    contador.className = 'respuestas-contador';
+    contador.textContent = `Mostrando ${inicio + 1} - ${fin} de ${totalRespuestas} respuesta${totalRespuestas !== 1 ? 's' : ''}`;
+    contenedorLista.appendChild(contador);
 
+    // Crear lista de respuestas
+    const lista = document.createElement('div');
+    lista.className = 'respuestas-lista';
+
+    // Generar cada tarjeta usando los templates
     respuestasPagina.forEach(resp => {
+      let card;
       if (tipo === 'dibujo') {
-        html += generarCardDibujo(resp);
+        card = generarCardDibujo(resp);
       } else {
-        html += generarCardTexto(resp);
+        card = generarCardTexto(resp);
       }
+      lista.appendChild(card); // <--- Aquí está la magia: agregamos el elemento DOM
     });
 
-    html += '</div>'; // Cierra respuestas-lista
+    contenedorLista.appendChild(lista);
 
-    // Paginacion
+    // Agregar paginación si hace falta
     if (totalPaginas > 1) {
-      html += generarPaginacion(totalPaginas);
+      // Nota: generarPaginacion devuelve string, así que lo insertamos como HTML
+      const divPaginacion = document.createElement('div');
+      divPaginacion.innerHTML = generarPaginacion(totalPaginas);
+      contenedorLista.appendChild(divPaginacion);
     }
 
-    html += '</div>'; // Cierra respuestas-container
-
-    modalContenido.innerHTML = html;
+    modalContenido.appendChild(contenedorLista);
   }
 
   function generarCardTexto(resp) {
-    const fecha = new Date(resp.fecha);
-    const fechaFormateada = formatearFecha(fecha);
-    const horaFormateada = formatearHora(fecha);
-
-    return `
-      <div class="respuesta-card">
-        <div class="respuesta-header">
-          <div class="respuesta-info">
-            <span class="respuesta-escuela">${escapeHtml(resp.escuela)}</span>
-            <span class="respuesta-fecha-hora">
-              ${fechaFormateada} • ${horaFormateada}
-            </span>
-          </div>
-          <button class="respuesta-eliminar" 
-                  onclick="eliminarRespuesta(${resp.id})"
-                  title="Eliminar respuesta">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              <line x1="10" y1="11" x2="10" y2="17"></line>
-              <line x1="14" y1="11" x2="14" y2="17"></line>
-            </svg>
-          </button>
-        </div>
-        <div class="respuesta-contenido">
-          <p>${escapeHtml(resp.texto)}</p>
-        </div>
-      </div>
-    `;
-  }
-
-  function generarCardDibujo(resp) {
-    const fecha = new Date(resp.fecha);
-    const fechaFormateada = formatearFecha(fecha);
-    const horaFormateada = formatearHora(fecha);
+    const template = document.getElementById('template-card-texto');
+    const clone = template.content.cloneNode(true);
     
-    const existeArchivo = resp.existe_archivo;
-    const rutaDibujo = resp.ruta_dibujo || '';
-    const tamano = resp.tamano || resp.tamaño || '';
+    // 1. Rellenar Escuela
+    clone.querySelector('.respuesta-escuela').textContent = resp.escuela;
+    
+    // 2. Rellenar Fecha
+    const fecha = new Date(resp.fecha);
+    clone.querySelector('.respuesta-fecha-hora').textContent = 
+        `${formatearFecha(fecha)} • ${formatearHora(fecha)}`;
+    
+    // 3. Rellenar Texto
+    clone.querySelector('.texto-respuesta').textContent = resp.texto;
+    
+    // 4. Configurar botón eliminar
+    const btnEliminar = clone.querySelector('.respuesta-eliminar');
+    btnEliminar.onclick = () => eliminarRespuesta(resp.id);
+    
+    // --- CORRECCIÓN AQUÍ ---
+    // Antes tenías: return div.innerHTML; (Devolvía texto)
+    // Ahora devolvemos el NODO directamente para que appendChild funcione:
+    return clone; 
+  }
+  function generarCardDibujo(resp) {
+    const template = document.getElementById('template-card-dibujo');
+    const clone = template.content.cloneNode(true);
 
-    return `
-      <div class="respuesta-card respuesta-dibujo">
-        <div class="respuesta-header">
-          <div class="respuesta-info">
-            <span class="respuesta-escuela">${escapeHtml(resp.escuela)}</span>
-            <span class="respuesta-fecha-hora">
-              ${fechaFormateada} • ${horaFormateada}
-            </span>
-          </div>
-          <button class="respuesta-eliminar" 
-                  onclick="eliminarRespuesta(${resp.id})"
-                  title="Eliminar respuesta">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              <line x1="10" y1="11" x2="10" y2="17"></line>
-              <line x1="14" y1="11" x2="14" y2="17"></line>
-            </svg>
-          </button>
-        </div>
-        <div class="respuesta-contenido respuesta-imagen-wrapper">
-          ${existeArchivo 
-            ? `<img src="${rutaDibujo}" alt="Dibujo" class="respuesta-imagen" onclick="abrirImagenCompleta('${rutaDibujo}')">
-               ${tamano ? `<span class="imagen-tamano">${tamano}</span>` : ''}`
-            : '<div class="imagen-no-disponible">Imagen no disponible</div>'
-          }
-        </div>
-      </div>
-    `;
+    // Rellenar datos básicos
+    clone.querySelector('.respuesta-escuela').textContent = resp.escuela;
+
+    const fecha = new Date(resp.fecha);
+    clone.querySelector('.respuesta-fecha-hora').textContent = 
+        `${formatearFecha(fecha)} • ${formatearHora(fecha)}`;
+
+    // Configurar botón eliminar
+    const btnEliminar = clone.querySelector('.respuesta-eliminar');
+    btnEliminar.onclick = function() { eliminarRespuesta(resp.id); };
+
+    // Lógica de imagen
+    const img = clone.querySelector('.respuesta-imagen');
+    const noImg = clone.querySelector('.imagen-no-disponible');
+    const tamanoSpan = clone.querySelector('.imagen-tamano');
+
+    if (resp.existe_archivo) {
+        img.src = resp.ruta_dibujo || '';
+        img.onclick = function() { abrirImagenCompleta(resp.ruta_dibujo); };
+        
+        if (resp.tamano || resp.tamaño) {
+            tamanoSpan.textContent = resp.tamano || resp.tamaño;
+        } else {
+            tamanoSpan.remove();
+        }
+    } else {
+        img.remove(); // Quitamos la etiqueta img si no hay archivo
+        tamanoSpan.remove();
+        noImg.classList.remove('hidden'); // Mostramos el div de error
+    }
+
+    return clone; // Devuelve un elemento DOM
   }
 
   function generarPaginacion(totalPaginas) {

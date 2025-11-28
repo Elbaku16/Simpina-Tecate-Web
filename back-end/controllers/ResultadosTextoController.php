@@ -92,13 +92,20 @@ class ResultadosTextoController
                 'error'   => 'Error al preparar consulta'
             ];
         }
-
-        // Usar la función de PHP 8.1+ para unpacking de arrays o la función call_user_func_array para versiones anteriores
-        if (version_compare(PHP_VERSION, '8.1.0', '>=')) {
-            $stmt->bind_param($types, ...$params);
-        } else {
-            call_user_func_array([$stmt, 'bind_param'], array_merge([$types], $params));
+// --- INICIO CORRECCIÓN ---
+        // bind_param requiere que los argumentos se pasen por referencia.
+        // Creamos un array nuevo donde cada elemento es una referencia a los valores de $params.
+        $paramsReferencias = [];
+        foreach ($params as $key => $value) {
+            $paramsReferencias[$key] = &$params[$key];
         }
+
+        // Unimos los tipos al principio
+        $args = array_merge([$types], $paramsReferencias);
+
+        // Llamamos a bind_param usando call_user_func_array (Funciona en todas las versiones de PHP)
+        call_user_func_array([$stmt, 'bind_param'], $args);
+        // --- FIN CORRECCIÓN ---
 
         $stmt->execute();
         $res = $stmt->get_result();
