@@ -370,3 +370,64 @@ color: white;
   .encuesta-content { padding: 2rem; }
   .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
 }
+
+/* =========================================
+   CORRECCIÓN RESPONSIVA: SECCIÓN ENCUESTA
+   ========================================= */
+
+/* 1. Ajuste para Tablets y Laptops pequeñas (menos de 992px) */
+@media (max-width: 992px) {
+  .encuesta-content {
+    /* Cambiar de 2 columnas a 1 columna apilada */
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 3rem;
+    /* Reducir el padding interno de la caja blanca */
+    padding: 3rem 2rem; 
+  }
+
+  /* Centrar la lista de beneficios */
+  .encuesta-beneficios li {
+    justify-content: center;
+    text-align: left; /* Mantiene el texto legible aunque el bloque esté centrado */
+  }
+
+  /* Ordenar elementos: si quieres que el icono aparezca primero, usa esto (opcional) */
+  /* .encuesta-right { order: -1; } */
+}
+
+/* 2. Ajuste Crítico para Celulares (menos de 576px) */
+@media (max-width: 576px) {
+  .encuesta-section {
+    padding: 3rem 5%; /* Menos espacio exterior */
+  }
+
+  .encuesta-content {
+    padding: 2rem 1.2rem; /* Mucho menos espacio interior para ganar aire */
+    border-radius: 15px; /* Bordes un poco menos redondos para aprovechar espacio */
+  }
+
+  .encuesta-left h2 {
+    font-size: 1.8rem; /* Título más pequeño para que no ocupe toda la pantalla */
+  }
+
+  /* --- AJUSTE VITAL: EL CÍRCULO GIRATORIO --- */
+  /* El original mide 300px, aquí lo bajamos a 200px o menos */
+  .encuesta-icon-wrapper {
+    width: 200px;
+    height: 200px;
+    margin-top: 1rem;
+  }
+  
+  /* Ajustar el tamaño del SVG dentro del círculo */
+  .encuesta-icon-wrapper svg {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Botón ancho completo para facilitar el 'tap' con el dedo */
+  .encuesta-left .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
