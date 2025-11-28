@@ -66,22 +66,59 @@ footer { flex-shrink: 0; }
     z-index: 2;
 }
 
-/* Info Usuario Desktop */
+/* --- Info Usuario Desktop (Columna Alineada) --- */
 .admin-info-desktop {
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: flex-start;
-    gap: 0.3rem; margin-left: 1rem;
+    display: flex;
+    flex-direction: column; /* Uno debajo del otro */
+    justify-content: center; /* Centrado vertical respecto al logo */
+    align-items: flex-start; /* Alineados a la izquierda del bloque */
+    gap: 1rem; /* Espacio entre el nombre y el botón */
+    margin-left: 1.5rem;
 }
+
+/* Estilo del Nombre */
 .user-label {
-    font-family: var(--font-body, sans-serif); font-weight: 700;
-    font-size: 1.1rem; color: #611232; text-transform: capitalize;
+    font-family: var(--font-body, sans-serif);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #611232;
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    line-height: 1; /* Ayuda a la alineación */
 }
+
+/* Estilo del Botón Salir */
 .btn-logout {
-    font-family: var(--font-body, sans-serif); font-size: 0.95rem;
-    color: #611232; text-decoration: none; font-weight: 600;
-    opacity: 0.85; transition: 0.2s;
+    font-family: var(--font-body, sans-serif);
+    font-size: 0.95rem;
+    color: #611232;
+    text-decoration: none;
+    font-weight: 600;
+    opacity: 0.85;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    /* Aseguramos que no tenga márgenes extraños */
+    padding: 0;
+    margin: 0;
 }
-.btn-logout:hover { text-decoration: underline; opacity: 1; }
+
+.btn-logout:hover {
+    text-decoration: underline;
+    opacity: 1;
+}
+
+/* --- TRUCO DE ALINEACIÓN --- */
+/* Damos un ancho fijo a los iconos para que el texto empiece siempre igual */
+.user-label i,
+.btn-logout i {
+    width: 25px; /* Ancho fijo para el contenedor del icono */
+    text-align: center; /* Icono centrado en ese hueco */
+    margin-right: 0.5rem; /* Separación con el texto */
+    font-size: 1rem;
+}
 
 /* Título Central Desktop */
 .header-center {
