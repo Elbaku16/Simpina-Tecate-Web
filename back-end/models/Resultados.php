@@ -109,18 +109,17 @@ class Resultados
 
     /**
      * Calcula estadísticas combinadas:
-     *  - opcion / multiple → desde respuestas_usuario
-     *  - ranking          → desde respuestas_ranking
      *
-     * Devuelve:
-     *  [ id_pregunta => [ id_opcion => total_respuestas, ... ], ... ]
-     *
-     * $escuelaFiltro: id_escuela (0 = todas)
+     * @param int $escuelaFiltro id_escuela (0 = todas)
+     * @param string $generoFiltro 'M', 'F', 'O', 'X', o '' (todos)
+     * @param ?array $cicloRango [inicio_anio, fin_anio] o null (todos)
      */
     public static function obtenerEstadisticasMixta(
         mysqli $db,
         array $preguntas,
-        int $escuelaFiltro = 0
+        int $escuelaFiltro = 0,
+        string $generoFiltro = '', 
+        ?array $cicloRango = null
     ): array {
         if (empty($preguntas)) {
             return [];
@@ -144,21 +143,25 @@ class Resultados
 
         // 1) Estadísticas de opcion / multiple (respuestas_usuario)
         if (!empty($idsOpciones)) {
-            $statsOpc = self::obtenerEstadisticasOpciones($db, $idsOpciones, $escuelaFiltro);
-            $estadisticas = $statsOpc; // se puede mezclar porque los ids no se repiten con ranking
+            $statsOpc = self::obtenerEstadisticasOpciones($db, $idsOpciones, $escuelaFiltro, $generoFiltro, $cicloRango);
+            $estadisticas = $statsOpc;
         }
 
         // 2) Estadísticas de ranking (respuestas_ranking)
         if (!empty($idsRanking)) {
-            $statsRank = self::obtenerEstadisticasRanking($db, $idsRanking);
+            // El ranking ahora devuelve promedio y total
+            $statsRank = self::obtenerEstadisticasRanking($db, $idsRanking, $escuelaFiltro, $generoFiltro, $cicloRango);
 
             foreach ($statsRank as $pid => $porOpcion) {
                 if (!isset($estadisticas[$pid])) {
                     $estadisticas[$pid] = [];
                 }
-                foreach ($porOpcion as $oid => $total) {
-                    // Si existiera, se sumaría (pero no debería solaparse)
-                    $estadisticas[$pid][$oid] = ($estadisticas[$pid][$oid] ?? 0) + $total;
+                foreach ($porOpcion as $oid => $data) {
+                    // Almacena el total de votos (para pie chart) y el promedio (para barra)
+                    $estadisticas[$pid][$oid] = [
+                        'total'    => $data['total_respuestas'],
+                        'promedio' => $data['promedio_posicion'] 
+                    ];
                 }
             }
         }
@@ -168,16 +171,14 @@ class Resultados
 
     /**
      * Estadísticas para preguntas tipo opcion / multiple
-     * Cuenta cuántas veces se selecciona cada id_opcion
-     * usando respuestas_usuario.
-     *
-     * Formato:
-     *  [ id_pregunta => [ id_opcion => total_respuestas, ... ], ... ]
+     * Usa campos de filtro nuevos (escuela, genero, ciclo)
      */
     public static function obtenerEstadisticasOpciones(
         mysqli $db,
         array $idsPreguntas,
-        int $escuelaFiltro = 0
+        int $escuelaFiltro = 0,
+        string $generoFiltro = '', 
+        ?array $cicloRango = null
     ): array {
         if (empty($idsPreguntas)) {
             return [];
@@ -195,10 +196,27 @@ class Resultados
                 WHERE r.id_pregunta IN ($placeholders)
                   AND r.id_opcion IS NOT NULL";
 
+        // Aplica filtro de escuela
         if ($escuelaFiltro > 0) {
             $sql     .= " AND r.id_escuela = ?";
             $types   .= 'i';
             $params[] = $escuelaFiltro;
+        }
+
+        // Aplica filtro de género
+        if (!empty($generoFiltro)) {
+            $sql     .= " AND r.genero = ?";
+            $types   .= 's';
+            $params[] = $generoFiltro;
+        }
+        
+        // Aplica filtro de ciclo (usando fecha_respuesta)
+        if ($cicloRango !== null && count($cicloRango) === 2) {
+            // Asume que la fecha de inicio es el año de inicio (Agosto)
+            $sql     .= " AND YEAR(r.fecha_respuesta) >= ? AND YEAR(r.fecha_respuesta) < ?";
+            $types   .= 'ii';
+            $params[] = $cicloRango[0]; 
+            $params[] = $cicloRango[1];
         }
 
         $sql .= " GROUP BY r.id_pregunta, r.id_opcion";
@@ -231,15 +249,14 @@ class Resultados
 
     /**
      * Estadísticas para preguntas tipo ranking
-     * Cuenta cuántas veces aparece cada id_opcion en respuestas_ranking
-     * (no se filtra por escuela porque la tabla no guarda id_escuela).
-     *
-     * Formato:
-     *  [ id_pregunta => [ id_opcion => total_respuestas, ... ], ... ]
+     * Calcula el promedio de posición y el total de votos, usando EU para filtros.
      */
     public static function obtenerEstadisticasRanking(
         mysqli $db,
-        array $idsPreguntas
+        array $idsPreguntas,
+        int $escuelaFiltro = 0,
+        string $generoFiltro = '', 
+        ?array $cicloRango = null
     ): array {
         if (empty($idsPreguntas)) {
             return [];
@@ -247,21 +264,50 @@ class Resultados
 
         $placeholders = implode(',', array_fill(0, count($idsPreguntas), '?'));
         $types        = str_repeat('i', count($idsPreguntas));
+        $params       = $idsPreguntas;
 
+        // Se une con encuestas_usuarios (EU) y respuestas_usuario (RU) para aplicar filtros
         $sql = "SELECT 
-                    id_pregunta,
-                    id_opcion,
-                    COUNT(*) AS total_respuestas
-                FROM respuestas_ranking
-                WHERE id_pregunta IN ($placeholders)
-                GROUP BY id_pregunta, id_opcion";
+                    r.id_pregunta,
+                    r.id_opcion,
+                    COUNT(*) AS total_respuestas,
+                    AVG(r.posicion) AS promedio_posicion
+                FROM respuestas_ranking r
+                INNER JOIN encuestas_usuarios eu ON r.id_usuario_encuesta = eu.id_usuario_encuesta
+                LEFT JOIN respuestas_usuario ru ON ru.id_usuario_encuesta = eu.id_usuario_encuesta
+                WHERE r.id_pregunta IN ($placeholders)";
+
+        // Aplica filtro de escuela (usando encuestas_usuarios)
+        if ($escuelaFiltro > 0) {
+            $sql     .= " AND eu.id_escuela = ?";
+            $types   .= 'i';
+            $params[] = $escuelaFiltro;
+        }
+
+        // Aplica filtro de género (usando respuestas_usuario)
+        if (!empty($generoFiltro)) {
+            $sql     .= " AND ru.genero = ?"; 
+            $types   .= 's';
+            $params[] = $generoFiltro;
+        }
+
+        // Aplica filtro de ciclo (usando fecha_inicio de encuestas_usuarios)
+        if ($cicloRango !== null && count($cicloRango) === 2) {
+            $sql     .= " AND YEAR(eu.fecha_inicio) >= ? AND YEAR(eu.fecha_inicio) < ?";
+            $types   .= 'ii';
+            $params[] = $cicloRango[0]; 
+            $params[] = $cicloRango[1];
+        }
+
+
+        $sql .= " GROUP BY r.id_pregunta, r.id_opcion";
 
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             throw new Exception("Error al preparar consulta de estadísticas (ranking): " . $db->error);
         }
 
-        $stmt->bind_param($types, ...$idsPreguntas);
+        $stmt->bind_param($types, ...$params);
         $stmt->execute();
 
         $res = $stmt->get_result();
@@ -270,12 +316,15 @@ class Resultados
         while ($row = $res->fetch_assoc()) {
             $pid   = (int)$row['id_pregunta'];
             $oid   = (int)$row['id_opcion'];
-            $total = (int)$row['total_respuestas'];
 
             if (!isset($out[$pid])) {
                 $out[$pid] = [];
             }
-            $out[$pid][$oid] = $total;
+            // Almacenamos un array con el total y el promedio
+            $out[$pid][$oid] = [
+                'total_respuestas'    => (int)$row['total_respuestas'],
+                'promedio_posicion'   => (float)$row['promedio_posicion'] 
+            ];
         }
 
         $stmt->close();
@@ -283,22 +332,7 @@ class Resultados
     }
 
     /**
-     * Obtiene las opciones de cada pregunta + asigna el total de respuestas
-     *
-     * $estadisticas:
-     *  [ id_pregunta => [ id_opcion => total, ... ], ... ]
-     *
-     * Devuelve:
-     *  [ id_pregunta => [
-     *      [
-     *        'id_opcion' => int,
-     *        'texto'     => string,
-     *        'icono'     => ?string,
-     *        'valor'     => ?int,
-     *        'total'     => int
-     *      ], ...
-     *    ], ...
-     *  ]
+     * Obtiene las opciones de cada pregunta + asigna el total de respuestas y promedio
      */
     public static function obtenerOpciones(
         mysqli $db,
@@ -313,14 +347,16 @@ class Resultados
         $types        = str_repeat('i', count($idsPreguntas));
 
         $sql = "SELECT 
-                    id_opcion,
-                    id_pregunta,
-                    texto_opcion,
-                    icono,
-                    valor
-                FROM opciones_respuesta
-                WHERE id_pregunta IN ($placeholders)
-                ORDER BY id_pregunta, id_opcion";
+                    o.id_opcion,
+                    o.id_pregunta,
+                    o.texto_opcion,
+                    o.icono,
+                    o.valor,
+                    p.tipo_pregunta
+                FROM opciones_respuesta o
+                INNER JOIN preguntas p ON o.id_pregunta = p.id_pregunta
+                WHERE o.id_pregunta IN ($placeholders)
+                ORDER BY o.id_pregunta, o.id_opcion";
 
         $stmt = $db->prepare($sql);
         if (!$stmt) {
@@ -336,8 +372,22 @@ class Resultados
         while ($row = $res->fetch_assoc()) {
             $pid = (int)$row['id_pregunta'];
             $oid = (int)$row['id_opcion'];
+            $tipo = strtolower(trim($row['tipo_pregunta']));
 
-            $total = $estadisticas[$pid][$oid] ?? 0;
+            $total = 0;
+            $promedio = null;
+
+            if (isset($estadisticas[$pid][$oid])) {
+                $data = $estadisticas[$pid][$oid];
+                if ($tipo === 'ranking') {
+                    // Ranking: la estadística es un array ['total' => int, 'promedio' => float]
+                    $total = $data['total'] ?? 0;
+                    $promedio = $data['promedio'] ?? null;
+                } else {
+                    // Opción/Múltiple: la estadística es solo el total (int)
+                    $total = $data;
+                }
+            }
 
             if (!isset($out[$pid])) {
                 $out[$pid] = [];
@@ -348,7 +398,8 @@ class Resultados
                 'texto'     => $row['texto_opcion'],
                 'icono'     => $row['icono'],
                 'valor'     => isset($row['valor']) ? (int)$row['valor'] : null,
-                'total'     => $total
+                'total'     => $total,
+                'promedio'  => $promedio // Nuevo campo para Ranking
             ];
         }
 
