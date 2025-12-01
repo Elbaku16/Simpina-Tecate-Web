@@ -20,10 +20,10 @@ try {
             $idPregunta   = (int)($_GET['id_pregunta'] ?? 0);
             $idEscuela    = (int)($_GET['escuela'] ?? 0);
             $cicloEscolar = $_GET['ciclo'] ?? '';
-            $generoFiltro = $_GET['genero'] ?? ''; // <--- AGREGADO
+            $generoFiltro = $_GET['genero'] ?? '';
 
             // Llamada al controlador con el nuevo parámetro
-            $respuesta = $controller->obtener($idPregunta, $idEscuela, $cicloEscolar, $generoFiltro); // <--- AGREGADO
+            $respuesta = $controller->obtener($idPregunta, $idEscuela, $cicloEscolar, $generoFiltro); 
 
             // CERRAR conexión antes de enviar JSON
             $conn->close();
@@ -32,6 +32,15 @@ try {
 
 
         case 'eliminar':
+            // RESTRICCIÓN: Solo si tiene permiso de eliminar
+            if (!tiene_permiso('eliminar_respuestas')) {
+                // CERRAR conexión antes de enviar JSON
+                $conn->close();
+                http_response_code(403);
+                echo json_encode(['success' => false, 'error' => 'Permiso denegado para eliminar respuestas']);
+                exit;
+            }
+            
             $idRespuesta = (int)($_POST['id_respuesta'] ?? 0);
 
             $respuesta = $controller->eliminar($idRespuesta);

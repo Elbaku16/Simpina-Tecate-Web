@@ -10,15 +10,12 @@ class ResultadosController
 
     public function __construct()
     {
-        // Usar la conexión global clásica (no Singleton)
         global $conn;
         $this->db = $conn;
     }
 
     /**
-     * ===============================================================
      * Obtener ciclos escolares detectando automáticamente por fecha
-     * ===============================================================
      */
     private function obtenerCiclosEscolares(int $encuestaId): array
     {
@@ -59,7 +56,6 @@ class ResultadosController
             }
         }
 
-        // Orden descendente
         $ciclos = array_values($ciclosUnicos);
         usort($ciclos, fn($a, $b) => $b['inicio'] <=> $a['inicio']);
 
@@ -91,89 +87,130 @@ class ResultadosController
             throw new Exception("No se encontró encuesta para este nivel");
         }
 
-        // 1. Filtro por escuela (Original)
+        // --- FILTROS ---
         $escuelaFiltro = isset($req['escuela']) ? (int)$req['escuela'] : 0;
         
-        // 2. Filtro por género (NUEVO)
         $generoFiltro = $req['genero'] ?? '';
         if (!in_array($generoFiltro, ['M', 'F', 'O', 'X'])) { 
             $generoFiltro = ''; 
         }
 
-        /* 3. Filtro por ciclo escolar (NUEVO) */
         $cicloFiltro = $req['ciclo'] ?? '';
         $cicloRango = null; 
-
         if ($cicloFiltro && strpos($cicloFiltro, '-') !== false) {
             list($inicio, $fin) = explode('-', $cicloFiltro);
             $cicloRango = [(int)$inicio, (int)$fin]; 
         }
 
-        // Escuelas del nivel
+        // --- DATOS BÁSICOS ---
         $escuelasDelNivel = Resultados::obtenerEscuelasPorNivel($this->db, $nivelId);
-
-        // Preguntas
+        
+        // 1. Obtener Preguntas
         $preguntas = Resultados::obtenerPreguntas($this->db, $encuestaId);
 
-        // Estadísticas (PASANDO LOS NUEVOS FILTROS)
-        $estadisticas = Resultados::obtenerEstadisticasMixta(
-            $this->db,
-            $preguntas,
-            $escuelaFiltro,
-            $generoFiltro, 
-            $cicloRango    
-        );
+        // --- CÁLCULO DE ESTADÍSTICAS ---
+        // Separamos IDs por tipo para llamar a la función correcta del modelo
+        $idsOpcion = [];
+        $idsMultiple = [];
+        $idsRanking = [];
 
-        // Opciones por pregunta
-        $idsPreguntas        = array_column($preguntas, 'id_pregunta');
-        $opcionesPorPregunta = Resultados::obtenerOpciones(
-            $this->db,
-            $idsPreguntas,
-            $estadisticas
-        );
+        foreach ($preguntas as $p) {
+            $tipo = strtolower(trim($p['tipo_pregunta']));
+            $pid = (int)$p['id_pregunta'];
+            
+            if ($tipo === 'opcion') $idsOpcion[] = $pid;
+            elseif ($tipo === 'multiple') $idsMultiple[] = $pid;
+            elseif ($tipo === 'ranking') $idsRanking[] = $pid;
+        }
 
-        // Paleta
+        $stats = [];
+
+        // Estadísticas Opción Simple
+        if (!empty($idsOpcion)) {
+            $s = Resultados::obtenerEstadisticasOpciones(
+                $this->db, $idsOpcion, $escuelaFiltro, $generoFiltro, $cicloRango
+            );
+            $stats += $s;
+        }
+
+        // Estadísticas Opción Múltiple
+        if (!empty($idsMultiple)) {
+            $s = Resultados::obtenerEstadisticasOpciones(
+                $this->db, $idsMultiple, $escuelaFiltro, $generoFiltro, $cicloRango
+            );
+            $stats += $s;
+        }
+
+        // Estadísticas Ranking (Aquí es donde se arregló el promedio)
+        if (!empty($idsRanking)) {
+            $s = Resultados::obtenerEstadisticasRanking(
+                $this->db, $idsRanking, $escuelaFiltro, $generoFiltro, $cicloRango
+            );
+            $stats += $s;
+        }
+
+        // --- FUSIÓN DE DATOS (Texto + Estadísticas) ---
+        // Obtenemos el texto de las opciones
+        $allIds = array_column($preguntas, 'id_pregunta');
+        $rawOptions = Resultados::obtenerOpcionesPreguntas($this->db, $allIds);
+
+        $opcionesPorPregunta = [];
+        $totalRespuestasGlobal = 0; // Para el encabezado
+
+        foreach ($rawOptions as $pid => $opts) {
+            $sumaVotosPregunta = 0;
+            
+            foreach ($opts as $oid => $texto) {
+                // Valores por defecto
+                $data = [
+                    'texto' => $texto,
+                    'total' => 0,
+                    'promedio' => 0
+                ];
+
+                // Si hay estadísticas para esta pregunta y opción, las asignamos
+                if (isset($stats[$pid][$oid])) {
+                    $st = $stats[$pid][$oid];
+                    // Si es un array (ranking), extraer total y promedio
+                    // Si es un entero (opcion/multiple), es solo el total
+                    if (is_array($st)) {
+                        $data['total'] = $st['total'] ?? 0;
+                        $data['promedio'] = $st['promedio_posicion'] ?? 0;
+                    } else {
+                        $data['total'] = (int)$st;
+                        $data['promedio'] = 0;
+                    }
+                }
+
+                $sumaVotosPregunta += $data['total'];
+                $opcionesPorPregunta[$pid][] = $data;
+            }
+            
+            // Actualizar el máximo global de respuestas encontradas
+            if ($sumaVotosPregunta > $totalRespuestasGlobal) {
+                $totalRespuestasGlobal = $sumaVotosPregunta;
+            }
+        }
+
+        // Paleta de colores para gráficas
         $palette = [
             '#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6',
             '#06b6d4','#84cc16','#f97316','#e11d48','#22c55e'
         ];
 
-        /* ------------------------------------------------------
-           NUEVO: ciclos escolares detectados automáticamente
-        ------------------------------------------------------- */
         $ciclosDisponibles = $this->obtenerCiclosEscolares($encuestaId);
-        
-        // Obtener el total de respuestas para mostrarlo en la cabecera
-        $totalRespuestas = 0;
-        // Se busca la pregunta con más respuestas (normalmente la primera opción/múltiple)
-        foreach ($preguntas as $p) {
-            $pid = (int)$p['id_pregunta'];
-            $tipo = strtolower(trim($p['tipo_pregunta']));
-            
-            if ($tipo !== 'texto' && $tipo !== 'dibujo' && isset($estadisticas[$pid])) {
-                $sum = 0;
-                if ($tipo === 'ranking') {
-                    foreach ($estadisticas[$pid] as $data) {
-                        $sum += $data['total'] ?? 0;
-                    }
-                } else {
-                    $sum = array_sum($estadisticas[$pid]);
-                }
-                $totalRespuestas = max($totalRespuestas, $sum);
-            }
-        }
 
         return [
             'nivelNombre'         => $nivelNombre,
             'escuelaFiltro'       => $escuelaFiltro,
-            'generoFiltro'        => $generoFiltro, // <-- NUEVO
+            'generoFiltro'        => $generoFiltro,
             'escuelasDelNivel'    => $escuelasDelNivel,
             'preguntas'           => $preguntas,
             'opcionesPorPregunta' => $opcionesPorPregunta,
             'palette'             => $palette,
             'ciclosDisponibles'   => $ciclosDisponibles,
             'cicloFiltro'         => $cicloFiltro,
-            'totalRespuestas'     => $totalRespuestas // <-- NUEVO
+            'totalRespuestas'     => $totalRespuestasGlobal
         ];
     }
 }

@@ -31,6 +31,37 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
   <link rel="stylesheet" href="/front-end/assets/css/admin/modal-respuestas.css">
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* Estilo para la leyenda de exportación global */
+    .export-legend {
+        font-size: 1rem;
+        color: #9aa4b2; /* Gris claro sutil */
+        font-style: italic;
+        /* Asegura que esté centrado verticalmente con los botones si es necesario */
+        line-height: 2.5rem; 
+        padding-right: 15px; /* Espacio entre el texto y los botones */
+        white-space: nowrap; /* Evita que el texto se rompa */
+    }
+
+    /* Ajuste al toolbar para alinear elementos */
+    .toolbar {
+      display: flex;
+      justify-content: space-between; /* Mantiene el espacio entre el botón Regresar y el grupo de exportación */
+      align-items: center; /* Centra verticalmente los elementos */
+      padding: 1rem 0;
+    }
+    
+    .export-controls {
+        display: flex; /* Nuevo contenedor para alinear la leyenda con los botones */
+        align-items: center;
+    }
+    
+    /* El div original de botones se mantiene a la derecha dentro de export-controls */
+    .export-buttons-global {
+        display: flex;
+        gap: 5px;
+    }
+  </style>
 </head>
 <body>
   <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/header-admin.php'; ?>
@@ -38,20 +69,24 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
   <div class="toolbar">
     <a class="btn" href="/front-end/frames/panel/panel-admin.php"><span class="icon">↩</span> Regresar al Panel</a>
 
-    
-    <div class="export-buttons-global">
-      <button class="btn-export-global btn-csv-global" onclick="exportarTodosCSV()" title="Exportar todas las respuestas a CSV">
-        CSV
-      </button>
-      <button class="btn-export-global btn-excel-global" onclick="exportarTodosExcel()" title="Exportar todas las respuestas a Excel">
-        Excel
-      </button>
-      <button class="btn-export-global btn-pdf-global" onclick="exportarTodosPDF()" title="Exportar todas las respuestas a PDF">
-        PDF
-      </button>
-      <button class="btn-export-global btn-print-global" onclick="exportarTodosPrint()" title="Imprimir todas las respuestas">
-        Imprimir
-      </button>
+    <div class="export-controls">
+      <span class="export-legend">
+        Exportar datos de preguntas gráficas.
+      </span>
+      <div class="export-buttons-global">
+        <button class="btn-export-global btn-csv-global" onclick="exportarTodosCSV()" title="Exportar todas las respuestas a CSV">
+          CSV
+        </button>
+        <button class="btn-export-global btn-excel-global" onclick="exportarTodosExcel()" title="Exportar todas las respuestas a Excel">
+          Excel
+        </button>
+        <button class="btn-export-global btn-pdf-global" onclick="exportarTodosPDF()" title="Exportar todas las respuestas a PDF">
+          PDF
+        </button>
+        <button class="btn-export-global btn-print-global" onclick="exportarTodosPrint()" title="Imprimir todas las respuestas">
+          Imprimir
+        </button>
+      </div>
     </div>
   </div>
 
@@ -118,6 +153,7 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
       <?php foreach ($preguntas as $i => $p):
         $pid   = (int)$p['id_pregunta'];
         $tipo  = strtolower(trim($p['tipo_pregunta'])); 
+        $qNum = $i + 1; // Número de pregunta secuencial
         $lista = $opcionesPorPregunta[$pid] ?? [];
         
         // Asignar color y preparar lista para Ranking o Pie Chart
@@ -127,7 +163,7 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
         $esRanking = $tipo === 'ranking';
       ?>
         <article class="res-card" id="pregunta-<?php echo $pid; ?>">
-          <h2 class="pregunta-titulo"><?php echo htmlspecialchars(($i+1).'. '.$p['texto_pregunta']); ?></h2>
+          <h2 class="pregunta-titulo"><?php echo htmlspecialchars($qNum.'. '.$p['texto_pregunta']); ?></h2>
           
           <?php if ($esNoGraficable): ?>
             <div class="encuesta-icon-container">
@@ -148,15 +184,15 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
                 <?php endif; ?>
               </div>
             </div>
-            <button class="btn-ver-respuestas" onclick="abrirRespuestas(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>)">
+            <button class="btn-ver-respuestas" onclick="abrirRespuestas(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, <?php echo $qNum; ?>)">
               Ver respuestas de <?php echo $tipo === 'texto' ? 'texto' : 'dibujo'; ?>
             </button>
 
             <div class="export-buttons">
-              <button class="btn-export btn-csv"  onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'csv')">CSV</button>
-              <button class="btn-export btn-excel"  onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'excel')">Excel</button>
-              <button class="btn-export btn-pdf"   onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'pdf')">PDF</button>
-              <button class="btn-export btn-print" onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'print')">Imprimir</button>
+              <button class="btn-export btn-csv"  onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'csv', <?php echo $qNum; ?>)">CSV</button>
+              <button class="btn-export btn-excel"  onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'excel', <?php echo $qNum; ?>)">Excel</button>
+              <button class="btn-export btn-pdf"   onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'pdf', <?php echo $qNum; ?>)">PDF</button>
+              <button class="btn-export btn-print" onclick="abrirRespuestasYExportar(<?php echo $pid; ?>, '<?php echo $nivelNombre; ?>', <?php echo $escuelaFiltro; ?>, 'print', <?php echo $qNum; ?>)">Imprimir</button>
             </div>
 
           <?php elseif ($esRanking): ?>
@@ -243,10 +279,10 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
             </div>
 
             <div class="export-buttons">
-              <button class="btn-export btn-csv"  onclick="exportarRanking(<?php echo $pid; ?>, 'csv')">CSV</button>
-              <button class="btn-export btn-excel"  onclick="exportarRanking(<?php echo $pid; ?>, 'excel')">Excel</button>
-              <button class="btn-export btn-pdf"   onclick="exportarRanking(<?php echo $pid; ?>, 'pdf')">PDF</button>
-              <button class="btn-export btn-print" onclick="exportarRanking(<?php echo $pid; ?>, 'print')">Imprimir</button>
+              <button class="btn-export btn-csv"  onclick="exportarGrafica(<?php echo $pid; ?>, 'csv')">CSV</button>
+              <button class="btn-export btn-excel"  onclick="exportarGrafica(<?php echo $pid; ?>, 'excel')">Excel</button>
+              <button class="btn-export btn-pdf"   onclick="exportarGrafica(<?php echo $pid; ?>, 'pdf')">PDF</button>
+              <button class="btn-export btn-print" onclick="exportarGrafica(<?php echo $pid; ?>, 'print')">Imprimir</button>
             </div>
 
 
@@ -263,17 +299,11 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
               <canvas id="chart-<?php echo $pid; ?>"></canvas>
             </div>
 
-     <button class="toggle-legend"
-        onclick="SimpinnaResultados.toggleLegend(<?php echo $pid; ?>)"
-        id="toggle-<?php echo $pid; ?>">
-  
-  <span class="text-ver">Ver leyenda</span>
-  <span class="text-ocultar">Ocultar leyenda</span>
-  
-  <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-  </svg>
-</button>
+            <button class="toggle-legend"
+                    onclick="SimpinnaResultados.toggleLegend(<?php echo $pid; ?>)"
+                    id="toggle-<?php echo $pid; ?>">
+              <span>Ver leyenda</span>
+            </button>
 
             <div class="legend collapsed" id="legend-<?php echo $pid; ?>">
               <?php if (empty($lista)): ?>
@@ -318,51 +348,7 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
       </div>
     </div>
   </div>
-<template id="template-card-texto">
-  <div class="respuesta-card">
-    <div class="respuesta-header">
-      <div class="respuesta-info">
-        <span class="respuesta-escuela"></span>
-        <span class="respuesta-fecha-hora"></span>
-      </div>
-      <button class="respuesta-eliminar" title="Eliminar respuesta">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          <line x1="10" y1="11" x2="10" y2="17"></line>
-          <line x1="14" y1="11" x2="14" y2="17"></line>
-        </svg>
-      </button>
-    </div>
-    <div class="respuesta-contenido">
-      <p class="texto-respuesta"></p>
-    </div>
-  </div>
-</template>
 
-<template id="template-card-dibujo">
-  <div class="respuesta-card respuesta-dibujo">
-    <div class="respuesta-header">
-      <div class="respuesta-info">
-        <span class="respuesta-escuela"></span>
-        <span class="respuesta-fecha-hora"></span>
-      </div>
-      <button class="respuesta-eliminar" title="Eliminar respuesta">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          <line x1="10" y1="11" x2="10" y2="17"></line>
-          <line x1="14" y1="11" x2="14" y2="17"></line>
-        </svg>
-      </button>
-    </div>
-    <div class="respuesta-contenido respuesta-imagen-wrapper">
-      <img src="" alt="Dibujo" class="respuesta-imagen">
-      <span class="imagen-tamano"></span>
-      <div class="imagen-no-disponible hidden">Imagen no disponible</div>
-    </div>
-  </div>
-</template>            
   <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/footer-admin.php'; ?>
 
   
@@ -376,8 +362,9 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
   <script>
-    function abrirRespuestasYExportar(idPregunta, nivel, escuela, formato) {
-      abrirRespuestas(idPregunta, nivel, escuela);
+    // Se añade el nuevo parámetro qNum (número de pregunta)
+    function abrirRespuestasYExportar(idPregunta, nivel, escuela, formato, qNum) {
+      abrirRespuestas(idPregunta, nivel, escuela, qNum);
       setTimeout(function() {
         exportarRespuestasTexto(formato);
       }, 1000); // Esperar a que se carguen los datos
