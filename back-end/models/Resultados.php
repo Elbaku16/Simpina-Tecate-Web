@@ -247,89 +247,6 @@ class Resultados
         return $out;
     }
 
-    /**
-     * Estadísticas para preguntas tipo ranking
-     * Calcula el promedio de posición y el total de votos, usando EU para filtros.
-     */
-    public static function obtenerEstadisticasRanking(
-        mysqli $db,
-        array $idsPreguntas,
-        int $escuelaFiltro = 0,
-        string $generoFiltro = '', 
-        ?array $cicloRango = null
-    ): array {
-        if (empty($idsPreguntas)) {
-            return [];
-        }
-
-        $placeholders = implode(',', array_fill(0, count($idsPreguntas), '?'));
-        $types        = str_repeat('i', count($idsPreguntas));
-        $params       = $idsPreguntas;
-
-        // Se une con encuestas_usuarios (EU) y respuestas_usuario (RU) para aplicar filtros
-        $sql = "SELECT 
-                    r.id_pregunta,
-                    r.id_opcion,
-                    COUNT(*) AS total_respuestas,
-                    AVG(r.posicion) AS promedio_posicion
-                FROM respuestas_ranking r
-                INNER JOIN encuestas_usuarios eu ON r.id_usuario_encuesta = eu.id_usuario_encuesta
-                LEFT JOIN respuestas_usuario ru ON ru.id_usuario_encuesta = eu.id_usuario_encuesta
-                WHERE r.id_pregunta IN ($placeholders)";
-
-        // Aplica filtro de escuela (usando encuestas_usuarios)
-        if ($escuelaFiltro > 0) {
-            $sql     .= " AND eu.id_escuela = ?";
-            $types   .= 'i';
-            $params[] = $escuelaFiltro;
-        }
-
-        // Aplica filtro de género (usando respuestas_usuario)
-        if (!empty($generoFiltro)) {
-            $sql     .= " AND ru.genero = ?"; 
-            $types   .= 's';
-            $params[] = $generoFiltro;
-        }
-
-        // Aplica filtro de ciclo (usando fecha_inicio de encuestas_usuarios)
-        if ($cicloRango !== null && count($cicloRango) === 2) {
-            $sql     .= " AND YEAR(eu.fecha_inicio) >= ? AND YEAR(eu.fecha_inicio) < ?";
-            $types   .= 'ii';
-            $params[] = $cicloRango[0]; 
-            $params[] = $cicloRango[1];
-        }
-
-
-        $sql .= " GROUP BY r.id_pregunta, r.id_opcion";
-
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error al preparar consulta de estadísticas (ranking): " . $db->error);
-        }
-
-        $stmt->bind_param($types, ...$params);
-        $stmt->execute();
-
-        $res = $stmt->get_result();
-        $out = [];
-
-        while ($row = $res->fetch_assoc()) {
-            $pid   = (int)$row['id_pregunta'];
-            $oid   = (int)$row['id_opcion'];
-
-            if (!isset($out[$pid])) {
-                $out[$pid] = [];
-            }
-            // Almacenamos un array con el total y el promedio
-            $out[$pid][$oid] = [
-                'total_respuestas'    => (int)$row['total_respuestas'],
-                'promedio_posicion'   => (float)$row['promedio_posicion'] 
-            ];
-        }
-
-        $stmt->close();
-        return $out;
-    }
 
     /**
      * Obtiene las opciones de cada pregunta + asigna el total de respuestas y promedio
@@ -401,6 +318,137 @@ class Resultados
                 'total'     => $total,
                 'promedio'  => $promedio // Nuevo campo para Ranking
             ];
+        }
+
+        $stmt->close();
+        return $out;
+    }
+    public static function obtenerEstadisticasRanking(
+        mysqli $db,
+        array $idsPreguntas,
+        int $escuelaFiltro = 0,
+        string $generoFiltro = '', 
+        ?array $cicloRango = null
+    ): array {
+        if (empty($idsPreguntas)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($idsPreguntas), '?'));
+        $types        = str_repeat('i', count($idsPreguntas));
+        $params       = $idsPreguntas;
+
+        // Utilizamos COALESCE para que AVG devuelva NULL en lugar de 0 si no hay resultados, 
+        // y solo contamos r.id_opcion.
+        $sql = "SELECT 
+                    r.id_pregunta,
+                    r.id_opcion,
+                    COUNT(r.id_opcion) AS total_respuestas,
+                    COALESCE(AVG(r.posicion), 0) AS promedio_posicion
+                FROM respuestas_ranking r
+                
+                /*
+                 * Hacemos LEFT JOIN con respuestas_usuario (ru) para obtener el género,
+                 * que es el filtro principal que podría causar fallos si la unión fuera INNER
+                 * y no existieran respuestas RU para ese EU.
+                 */
+                LEFT JOIN respuestas_usuario ru ON r.id_usuario_encuesta = ru.id_usuario_encuesta
+                
+                WHERE r.id_pregunta IN ($placeholders)";
+
+        // Aplica filtro de escuela (usando respuestas_usuario si posible, o eu si fuera necesario)
+        if ($escuelaFiltro > 0) {
+            $sql     .= " AND ru.id_escuela = ?"; // Usamos ru.id_escuela si el id está en esa tabla
+            $types   .= 'i';
+            $params[] = $escuelaFiltro;
+        }
+
+        // Aplica filtro de género (usando respuestas_usuario)
+        if (!empty($generoFiltro)) {
+            $sql     .= " AND ru.genero = ?"; 
+            $types   .= 's';
+            $params[] = $generoFiltro;
+        }
+
+        // Aplica filtro de ciclo (usando fecha_respuesta en respuestas_usuario)
+        if ($cicloRango !== null && count($cicloRango) === 2) {
+            $sql     .= " AND YEAR(ru.fecha_respuesta) >= ? AND YEAR(ru.fecha_respuesta) < ?";
+            $types   .= 'ii';
+            $params[] = $cicloRango[0]; 
+            $params[] = $cicloRango[1];
+        }
+
+
+        $sql .= " GROUP BY r.id_pregunta, r.id_opcion";
+
+// ... (Resto de la función sin cambios)
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error al preparar consulta de estadísticas (ranking): " . $db->error);
+        }
+
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+
+        $res = $stmt->get_result();
+        $out = [];
+
+        while ($row = $res->fetch_assoc()) {
+            $pid   = (int)$row['id_pregunta'];
+            $oid   = (int)$row['id_opcion'];
+
+            if (!isset($out[$pid])) {
+                $out[$pid] = [];
+            }
+            // Almacenamos un array con el total y el promedio
+            $out[$pid][$oid] = [
+                'total'    => (int)$row['total_respuestas'],
+                // El COALESCE en SQL asegura que sea 0.0 si no hay votos, pero la BD lo devuelve como string/float.
+                'promedio_posicion'   => (float)$row['promedio_posicion'] 
+            ];
+        }
+
+        $stmt->close();
+        return $out;
+    }
+
+    /**
+     * Obtiene solo el texto de las opciones por pregunta
+     * Retorna: [id_pregunta => [id_opcion => texto_opcion, ...], ...]
+     */
+    public static function obtenerOpcionesPreguntas(mysqli $db, array $idsPreguntas): array
+    {
+        if (empty($idsPreguntas)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($idsPreguntas), '?'));
+        $types = str_repeat('i', count($idsPreguntas));
+
+        $sql = "SELECT id_opcion, id_pregunta, texto_opcion
+                FROM opciones_respuesta
+                WHERE id_pregunta IN ($placeholders)
+                ORDER BY id_pregunta, id_opcion";
+
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error al preparar consulta de opciones: " . $db->error);
+        }
+
+        $stmt->bind_param($types, ...$idsPreguntas);
+        $stmt->execute();
+
+        $res = $stmt->get_result();
+        $out = [];
+
+        while ($row = $res->fetch_assoc()) {
+            $pid = (int)$row['id_pregunta'];
+            $oid = (int)$row['id_opcion'];
+            
+            if (!isset($out[$pid])) {
+                $out[$pid] = [];
+            }
+            $out[$pid][$oid] = $row['texto_opcion'];
         }
 
         $stmt->close();

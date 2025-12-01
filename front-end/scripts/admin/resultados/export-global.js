@@ -2,6 +2,13 @@
 (function (global) {
   const ns = (global.SimpinnaResultados = global.SimpinnaResultados || {});
   const helpers = ns;
+  
+  // Helper para obtener el número de pregunta
+  function getNumeroPregunta(titulo) {
+      // Busca un patrón que empiece con número y punto, como "1. "
+      const match = titulo.match(/^(\d+)\./); 
+      return match ? match[1] : '';
+  }
 
   ns.obtenerDatosGlobales = function () {
     const datos = [];
@@ -47,15 +54,24 @@
       return;
     }
 
-    let csv = "RESULTADOS COMPLETOS DE ENCUESTA\n";
-    csv += `Filtro: ${filtro}\n`;
+    // Prependemos el Byte Order Mark (BOM: \uFEFF) para forzar a Excel a usar UTF-8.
+    let csv = '\uFEFF'; 
+
+    csv += "RESULTADOS COMPLETOS DE ENCUESTA\n";
+    // El filtro ya contiene el Genero y Ciclo Escolar, asegurando que se imprima.
+    csv += `Filtro: ${filtro}\n`; 
     csv += `Fecha de exportación: ${fecha}\n\n`;
 
-    datos.forEach((pregunta, idx) => {
-      csv += `PREGUNTA ${idx + 1}: ${pregunta.titulo}\n`;
+    datos.forEach((pregunta) => {
+      
+      // La línea de encabezado es solo el título completo que ya está numerado (ej: "1. ¿Has oído...")
+      csv += `${pregunta.titulo}\n`;
+      
       csv += "Opción,Respuestas,Porcentaje\n";
       pregunta.opciones.forEach((op) => {
-        csv += `"${op.label}",${op.respuestas},${op.porcentaje}%\n`;
+        // Aseguramos el escape de comillas en las etiquetas
+        const labelLimpia = op.label.replace(/"/g, '""'); 
+        csv += `"${labelLimpia}",${op.respuestas},${op.porcentaje}%\n`;
       });
       csv += `Total,${pregunta.total},100%\n\n`;
     });
@@ -63,7 +79,7 @@
     helpers.descargarArchivo(
       csv,
       `resultados_completos_${Date.now()}.csv`,
-      "text/csv"
+      "text/csv;charset=utf-8;" // MIME type con charset UTF-8
     );
   };
 
@@ -93,11 +109,14 @@
       wsResumen["!cols"] = [{ wch: 25 }, { wch: 50 }];
       XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen");
 
-      datos.forEach((pregunta, idx) => {
+      datos.forEach((pregunta) => {
+        const numeroPregunta = getNumeroPregunta(pregunta.titulo) || pregunta.preguntaId; // Usar número real si existe
+        
+        // --- INICIO CAMBIO EXCEL ---
         const wsData = [
-          [`PREGUNTA ${idx + 1}: ${pregunta.titulo}`],
-          [],
-          ["Opción", "Respuestas", "Porcentaje"],
+          [pregunta.titulo], // El título de la pregunta va en su propia fila de encabezado
+          [], // Línea en blanco para separar
+          ["Opción", "Respuestas", "Porcentaje"], // Encabezados de tabla
           ...pregunta.opciones.map((op) => [
             op.label,
             op.respuestas,
@@ -105,9 +124,15 @@
           ]),
           ["Total", pregunta.total, "100%"],
         ];
+        // --- FIN CAMBIO EXCEL ---
+        
         const ws = XLSX.utils.aoa_to_sheet(wsData);
+        
+        // Ajuste de ancho de columnas
         ws["!cols"] = [{ wch: 30 }, { wch: 12 }, { wch: 12 }];
-        XLSX.utils.book_append_sheet(wb, ws, `P${idx + 1}`);
+        
+        // Añadir la hoja de cálculo
+        XLSX.utils.book_append_sheet(wb, ws, `P${numeroPregunta}`); // Nombre de hoja P1, P2, P3...
       });
 
       XLSX.writeFile(wb, `resultados_completos_${Date.now()}.xlsx`);
@@ -123,15 +148,23 @@
       alert("No hay datos para exportar");
       return;
     }
+    
+    // --- VERIFICACIÓN Y REFERENCIA DE PDF MÁS DIRECTA Y ROBUSTA ---
+    // Usamos global.jspdf si existe (típico de UMD) o window.jsPDF
+    let PDFClass = null;
 
-    if (typeof jsPDF === "undefined" || !jsPDF.jsPDF) {
-      alert("Error: Librería jsPDF no cargada");
-      return;
+    if (typeof global.jspdf !== 'undefined' && typeof global.jspdf.jsPDF === 'function') {
+        PDFClass = global.jspdf.jsPDF;
+    } else if (typeof global.jsPDF === 'function') {
+        PDFClass = global.jsPDF;
+    } else {
+        console.error("jsPDF no está cargado. Verifique que el CDN sea accesible.");
+        alert("Error: Librería de PDF no cargada. No se puede exportar.");
+        return;
     }
 
     try {
-      const { jsPDF } = global;
-      const doc = new jsPDF();
+      const doc = new PDFClass(); // Usamos la referencia validada
       let y = 20;
 
       doc.setFontSize(16);
@@ -152,10 +185,13 @@
           y = 20;
         }
 
+        const numeroPregunta = getNumeroPregunta(pregunta.titulo) || idx + 1; // Usar número real
+        const tituloCompleto = String(pregunta.titulo);
+
         doc.setFontSize(12);
         doc.setFont(undefined, "bold");
         doc.text(
-          `Pregunta ${idx + 1}: ${String(pregunta.titulo).substring(0, 80)}`,
+          `Pregunta ${numeroPregunta}: ${tituloCompleto.substring(0, 80)}`,
           10,
           y
         );
@@ -191,8 +227,8 @@
 
       doc.save(`resultados_completos_${Date.now()}.pdf`);
     } catch (err) {
-      console.error("Error exportando PDF:", err);
-      alert("Error al exportar a PDF");
+      console.error("Error al exportar PDF:", err);
+      alert("Error interno al generar el PDF. Revisa la consola para más detalles.");
     }
   };
 
@@ -245,22 +281,25 @@
     );
 
     datos.forEach((pregunta, idx) => {
-      w.document.write(`<h2>Pregunta ${idx + 1}: ${pregunta.titulo}</h2>`);
-      w.document.write(
-        "<table><tr><th>Opción</th><th>Respuestas</th><th>Porcentaje</th></tr>"
-      );
-      pregunta.opciones.forEach((op) => {
+        const numeroPregunta = getNumeroPregunta(pregunta.titulo) || idx + 1;
+        const tituloCompleto = String(pregunta.titulo);
+        
+        w.document.write(`<h2>Pregunta ${numeroPregunta}: ${tituloCompleto}</h2>`);
         w.document.write(
-          `<tr><td>${op.label}</td><td>${op.respuestas}</td><td>${op.porcentaje}%</td></tr>`
+            "<table><tr><th>Opción</th><th>Respuestas</th><th>Porcentaje</th></tr>"
         );
-      });
-      w.document.write(
-        `<tr><td><strong>Total</strong></td><td><strong>${pregunta.total}</strong></td><td><strong>100%</strong></td></tr>`
-      );
-      w.document.write("</table>");
-      if (idx < datos.length - 1) {
-        w.document.write('<div class="page-break"></div>');
-      }
+        pregunta.opciones.forEach((op) => {
+            w.document.write(
+            `<tr><td>${op.label}</td><td>${op.respuestas}</td><td>${op.porcentaje}%</td></tr>`
+            );
+        });
+        w.document.write(
+            `<tr><td><strong>Total</strong></td><td><strong>${pregunta.total}</strong></td><td><strong>100%</strong></td></tr>`
+        );
+        w.document.write("</table>");
+        if (idx < datos.length - 1) {
+            w.document.write('<div class="page-break"></div>');
+        }
     });
 
     w.document.write("</body></html>");

@@ -2,9 +2,11 @@
 (function() {
   'use strict';
 
+  // Variables de estado accesibles por las funciones expuestas globalmente (window.cambiarPagina)
   let datosActuales = [];
   let paginaActual = 1;
   let preguntaActualId = 0;
+  let preguntaActualNumero = 0; // NUEVA VARIABLE PARA EL NÚMERO SECUENCIAL
   const RESPUESTAS_POR_PAGINA = 20;
 
   // Función para obtener los valores de los filtros actuales
@@ -20,16 +22,18 @@
           ciclo: cicloFilter ? cicloFilter.value : ''
       };
   }
-
-  window.abrirRespuestas = function(idPregunta, nivel, escuela) {
+  
+  // Función principal para abrir el modal
+  window.abrirRespuestas = function(idPregunta, nivel, escuela, qNum) { // RECIBE qNum
     const modal = document.getElementById('modalRespuestas');
     const modalTitulo = document.getElementById('modalTitulo');
     const modalContenido = document.getElementById('modalContenido');
 
     preguntaActualId = idPregunta;
+    preguntaActualNumero = qNum || 0; // ASIGNA EL NÚMERO SECUENCIAL
     
     // Capturar filtros activos
-    const filtros = obtenerFiltrosActivos(); // <--- CAPTURA LOS FILTROS ACTUALES
+    const filtros = obtenerFiltrosActivos(); 
 
     // Mostrar modal
     modal.classList.remove('hidden');
@@ -42,9 +46,9 @@
     const params = new URLSearchParams({
       accion: 'obtener',
       id_pregunta: idPregunta,
-      escuela: filtros.escuela, // Usa el filtro de escuela capturado
-      genero: filtros.genero,   // <--- AÑADIDO FILTRO DE GÉNERO
-      ciclo: filtros.ciclo      // <--- AÑADIDO FILTRO DE CICLO
+      escuela: filtros.escuela,
+      genero: filtros.genero,
+      ciclo: filtros.ciclo
     });
 
     // Peticion AJAX
@@ -58,6 +62,7 @@
         const tipo = data.tipo_pregunta || 'texto';
         const respuestas = data.respuestas || [];
         
+        // Almacenar datos y resetear paginación
         datosActuales = respuestas;
         paginaActual = 1;
 
@@ -68,6 +73,10 @@
 
         // Renderizar respuestas
         renderizarRespuestas(respuestas, tipo);
+        
+        // **IMPORTANTE:** Aquí llamamos a una función para actualizar el estado de los botones
+        actualizarBotonesExportacion(tipo); 
+
       })
       .catch(err => {
         console.error('Error al cargar respuestas:', err);
@@ -80,133 +89,117 @@
       });
   };
 
+  // Función para actualizar la visibilidad de los botones de exportación
+  function actualizarBotonesExportacion(tipo) {
+      const isDibujo = tipo === 'dibujo';
+
+      // Nota: Necesitarías añadir estos selectores en el HTML de tu modal si no existen.
+      // Asumo que el HTML se maneja en el mismo modalRespuestas.
+      
+      const btnCsv = document.querySelector('.btn-export-respuestas[data-formato="csv"]');
+      const btnExcel = document.querySelector('.btn-export-respuestas[data-formato="excel"]');
+      const btnPdf = document.querySelector('.btn-export-respuestas[data-formato="pdf"]');
+      const btnPrint = document.querySelector('.btn-export-respuestas[data-formato="print"]');
+
+      if (btnCsv) btnCsv.style.display = isDibujo ? 'none' : 'inline-block';
+      if (btnExcel) btnExcel.style.display = isDibujo ? 'none' : 'inline-block';
+      if (btnPdf) btnPdf.style.display = 'inline-block'; // PDF siempre disponible
+      if (btnPrint) btnPrint.style.display = 'inline-block'; // Imprimir siempre disponible
+  }
+
+
+  // Función para cerrar el modal
   window.cerrarRespuestas = function() {
     const modal = document.getElementById('modalRespuestas');
     modal.classList.add('hidden');
     document.body.style.overflow = '';
+    // Limpiar estado
     datosActuales = [];
     paginaActual = 1;
     preguntaActualId = 0;
+    preguntaActualNumero = 0; // LIMPIAR NÚMERO
+  };
+  
+  // Función de paginación (expuesta al global scope para el onclick del HTML)
+  window.cambiarPagina = function(nuevaPagina) {
+    // 1. Validar si hay datos
+    if (datosActuales.length === 0) {
+        console.warn("No hay datos para cambiar de página.");
+        return;
+    }
+    
+    const totalPaginas = Math.ceil(datosActuales.length / RESPUESTAS_POR_PAGINA);
+    
+    // 2. Validar rango de página
+    if (nuevaPagina < 1 || nuevaPagina > totalPaginas) {
+      return;
+    }
+
+    // 3. Actualizar la página actual
+    paginaActual = nuevaPagina;
+    
+    // 4. Re-renderizar
+    const tipo = datosActuales[0]?.es_dibujo ? 'dibujo' : 'texto';
+    renderizarRespuestas(datosActuales, tipo);
+
+    // 5. Scroll al inicio del contenido
+    const modalContenido = document.getElementById('modalContenido');
+    modalContenido.scrollTop = 0;
   };
 
- function renderizarRespuestas(respuestas, tipo) {
+  // Función para renderizar el contenido y la paginación
+  function renderizarRespuestas(respuestas, tipo) {
     const modalContenido = document.getElementById('modalContenido');
-    modalContenido.innerHTML = ''; // Limpiar contenido previo
     
     if (respuestas.length === 0) {
       modalContenido.innerHTML = `
         <div class="empty-state">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11H3v2h6v-2z"/>
+            <path d="M21 11h-6v2h6v-2z"/>
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
           <p>No hay respuestas para mostrar</p>
         </div>
       `;
       return;
     }
 
-    // Calcular paginación
+    // Calcular paginacion
     const totalRespuestas = respuestas.length;
     const totalPaginas = Math.ceil(totalRespuestas / RESPUESTAS_POR_PAGINA);
     const inicio = (paginaActual - 1) * RESPUESTAS_POR_PAGINA;
     const fin = Math.min(inicio + RESPUESTAS_POR_PAGINA, totalRespuestas);
     const respuestasPagina = respuestas.slice(inicio, fin);
 
-    // Crear contenedor
-    const contenedorLista = document.createElement('div');
-    contenedorLista.className = 'respuestas-container';
+    // Construir HTML
+    let html = `
+      <div class="respuestas-container">
+        <div class="respuestas-contador">
+          Mostrando ${inicio + 1} - ${fin} de ${totalRespuestas} respuesta${totalRespuestas !== 1 ? 's' : ''}
+        </div>
 
-    // Agregar contador
-    const contador = document.createElement('div');
-    contador.className = 'respuestas-contador';
-    contador.textContent = `Mostrando ${inicio + 1} - ${fin} de ${totalRespuestas} respuesta${totalRespuestas !== 1 ? 's' : ''}`;
-    contenedorLista.appendChild(contador);
+        <div class="respuestas-lista">
+    `;
 
-    // Crear lista de respuestas
-    const lista = document.createElement('div');
-    lista.className = 'respuestas-lista';
-
-    // Generar cada tarjeta usando los templates
     respuestasPagina.forEach(resp => {
-      let card;
       if (tipo === 'dibujo') {
-        card = generarCardDibujo(resp);
+        html += generarCardDibujo(resp);
       } else {
-        card = generarCardTexto(resp);
+        html += generarCardTexto(resp);
       }
-      lista.appendChild(card); // <--- Aquí está la magia: agregamos el elemento DOM
     });
 
-    contenedorLista.appendChild(lista);
+    html += '</div>'; // Cierra respuestas-lista
 
-    // Agregar paginación si hace falta
+    // Paginacion
     if (totalPaginas > 1) {
-      // Nota: generarPaginacion devuelve string, así que lo insertamos como HTML
-      const divPaginacion = document.createElement('div');
-      divPaginacion.innerHTML = generarPaginacion(totalPaginas);
-      contenedorLista.appendChild(divPaginacion);
+      html += generarPaginacion(totalPaginas);
     }
 
-    modalContenido.appendChild(contenedorLista);
-  }
+    html += '</div>'; // Cierra respuestas-container
 
-  function generarCardTexto(resp) {
-    const template = document.getElementById('template-card-texto');
-    const clone = template.content.cloneNode(true);
-    
-    // 1. Rellenar Escuela
-    clone.querySelector('.respuesta-escuela').textContent = resp.escuela;
-    
-    // 2. Rellenar Fecha
-    const fecha = new Date(resp.fecha);
-    clone.querySelector('.respuesta-fecha-hora').textContent = 
-        `${formatearFecha(fecha)} • ${formatearHora(fecha)}`;
-    
-    // 3. Rellenar Texto
-    clone.querySelector('.texto-respuesta').textContent = resp.texto;
-    
-    // 4. Configurar botón eliminar
-    const btnEliminar = clone.querySelector('.respuesta-eliminar');
-    btnEliminar.onclick = () => eliminarRespuesta(resp.id);
-    
-    // --- CORRECCIÓN AQUÍ ---
-    // Antes tenías: return div.innerHTML; (Devolvía texto)
-    // Ahora devolvemos el NODO directamente para que appendChild funcione:
-    return clone; 
-  }
-  function generarCardDibujo(resp) {
-    const template = document.getElementById('template-card-dibujo');
-    const clone = template.content.cloneNode(true);
-
-    // Rellenar datos básicos
-    clone.querySelector('.respuesta-escuela').textContent = resp.escuela;
-
-    const fecha = new Date(resp.fecha);
-    clone.querySelector('.respuesta-fecha-hora').textContent = 
-        `${formatearFecha(fecha)} • ${formatearHora(fecha)}`;
-
-    // Configurar botón eliminar
-    const btnEliminar = clone.querySelector('.respuesta-eliminar');
-    btnEliminar.onclick = function() { eliminarRespuesta(resp.id); };
-
-    // Lógica de imagen
-    const img = clone.querySelector('.respuesta-imagen');
-    const noImg = clone.querySelector('.imagen-no-disponible');
-    const tamanoSpan = clone.querySelector('.imagen-tamano');
-
-    if (resp.existe_archivo) {
-        img.src = resp.ruta_dibujo || '';
-        img.onclick = function() { abrirImagenCompleta(resp.ruta_dibujo); };
-        
-        if (resp.tamano || resp.tamaño) {
-            tamanoSpan.textContent = resp.tamano || resp.tamaño;
-        } else {
-            tamanoSpan.remove();
-        }
-    } else {
-        img.remove(); // Quitamos la etiqueta img si no hay archivo
-        tamanoSpan.remove();
-        noImg.classList.remove('hidden'); // Mostramos el div de error
-    }
-
-    return clone; // Devuelve un elemento DOM
+    modalContenido.innerHTML = html;
   }
 
   function generarPaginacion(totalPaginas) {
@@ -270,23 +263,78 @@
     html += '</div>';
     return html;
   }
+  
+  function generarCardTexto(resp) {
+    const fecha = new Date(resp.fecha);
+    const fechaFormateada = formatearFecha(fecha);
+    const horaFormateada = formatearHora(fecha);
 
-  window.cambiarPagina = function(nuevaPagina) {
-    const totalPaginas = Math.ceil(datosActuales.length / RESPUESTAS_POR_PAGINA);
+    return `
+      <div class="respuesta-card">
+        <div class="respuesta-header">
+          <div class="respuesta-info">
+            <span class="respuesta-escuela">${escapeHtml(resp.escuela)}</span>
+            <span class="respuesta-fecha-hora">
+              ${fechaFormateada} • ${horaFormateada}
+            </span>
+          </div>
+          <button class="respuesta-eliminar" 
+                  onclick="eliminarRespuesta(${resp.id})"
+                  title="Eliminar respuesta">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="respuesta-contenido">
+          <p>${escapeHtml(resp.texto)}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function generarCardDibujo(resp) {
+    const fecha = new Date(resp.fecha);
+    const fechaFormateada = formatearFecha(fecha);
+    const horaFormateada = formatearHora(fecha);
     
-    if (nuevaPagina < 1 || nuevaPagina > totalPaginas) {
-      return;
-    }
+    const existeArchivo = resp.existe_archivo;
+    const rutaDibujo = resp.ruta_dibujo || '';
+    const tamano = resp.tamano || resp.tamaño || '';
 
-    paginaActual = nuevaPagina;
-    
-    const tipo = datosActuales[0]?.es_dibujo ? 'dibujo' : 'texto';
-    renderizarRespuestas(datosActuales, tipo);
-
-    // Scroll al inicio del contenido
-    const modalContenido = document.getElementById('modalContenido');
-    modalContenido.scrollTop = 0;
-  };
+    return `
+      <div class="respuesta-card respuesta-dibujo">
+        <div class="respuesta-header">
+          <div class="respuesta-info">
+            <span class="respuesta-escuela">${escapeHtml(resp.escuela)}</span>
+            <span class="respuesta-fecha-hora">
+              ${fechaFormateada} • ${horaFormateada}
+            </span>
+          </div>
+          <button class="respuesta-eliminar" 
+                  onclick="eliminarRespuesta(${resp.id})"
+                  title="Eliminar respuesta">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="respuesta-contenido respuesta-imagen-wrapper">
+          ${existeArchivo 
+            ? `<img src="${rutaDibujo}" alt="Dibujo" class="respuesta-imagen" onclick="abrirImagenCompleta('${rutaDibujo}')">
+               ${tamano ? `<span class="imagen-tamano">${tamano}</span>` : ''}`
+            : '<div class="imagen-no-disponible">Imagen no disponible</div>'
+          }
+        </div>
+      </div>
+    `;
+  }
 
   window.eliminarRespuesta = function(idRespuesta) {
     if (!confirm('¿Estas seguro de que deseas eliminar esta respuesta?')) {
@@ -365,6 +413,13 @@
 
     const tipo = datosActuales[0]?.es_dibujo ? 'dibujo' : 'texto';
     
+    // --- LÓGICA DE RESTRICCIÓN DE FORMATO ---
+    if (tipo === 'dibujo' && (formato === 'csv' || formato === 'excel')) {
+        alert('La exportación a CSV o Excel no es compatible con respuestas de dibujo. Por favor, selecciona PDF o Imprimir.');
+        return;
+    }
+    // --- FIN LÓGICA DE RESTRICCIÓN DE FORMATO ---
+    
     switch(formato) {
       case 'csv':
         exportarCSVRespuestas(datosActuales, tipo);
@@ -381,29 +436,29 @@
     }
   };
 
+  // 1. CSV (FIXED: Filtros y Descarga)
   function exportarCSVRespuestas(respuestas, tipo) {
-    let csv = 'RESPUESTAS DE ' + (tipo === 'dibujo' ? 'DIBUJO' : 'TEXTO') + '\n';
+    // Si tipo === 'dibujo', esta función es bloqueada por la restricción superior.
+    
+    const filtroInfo = window.SimpinnaResultados.obtenerFiltroInfo(); 
+    let csv = '\uFEFF'; // BOM para UTF-8 (Asegura Acentos)
+    
+    csv += 'RESPUESTAS DE ' + (tipo === 'dibujo' ? 'DIBUJO' : 'TEXTO') + '\n';
     csv += 'Pregunta ID: ' + preguntaActualId + '\n';
+    csv += 'Pregunta Numero: ' + preguntaActualNumero + '\n'; // SE AGREGA EL NÚMERO
     csv += 'Fecha de exportacion: ' + new Date().toLocaleDateString('es-MX') + '\n';
+    csv += `Filtro aplicado: ${filtroInfo}\n`; // INCLUIR FILTRO
     csv += 'Total de respuestas: ' + respuestas.length + '\n\n';
     
-    if (tipo === 'dibujo') {
-      csv += 'Escuela,Fecha,Hora,Ruta Imagen,Tamano\n';
-      respuestas.forEach(resp => {
-        const fecha = new Date(resp.fecha);
-        const fechaStr = formatearFecha(fecha);
-        const horaStr = formatearHora(fecha);
-        const tamano = resp.tamano || resp.tamaño || 'N/A';
-        const ruta = resp.ruta_dibujo || 'N/A';
-        csv += `"${resp.escuela}","${fechaStr}","${horaStr}","${ruta}","${tamano}"\n`;
-      });
-    } else {
+    // El 'else' se ejecuta si es tipo 'texto'
+    if (tipo === 'texto') {
       csv += 'Escuela,Fecha,Hora,Respuesta\n';
       respuestas.forEach(resp => {
         const fecha = new Date(resp.fecha);
         const fechaStr = formatearFecha(fecha);
         const horaStr = formatearHora(fecha);
-        const textoLimpio = (resp.texto || '').replace(/"/g, '""');
+        // Asegurar que el texto sea encapsulado con comillas y se escapen las internas
+        const textoLimpio = (resp.texto || '').replace(/"/g, '""'); 
         csv += `"${resp.escuela}","${fechaStr}","${horaStr}","${textoLimpio}"\n`;
       });
     }
@@ -411,33 +466,26 @@
     descargarArchivo(csv, `respuestas_${tipo}_${Date.now()}.csv`, 'text/csv;charset=utf-8;');
   }
 
+  // 2. EXCEL (FIXED: Filtros y Número de Pregunta)
   function exportarExcelRespuestas(respuestas, tipo) {
     if (typeof XLSX === 'undefined') {
       alert('Error: Libreria XLSX no cargada');
       return;
     }
+    
+    const filtroInfo = window.SimpinnaResultados.obtenerFiltroInfo(); // OBTENER FILTRO
 
     const wsData = [
       ['RESPUESTAS DE ' + (tipo === 'dibujo' ? 'DIBUJO' : 'TEXTO')],
       ['Pregunta ID: ' + preguntaActualId],
+      ['Pregunta Numero: ' + preguntaActualNumero], // SE AGREGA EL NÚMERO
       ['Fecha de exportacion: ' + new Date().toLocaleDateString('es-MX')],
+      ['Filtro aplicado: ' + filtroInfo], // INCLUIR FILTRO
       ['Total de respuestas: ' + respuestas.length],
       []
     ];
 
-    if (tipo === 'dibujo') {
-      wsData.push(['Escuela', 'Fecha', 'Hora', 'Ruta Imagen', 'Tamano']);
-      respuestas.forEach(resp => {
-        const fecha = new Date(resp.fecha);
-        wsData.push([
-          resp.escuela,
-          formatearFecha(fecha),
-          formatearHora(fecha),
-          resp.ruta_dibujo || 'N/A',
-          resp.tamano || resp.tamaño || 'N/A'
-        ]);
-      });
-    } else {
+    if (tipo === 'texto') {
       wsData.push(['Escuela', 'Fecha', 'Hora', 'Respuesta']);
       respuestas.forEach(resp => {
         const fecha = new Date(resp.fecha);
@@ -458,32 +506,77 @@
     XLSX.writeFile(wb, `respuestas_${tipo}_${Date.now()}.xlsx`);
   }
 
-  function exportarPDFRespuestas(respuestas, tipo) {
-    if (typeof jsPDF === 'undefined' || !jsPDF.jsPDF) {
-      alert('Error: Libreria jsPDF no cargada');
-      return;
+  /**
+   * Carga una imagen y retorna un Promise con el objeto Image.
+   * @param {string} url La URL absoluta de la imagen.
+   * @returns {Promise<HTMLImageElement>}
+   */
+  function cargarImagenAsincrona(url) {
+      return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = (e) => {
+              console.warn(`Error cargando imagen para PDF: ${url}`, e);
+              // Resolver a null para que el PDF continúe sin la imagen
+              resolve(null); 
+          };
+          img.crossOrigin = 'Anonymous'; 
+          img.src = url;
+      });
+  }
+
+  // 3. PDF (Asegurado Filtro y Número de Pregunta)
+  // Se envuelve en una función asíncrona para manejar las imágenes.
+  async function exportarPDFRespuestas(respuestas, tipo) {
+    // 1. Verificar disponibilidad de jsPDF (robusta)
+    let PDFClass = null;
+    if (typeof window.jspdf !== 'undefined' && typeof window.jspdf.jsPDF === 'function') {
+        PDFClass = window.jspdf.jsPDF;
+    } else if (typeof window.jsPDF === 'function') {
+        PDFClass = window.jsPDF;
+    } else {
+        alert('Error: Librería de PDF no cargada o no inicializada.');
+        return;
     }
 
-    const { jsPDF } = window.jsPDF;
-    const doc = new jsPDF();
+    const filtroInfo = window.SimpinnaResultados.obtenerFiltroInfo();
+
+    const doc = new PDFClass();
     let y = 20;
 
-    // Titulo
+    // Título estático
     doc.setFontSize(16);
     doc.setFont(undefined, 'bold');
     doc.text('RESPUESTAS DE ' + (tipo === 'dibujo' ? 'DIBUJO' : 'TEXTO'), 10, y);
     y += 10;
 
+    // Metadatos
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
     doc.text('Pregunta ID: ' + preguntaActualId, 10, y);
     y += 7;
+    doc.text('Pregunta Número: ' + preguntaActualNumero, 10, y); // SE AGREGA EL NÚMERO
+    y += 7;
     doc.text('Fecha: ' + new Date().toLocaleDateString('es-MX'), 10, y);
     y += 7;
+    doc.text(`Filtro: ${filtroInfo}`, 10, y); // INCLUIR FILTRO
+    y += 7; 
     doc.text('Total de respuestas: ' + respuestas.length, 10, y);
     y += 12;
 
-    respuestas.forEach((resp, idx) => {
+    // 2. Procesar y cargar dibujos de forma asíncrona (si aplica)
+    const tareasCarga = respuestas.map(resp => {
+        if (tipo === 'dibujo' && resp.ruta_dibujo && resp.existe_archivo) {
+            return cargarImagenAsincrona(resp.ruta_dibujo);
+        }
+        return Promise.resolve(null);
+    });
+
+    const imagenesCargadas = await Promise.all(tareasCarga);
+    let indiceImagen = 0;
+
+    // 3. Dibujar el contenido (Texto o Imagen)
+    for (const [idx, resp] of respuestas.entries()) {
       if (y > 260) {
         doc.addPage();
         y = 20;
@@ -508,17 +601,65 @@
         doc.text(textoLineas, 15, y);
         y += (textoLineas.length * 6) + 8;
       } else {
+        // Lógica para Dibujos: Insertar la imagen cargada
+        
+        const img = imagenesCargadas[indiceImagen++];
+        const margen = 15;
+        const anchoPDF = 180; // Ancho máximo en el documento (210mm - 15mm*2)
+        const espacioVertical = 80; // Espacio fijo para el dibujo
+        
+        if (img) {
+            // Calcular dimensiones para que quepa en ancho y mantener aspecto
+            const ratio = img.width / img.height;
+            let finalWidth = anchoPDF;
+            let finalHeight = anchoPDF / ratio;
+            
+            // Asegurar que no exceda el espacio vertical máximo
+            if (finalHeight > espacioVertical) {
+                finalHeight = espacioVertical;
+                finalWidth = espacioVertical * ratio;
+            }
+
+            try {
+                // Añadir la imagen como un elemento JPEG/PNG
+                doc.addImage(
+                    img, 
+                    'PNG', 
+                    margen, 
+                    y, 
+                    finalWidth, 
+                    finalHeight
+                );
+                y += finalHeight + 5; // Mover el cursor después de la imagen
+            } catch (e) {
+                 doc.text(`[Error al renderizar imagen en PDF]`, 15, y);
+                 y += 6;
+            }
+
+        } else {
+            doc.text(`[Dibujo no disponible o archivo no encontrado]`, 15, y);
+            y += 6;
+        }
+        
+        // Agregar metadata de ruta/tamaño
+        doc.setFontSize(9);
+        doc.setFont(undefined, 'normal');
         doc.text(`Ruta: ${resp.ruta_dibujo || 'N/A'}`, 15, y);
-        y += 6;
+        y += 5;
         doc.text(`Tamano: ${resp.tamano || resp.tamaño || 'N/A'}`, 15, y);
         y += 10;
+        
       }
-    });
+    }
 
     doc.save(`respuestas_${tipo}_${Date.now()}.pdf`);
   }
 
+  // 4. PRINT (Asegurado Filtro y Número de Pregunta)
   function imprimirRespuestas(respuestas, tipo) {
+    // **NEW:** Obtener la información del filtro
+    const filtroInfo = window.SimpinnaResultados.obtenerFiltroInfo();
+
     const w = window.open('', '', 'width=900,height=700');
     let html = `
       <html>
@@ -532,6 +673,7 @@
           .respuesta-header { font-weight: bold; color: #7A1E2C; margin-bottom: 8px; }
           .respuesta-meta { color: #666; font-size: 0.9em; margin-bottom: 8px; }
           .respuesta-texto { line-height: 1.6; }
+          .respuesta-dibujo-img { max-width: 100%; height: auto; margin-top: 10px; border: 1px solid #ccc; }
           @media print { body { padding: 10px; } }
         </style>
       </head>
@@ -539,8 +681,8 @@
         <h1>Respuestas de ${tipo === 'dibujo' ? 'Dibujo' : 'Texto'}</h1>
         <div class="info">
           <strong>Pregunta ID:</strong> ${preguntaActualId}<br>
-          <strong>Fecha:</strong> ${new Date().toLocaleDateString('es-MX')}<br>
-          <strong>Total de respuestas:</strong> ${respuestas.length}
+          <strong>Pregunta Número:</strong> ${preguntaActualNumero}<br> <strong>Fecha:</strong> ${new Date().toLocaleDateString('es-MX')}<br>
+          <strong>Filtro aplicado:</strong> ${filtroInfo}<br> <strong>Total de respuestas:</strong> ${respuestas.length}
         </div>
     `;
 
@@ -558,9 +700,11 @@
       if (tipo === 'texto') {
         html += `<div class="respuesta-texto">${escapeHtml(resp.texto || '')}</div>`;
       } else {
+        // Lógica específica para Dibujos (Imprimir debe mostrar la imagen)
         html += `
           <div><strong>Ruta:</strong> ${escapeHtml(resp.ruta_dibujo || 'N/A')}</div>
           <div><strong>Tamano:</strong> ${escapeHtml(resp.tamano || resp.tamaño || 'N/A')}</div>
+          ${resp.ruta_dibujo ? `<img src="${escapeHtml(resp.ruta_dibujo)}" class="respuesta-dibujo-img" alt="Dibujo de respuesta">` : ''}
         `;
       }
 
