@@ -99,16 +99,30 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
       <input type="hidden" name="nivel" value="<?php echo htmlspecialchars($nivelNombre); ?>">
       
       <div class="filtro-item">
-        <label class="filtro-label" for="escuela-filter">Escuela:</label>
-        <select name="escuela" id="escuela-filter" class="filtro-select">
-          <option value="0" <?php echo ($escuelaFiltro ?? 0) === 0 ? 'selected' : ''; ?>>Todas las escuelas</option>
-          <?php foreach ($escuelasDelNivel as $esc): ?>
-            <option value="<?php echo $esc['id']; ?>" <?php echo ($escuelaFiltro ?? 0) === $esc['id'] ? 'selected' : ''; ?>>
-              <?php echo htmlspecialchars($esc['nombre']); ?>
+    <label class="filtro-label" for="escuela-filter">Escuela:</label>
+    <select name="escuela" id="escuela-filter" class="filtro-select">
+
+        <!-- Mostrar todas -->
+        <option value="0" <?php echo ($escuelaFiltro ?? 0) == 0 ? 'selected' : ''; ?>>
+            Todas las escuelas
+        </option>
+
+        <!-- NUEVO: opcion de no escolarizado -->
+        <option value="9999" <?php echo ($escuelaFiltro ?? 0) == 9999 ? 'selected' : ''; ?>>
+            No estudia actualmente
+        </option>
+
+        <!-- Escuelas del nivel -->
+        <?php foreach ($escuelasDelNivel as $esc): ?>
+            <option value="<?php echo $esc['id']; ?>" 
+                <?php echo ($escuelaFiltro ?? 0) == $esc['id'] ? 'selected' : ''; ?>>
+                <?php echo htmlspecialchars($esc['nombre']); ?>
             </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
+        <?php endforeach; ?>
+
+    </select>
+</div>
+
       
       <div class="filtro-item">
         <label class="filtro-label" for="ciclo-filter">Ciclo Escolar:</label>
