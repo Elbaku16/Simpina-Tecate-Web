@@ -1,103 +1,99 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const modal = document.getElementById('schoolModal');
     const selectEscuela = document.getElementById('selectEscuelaModal');
-    const selectGenero = document.getElementById('selectGeneroModal'); // <--- NUEVO
+    const selectGenero = document.getElementById('selectGeneroModal');
     const btnConfirmar = document.getElementById('btnConfirmarEscuela');
-    const btnCambiar = document.getElementById('btnCambiarEscuela'); // El botón de "Cambiar escuela" arriba
+    const btnCambiar = document.getElementById('btnCambiarEscuela');
     const btnClose = document.getElementById('btnCloseModal');
 
     // 1. Validaciones básicas
     if (!modal || !selectEscuela || !selectGenero || !btnConfirmar) return;
 
     const container = document.getElementById('contenedorPreguntas');
-    if (!container) return; 
+    if (!container) return;
     const nivelActual = container.dataset.nivel;
 
-    // 2. Verificar si YA existen datos guardados
-    // Ahora revisamos si hay escuela Y género
+    // 2. Revisar si ya existen datos guardados
     if (localStorage.getItem('id_escuela_seleccionada') && localStorage.getItem('genero_seleccionado')) {
-        // Todo listo, ocultar modal
-        if(modal) modal.style.display = 'none';
+        modal.style.display = 'none';
     } else {
-        // Falta algo, mostrar modal
-        if(modal) modal.style.display = 'flex';
+        modal.style.display = 'flex';
         cargarEscuelas();
     }
 
-    // 3. Función para cargar escuelas del backend
+    // 3. Función para cargar escuelas
     async function cargarEscuelas() {
         try {
             const res = await fetch('/back-end/routes/contacto/listar-opciones.php');
             const data = await res.json();
 
-            if(data.ok) {
+            if (data.ok) {
                 const nivelObj = data.niveles.find(n => n.nombre_nivel.toLowerCase() === nivelActual.toLowerCase());
-                
+
                 if (nivelObj) {
                     const lista = data.escuelasPorNivel[nivelObj.id_nivel] || [];
-                    
-                    selectEscuela.innerHTML = '<option value="">-- Selecciona tu escuela --</option>';
-                    
-                    if (lista.length === 0) {
-                        selectEscuela.innerHTML += '<option value="1">Escuela General</option>';
-                    } else {
-                        lista.forEach(esc => {
-                            const opt = document.createElement('option');
-                            opt.value = esc.id;
-                            opt.textContent = esc.nombre;
-                            selectEscuela.appendChild(opt);
-                        });
-                    }
-                    // Intentar restaurar selección previa si existe parcialmente
+
+                    // ⚡ SIEMPRE agregar "No estudia actualmente"
+                    const ID_NO_ESTUDIO = 9999; // EL MISMO QUE INSERTASTE EN BD
+
+                    selectEscuela.innerHTML = `
+                        <option value="">-- Selecciona tu escuela --</option>
+                        <option value="${ID_NO_ESTUDIO}">No estudio actualmente</option>
+                    `;
+
+                    // 🎒 Agregar las escuelas REALES del nivel
+                    lista.forEach(esc => {
+                        const opt = document.createElement('option');
+                        opt.value = esc.id;
+                        opt.textContent = esc.nombre;
+                        selectEscuela.appendChild(opt);
+                    });
+
+                    // Restaurar selección previa
                     const prevEscuela = localStorage.getItem('id_escuela_seleccionada');
-                    if(prevEscuela) selectEscuela.value = prevEscuela;
+                    if (prevEscuela) selectEscuela.value = prevEscuela;
                 }
             }
+
         } catch (err) {
             console.error(err);
             selectEscuela.innerHTML = '<option>Error de conexión</option>';
         }
     }
+
+    // Botón cerrar modal
     if (btnClose) {
         btnClose.addEventListener('click', () => {
-            // Redirigir al menú de selección de encuestas
             window.location.href = '/front-end/frames/inicio/seleccion-encuesta.php';
         });
     }
-    // 4. Lógica de Validación (AMBOS campos requeridos)
+
+    // 4. Validación
     function validarFormulario() {
         const escuelaValida = selectEscuela.value !== "";
         const generoValido = selectGenero.value !== "";
 
-        if (escuelaValida && generoValido) {
-            btnConfirmar.disabled = false;
-            btnConfirmar.style.opacity = "1";
-        } else {
-            btnConfirmar.disabled = true;
-            btnConfirmar.style.opacity = "0.5";
-        }
+        btnConfirmar.disabled = !(escuelaValida && generoValido);
+        btnConfirmar.style.opacity = escuelaValida && generoValido ? "1" : "0.5";
     }
 
-    // Escuchar cambios en ambos selects
     selectEscuela.addEventListener('change', validarFormulario);
     selectGenero.addEventListener('change', validarFormulario);
 
-    // 5. Guardar y Cerrar
+    // 5. Guardar selección
     btnConfirmar.addEventListener('click', () => {
         if (!selectEscuela.value || !selectGenero.value) return;
 
         localStorage.setItem('id_escuela_seleccionada', selectEscuela.value);
-        localStorage.setItem('genero_seleccionado', selectGenero.value); // <--- GUARDAMOS GÉNERO
-        
+        localStorage.setItem('genero_seleccionado', selectGenero.value);
+
         modal.style.display = 'none';
-        
-        // Si existe el botón de cambiar, lo mostramos
-        if(btnCambiar) btnCambiar.style.display = 'inline-block';
+
+        if (btnCambiar) btnCambiar.style.display = 'inline-block';
     });
 
-    // 6. Lógica del botón "Cambiar Escuela" (si existe en el HTML)
+    // 6. Cambiar escuela
     if (btnCambiar) {
-        // Si ya tenemos datos, mostramos el botón, si no, lo ocultamos
         const hayDatos = localStorage.getItem('id_escuela_seleccionada');
         btnCambiar.style.display = hayDatos ? 'inline-block' : 'none';
 
