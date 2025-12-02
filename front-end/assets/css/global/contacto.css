@@ -1,0 +1,226 @@
+/* ======== CONTACTO - DISEÑO INSTITUCIONAL AMPLIO ======== */
+
+:root {
+  --burgundy: #611232;       
+  --gold: #d6bd55;           
+  --cream-bg: #fbf8eb;       
+  --text-dark: #333333;
+  --border-color: #e0e0e0;
+  --focus-shadow: rgba(214, 189, 85, 0.25);
+}
+
+* { box-sizing: border-box; }
+
+/* --- Layout --- */
+.contacto-layout {
+  background-color: #ffffff;
+  /* Padding generoso arriba y abajo */
+  padding: 4rem clamp(1rem, 3vw, 2rem) 6rem;
+  min-height: calc(100vh - 200px); 
+}
+
+.contacto-wrap {
+  /* AJUSTE 1: ANCHO MÁS GRANDE */
+  /* Subimos de 75rem a 90rem (aprox 1440px) para pantallas grandes */
+  width: 92%; 
+  max-width: 90rem; 
+  margin: 0 auto;
+}
+
+/* --- Encabezado de Sección --- */
+.contacto-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.contacto-title {
+  font-family: 'Quicksand', sans-serif;
+  font-size: clamp(2.2rem, 4vw, 3.2rem); /* Título un poco más grande */
+  color: var(--burgundy);
+  font-weight: 700;
+  margin: 0 0 0.8rem;
+}
+
+.contacto-subtitle {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1.15rem;
+  color: #555;
+  line-height: 1.6;
+  max-width: 50rem; /* Texto un poco más ancho para balancear */
+  margin: 0 auto;
+}
+
+/* --- Tarjeta del Formulario --- */
+.card-form {
+  background: var(--cream-bg);
+  border-radius: 1rem; 
+  
+  /* AJUSTE 2: MÁS ALTURA Y ESPACIO INTERNO */
+  /* Mucho más aire: 4rem arriba/abajo, 5rem a los lados en PC */
+  padding: clamp(2.5rem, 5vw, 4.5rem) clamp(2rem, 5vw, 6rem);
+  
+  box-shadow: 0 1rem 2.5rem rgba(97, 18, 50, 0.08);
+  border-top: 0.5rem solid var(--burgundy); 
+}
+
+/* --- Grid System --- */
+.form-row {
+  display: grid;
+  /* Grid que se adapta, pero prefiere 2 columnas en PC */
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); 
+  gap: 2rem; /* Más espacio entre columnas */
+  margin-bottom: 2rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 2rem; /* Más separación entre filas */
+}
+
+.form-row .field { margin-bottom: 0; } 
+
+label {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem; /* Texto de etiqueta un poco más grande */
+  color: var(--burgundy);
+}
+
+.optional {
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.required {
+  color: #c62828;
+  margin-left: 0.25rem;
+}
+
+/* --- Inputs y Selects --- */
+.input-wrapper {
+  position: relative;
+}
+
+input, select, textarea {
+  width: 100%;
+  background: #ffffff;
+  border: 0.1rem solid var(--border-color);
+  border-radius: 0.6rem;
+  
+  /* Inputs más altos y cómodos */
+  padding: 1rem 1.2rem; 
+  font-size: 1.05rem;
+  
+  font-family: 'Open Sans', sans-serif;
+  color: var(--text-dark);
+  transition: all 0.2s ease;
+  appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23611232' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1.2rem center;
+  padding-right: 3rem;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 0.3rem var(--focus-shadow);
+}
+
+/* AJUSTE 3: ÁREA DE TEXTO MÁS ALTA */
+textarea {
+  resize: vertical;
+  min-height: 12rem; /* Esto estira la tarjeta verticalmente */
+}
+
+.hint {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.4rem;
+}
+
+/* --- Botón --- */
+.actions {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-primary {
+  background-color: var(--burgundy);
+  color: white;
+  border: none;
+  padding: 1rem 3rem; /* Botón más grande */
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 4rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 0.3rem 0.8rem rgba(97, 18, 50, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: #4a0e26;
+  transform: translateY(-0.2rem);
+  box-shadow: 0 0.5rem 1rem rgba(97, 18, 50, 0.3);
+}
+
+/* --- Alertas --- */
+.alert {
+  display: flex;
+  gap: 1rem;
+  padding: 1.2rem;
+  border-radius: 0.6rem;
+  margin-bottom: 2.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.alert.success {
+  background-color: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  color: #1b5e20;
+}
+
+.alert.error {
+  background-color: #ffebee;
+  border: 1px solid #ef9a9a;
+  color: #b71c1c;
+}
+
+.alert-icon {
+  font-size: 1.4rem;
+}
+
+/* Honeypot */
+.hp { display: none; }
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .contacto-wrap { width: 100%; }
+  
+  .card-form {
+    padding: 2rem 1.5rem; /* Padding normal en celular */
+    border-radius: 0; /* Opcional: borde recto en móvil para aprovechar espacio */
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .form-row .field {
+    margin-bottom: 1.5rem;
+  }
+  
+  .actions { justify-content: stretch; }
+  .btn-primary { width: 100%; justify-content: center; }
+}

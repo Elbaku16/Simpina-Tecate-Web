@@ -1,0 +1,367 @@
+:root {
+  /* PALETA ARMONIZADA CON COMENTARIOS.CSS */
+  --cream: #FDFCF7;
+  --panel-cream: #FFFAF3;
+  --burgundy: #7A1E2C;       /* Antes gob-guinda */
+  --burgundy-dark: #58121d;
+  --gold: #D4B056;           /* Antes gob-dorado */
+  --text-dark: #2D1B1F;      /* Antes #333333 */
+  --muted: rgba(212, 176, 86, 0.25);
+  
+  --shadow-suave: 0 1.25rem 2.5rem rgba(45, 27, 31, 0.15); /* Shadow soft de comentarios */
+  --shadow-input: 0 0.25rem 0.5rem rgba(58, 42, 37, 0.05);
+  
+  --radio: 1.375rem;         /* Radius-md de comentarios (aprox 22px) */
+  --radio-sm: 0.875rem;
+}
+
+body {
+    background-color: var(--cream);
+    font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text-dark);
+}
+
+/* =======================================================
+   WRAPPER PRINCIPAL
+======================================================= */
+.editor-wrapper {
+    width: 90%;
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding-bottom: 3rem;
+}
+
+/* =======================================================
+   ENCABEZADO
+======================================================= */
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+}
+
+.header-texts h1 {
+    font-size: 2rem;
+    color: var(--burgundy);
+    font-weight: 700; /* Ajustado a 700 como en comentarios */
+    margin: 0.4rem 0 0 0;
+    letter-spacing: 0.02em;
+}
+
+.badge-nivel {
+    background: var(--gold);
+    color: var(--burgundy);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 5px;
+    box-shadow: 0 4px 10px rgba(212, 176, 86, 0.25);
+}
+
+/* BOTÓN VOLVER (Estilo .btn-back) */
+.btn-volver-premium {
+    background-color: var(--burgundy);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.875rem; /* Radio armonizado */
+    border: none;
+    box-shadow: 0 0.625rem 1.25rem rgba(122, 30, 44, 0.25);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-volver-premium:hover {
+    background-color: var(--gold);
+    color: var(--burgundy);
+    transform: translateY(-2px);
+    box-shadow: 0 0.75rem 1.375rem rgba(212, 176, 86, 0.25);
+}
+
+.btn-volver-premium .icon {
+    font-size: 1.1rem;
+    line-height: 0;
+}
+
+/* =======================================================
+   TARJETA CONTENEDORA (CARD)
+   Armonizada con estilo .header-section / .filtros-section
+======================================================= */
+.editor-card {
+    background: var(--panel-cream);
+    border-radius: var(--radio);
+    /* Borde sutil dorado/muted en lugar del borde superior grueso */
+    border: 0.0625rem solid var(--muted); 
+    box-shadow: var(--shadow-suave);
+    padding: 2.5rem;
+    /* Eliminamos el border-top grueso antiguo para usar el estilo "panel" elegante */
+    border-top: 0.0625rem solid var(--muted);
+}
+
+.editor-intro {
+    color: rgba(45, 27, 31, 0.85); /* Color muted del texto */
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* =======================================================
+   PREGUNTAS
+======================================================= */
+.editor-pregunta {
+    background: #fff;
+    border: 0.0625rem solid var(--muted); /* Borde sutil */
+    border-left: 6px solid var(--gold);   /* Mantenemos tu indicador pero con el oro nuevo */
+    border-radius: var(--radio-sm);
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0.25rem 0.75rem rgba(58, 42, 37, 0.05);
+    transition: box-shadow 0.3s ease;
+}
+
+.editor-pregunta:hover {
+    box-shadow: 0 0.5rem 1.25rem rgba(58, 42, 37, 0.1);
+}
+
+.editor-pregunta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(212, 176, 86, 0.15);
+}
+
+.editor-pregunta h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--burgundy);
+    font-weight: 700;
+}
+
+/* INPUTS (Armonizados con .filtro-group input) */
+.editor-texto, 
+.editor-tipo, 
+.opcion-texto {
+    width: 100%;
+    padding: 1rem;
+    border: 0.125rem solid rgba(212, 176, 86, 0.5); /* Borde dorado suave */
+    border-radius: 0.75rem;
+    font-size: 0.95rem;
+    background-color: #fff; /* O var(--panel-cream) si prefieres más oscuro */
+    color: var(--text-dark);
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.3s;
+    margin-bottom: 0.5rem;
+}
+
+.editor-texto:focus, 
+.editor-tipo:focus, 
+.opcion-texto:focus {
+    background-color: #fff;
+    border-color: var(--burgundy);
+    box-shadow: 0 0 0 0.25rem rgba(122, 30, 44, 0.1);
+    outline: none;
+}
+
+.editor-texto {
+    min-height: 90px;
+    resize: vertical;
+}
+
+/* Botones de acción pequeña (Flechas, Borrar) */
+.editor-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 0.5rem;
+    background: rgba(212, 176, 86, 0.15); /* Fondo dorado muy suave */
+    color: var(--burgundy);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background: var(--burgundy);
+    color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(122, 30, 44, 0.2);
+}
+
+.btn-danger {
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+}
+
+/* =======================================================
+   OPCIONES
+======================================================= */
+.opcion-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.opcion-item .btn-icon { 
+    width: 40px; 
+    height: 44px; 
+}
+
+/* BOTÓN AGREGAR OPCIÓN */
+.btn-add-opcion {
+    margin-top: 10px;
+    background-color: #D4B056;
+    border: 1px dashed var(--gold);
+    color: var(--burgundy);
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.btn-add-opcion:hover {
+    border-color: var(--burgundy);
+    background: rgba(212, 176, 86, 0.1);
+}
+
+/* =======================================================
+   SECCIÓN INFERIOR
+======================================================= */
+.add-section {
+    margin: 2rem 0;
+}
+
+.btn-add-dashed {
+    width: 100%;
+    padding: 1.5rem;
+    background-color: white; /* Fondo crema muy suave */
+    border: 2px dashed var(--gold);
+    border-radius: var(--radio);
+    color: var(--burgundy);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-add-dashed:hover {
+    border-color: var(--burgundy);
+    background-color: #7A1E2C;
+    box-shadow: 0 0.5rem 1rem rgba(58, 42, 37, 0.08);
+    transform: translateY(-2px);
+    color:white;
+}
+
+.plus-icon {
+    font-size: 1.4rem;
+    font-weight: 300;
+}
+
+/* =======================================================
+   FOOTER (BOTONES FINALES)
+======================================================= */
+.divider {
+    border: 0;
+    height: 1px;
+    background: rgba(212, 176, 86, 0.2);
+    margin: 2rem 0;
+}
+
+.editor-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+/* Cancelar estilo .btn-limpiar */
+.btn-cancelar-solid {
+     background: transparent;
+    border: 2px solid var(--burgundy);
+    color: var(--burgundy);
+    padding: 0.8rem 1.5rem;
+    border-radius: 0.875rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-cancelar-solid:hover {
+    background-color: rgba(212, 176, 86, 0.25);
+    color: var(--burgundy-dark);
+    transform: translateY(-2px);
+}
+
+/* Guardar estilo .btn-filtrar (Solid Burgundy) */
+.btn-guardar-solid {
+    background: var(--burgundy);
+    color: #fff;
+    border: none;
+    padding: 0.8rem 2.5rem;
+    border-radius: 0.875rem;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 0.5rem 1rem rgba(122, 30, 44, 0.2);
+    transition: 0.3s;
+}
+
+.btn-guardar-solid:hover {
+    transform: translateY(-3px);
+    background: var(--gold);
+    color: var(--burgundy);
+    box-shadow: 0 0.75rem 1.5rem rgba(212, 176, 86, 0.3);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .editor-wrapper {
+        width: 100%;
+        padding: 1rem;
+    }
+    .editor-card {
+        padding: 1.5rem;
+    }
+    .editor-footer {
+        flex-direction: column-reverse;
+    }
+    .btn-cancelar-solid, .btn-guardar-solid {
+        width: 100%;
+        text-align: center;
+    }
+}

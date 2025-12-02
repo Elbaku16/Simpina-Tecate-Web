@@ -1,0 +1,763 @@
+/* ==========================================
+   admin.css – Panel Administrativo + Login
+   Estilo coherente con selección de encuestas
+   ========================================== */
+
+:root {
+  --cream: #FDFCF7;     /* Fondo general */
+  --panel-cream: #FFFAF3; /* Paneles/targetas sutilmente más claros */
+  --burgundy: #7A1E2C;
+  --gold: #D4B056;
+  --text-dark: #2D1B1F;
+  --muted: rgba(212, 176, 86, 0.25);
+  --shadow-soft: 0 20px 40px rgba(45, 27, 31, 0.15);
+  --shadow-card: 0 14px 30px rgba(58, 42, 37, 0.18);
+  --radius-lg: 28px;
+  --radius-md: 22px;
+  --radius-sm: 18px;
+}
+
+/* === Base === */
+body {
+  margin: 0;
+  background: var(--cream);
+  font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+footer { flex-shrink: 0; }
+/* =========================================
+   HEADER ADMIN (BASE)
+   ========================================= */
+
+.header-admin {
+    display: flex;
+    /* IMPORTANTE: space-between separa Izquierda de Derecha */
+    justify-content: space-between; 
+    align-items: center;
+    background-color: #fffef9;
+    color: #611232;
+    padding: 1rem 4%;
+    box-shadow: 0 2px 10px rgba(97, 18, 50, 0.08);
+    border-bottom: 2px solid rgba(203, 191, 155, 0.4);
+    position: relative;
+    z-index: 1000;
+    min-height: 105px;
+    box-sizing: border-box;
+}
+
+/* Logos Generales */
+.header-admin .logo-simpinna, 
+.header-admin .logo-gobierno {
+    height: 7rem; 
+    width: auto;
+    transition: all 0.3s ease;
+}
+
+/* Contenedores Izquierda y Derecha */
+.header-izq, .header-der {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* --- Info Usuario Desktop (Columna Alineada) --- */
+.admin-info-desktop {
+    display: flex;
+    flex-direction: column; /* Uno debajo del otro */
+    justify-content: center; /* Centrado vertical respecto al logo */
+    align-items: flex-start; /* Alineados a la izquierda del bloque */
+    gap: 1rem; /* Espacio entre el nombre y el botón */
+    margin-left: 1.5rem;
+}
+
+/* Estilo del Nombre */
+.user-label {
+    font-family: var(--font-body, sans-serif);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #611232;
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    line-height: 1; /* Ayuda a la alineación */
+}
+
+/* Estilo del Botón Salir */
+.btn-logout {
+    font-family: var(--font-body, sans-serif);
+    font-size: 0.95rem;
+    color: #611232;
+    text-decoration: none;
+    font-weight: 600;
+    opacity: 0.85;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    /* Aseguramos que no tenga márgenes extraños */
+    padding: 0;
+    margin: 0;
+}
+
+.btn-logout:hover {
+    text-decoration: underline;
+    opacity: 1;
+}
+
+/* --- TRUCO DE ALINEACIÓN --- */
+/* Damos un ancho fijo a los iconos para que el texto empiece siempre igual */
+.user-label i,
+.btn-logout i {
+    width: 25px; /* Ancho fijo para el contenedor del icono */
+    text-align: center; /* Icono centrado en ese hueco */
+    margin-right: 0.5rem; /* Separación con el texto */
+    font-size: 1rem;
+}
+
+/* Título Central Desktop */
+.header-center {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%); z-index: 1; text-align: center;
+}
+.center-title {
+    font-family: var(--font-title, serif); font-weight: 700;
+    font-size: 2rem; margin: 0; color: #611232; white-space: nowrap;
+}
+
+/* Botón Hamburguesa (Oculto en Desktop) */
+.menu-toggle {
+    display: none; background: none; border: none;
+    cursor: pointer; padding: 0.5rem;
+}
+.hamburger-icon { width: 34px; height: 34px; stroke: #611232; }
+
+/* =========================================
+   MENÚ LATERAL (DRAWER) & BOTÓN SALIR
+   ========================================= */
+.menu-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5); z-index: 1001; opacity: 0; visibility: hidden;
+    transition: all 0.3s ease; backdrop-filter: blur(2px);
+}
+.menu-overlay.active { opacity: 1; visibility: visible; }
+
+.mobile-menu {
+    position: fixed; top: 0; right: -280px; width: 280px; height: 100%;
+    background-color: #fffef9; z-index: 1002;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+    transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+    display: flex; flex-direction: column;
+}
+.mobile-menu.active { right: 0; }
+
+.mobile-menu-header {
+    padding: 1.5rem; display: flex; justify-content: flex-end;
+    border-bottom: 1px solid rgba(97, 18, 50, 0.1);
+}
+.menu-close { background: none; border: none; cursor: pointer; width: 32px; height: 32px; padding: 0; }
+.mobile-content { padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+.mobile-title { font-family: var(--font-title, serif); font-size: 1.5rem; color: #611232; margin: 0; text-align: center; }
+.mobile-divider { border: 0; border-top: 1px solid rgba(97,18,50,0.1); width: 100%; margin: 0.5rem 0; }
+.mobile-user-info { display: flex; flex-direction: column; gap: 1rem; }
+.mobile-user-name { font-weight: 700; color: #611232; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+
+/* --- BOTÓN SALIR MÓVIL (CORREGIDO) --- */
+.mobile-btn-logout {
+    background-color: #611232;
+    color: white;
+    padding: 0.5rem 1rem; /* Más pequeño */
+    font-size: 0.9rem;    /* Fuente más pequeña */
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none !important; /* SIN SUBRAYADO */
+    font-weight: 600;
+    display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+    transition: background 0.2s;
+    /* Para que no ocupe todo el ancho si no quieres */
+    align-self: center; 
+}
+.mobile-btn-logout:hover { background-color: #4a0e26; }
+
+
+/* =========================================
+   RESPONSIVE (MÓVIL) - CORRECCIÓN DE ALINEACIÓN
+   ========================================= */
+
+@media (max-width: 992px) {
+    .header-admin {
+        /* IMPORTANTE: Forzamos la fila horizontal */
+        flex-direction: row !important; 
+        justify-content: space-between !important;
+        align-items: center;
+        
+        padding: 0.8rem 1rem;
+        min-height: 85px;
+    }
+
+    /* Ocultamos lo que sobra */
+    .admin-info-desktop, .header-center { display: none; }
+
+    /* Mostramos el botón hamburguesa */
+    .menu-toggle { display: block; margin: 0; }
+
+    /* Ajustamos el contenedor derecho (.header-der) */
+    .header-der {
+        display: flex;
+        align-items: center;
+        /* Gap entre la hamburguesa y el logo derecho */
+        gap: 1rem; 
+    }
+
+    /* Tamaños de logos para móvil */
+    .header-admin .logo-simpinna { height: 3.8rem; }
+    .header-admin .logo-gobierno { height: 3.2rem; }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 380px) {
+    .header-admin { padding: 0.8rem 0.5rem; }
+    .header-der { gap: 0.5rem; }
+    .header-admin .logo-simpinna { height: 3rem; }
+    .header-admin .logo-gobierno { height: 2.5rem; }
+}
+/* ==========================================
+   PANEL ADMIN – CONTENEDOR
+========================================== */
+main.admin-encuestas {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+/* Encabezado superior simplificado */
+.admin-summary {
+  background: var(--panel-cream);
+  border: 1px solid var(--muted);
+  border-radius: var(--radius-sm);
+  padding: clamp(1.6rem, 3vw, 2.2rem);
+  box-shadow: 0 10px 24px rgba(58, 42, 37, 0.12);
+  text-align: center;
+  position: relative;
+}
+
+.admin-summary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(80%, 760px);
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  border-radius: 2px;
+  opacity: .6;
+}
+
+.titulo-admin {
+  margin: 0;
+  font-size: clamp(2rem, 3.5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--burgundy);
+  letter-spacing: .02em;
+}
+
+.subtitulo-admin {
+  margin: .8rem auto 0;
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  max-width: 600px;
+  line-height: 1.6;
+  color: rgba(45,27,31,.85);
+}
+
+/* Acciones rápidas (1 fila, sin duplicar con tarjetas) */
+.admin-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .75rem;
+  margin-top: 1.1rem;
+}
+
+.btn-action {
+  background: var(--burgundy);
+  color: #fff;
+  padding: .65rem 1.4rem;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background .3s ease, transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 10px 20px rgba(122,30,44,.25);
+}
+.btn-action:hover { background: var(--gold); color: var(--burgundy); transform: translateY(-2px); box-shadow: 0 12px 22px rgba(212,176,86,.25); }
+.btn-action:focus-visible { outline: 3px solid rgba(212,176,86,.6); outline-offset: 2px; }
+
+/* Sección de tarjetas */
+.encuestas-section {
+  background: rgba(255,255,255,.75);
+  backdrop-filter: blur(4px);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--muted);
+}
+
+.encuestas-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+.encuestas-section__header h2 {
+  margin: 0;
+  font-size: clamp(1.3rem, 2.5vw, 1.6rem);
+  color: var(--burgundy);
+  font-weight: 700;
+}
+.encuestas-section__header p {
+  margin: 0;
+  font-size: .95rem;
+  color: rgba(45,27,31,.78);
+  max-width: 420px;
+}
+
+/* Tarjetas de niveles */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(1rem, 3vw, 1.75rem);
+}
+
+.card-admin {
+  background: var(--panel-cream);
+  border-radius: var(--radius-md);
+  padding: 1.8rem 1.4rem 1.6rem;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  transition: transform .3s ease, box-shadow .3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.card-admin::before{
+  content:"";
+  position:absolute;
+  inset:auto -60px -60px auto;
+  width:150px;height:150px;
+  background: radial-gradient(circle at center, rgba(212,176,86,.2), transparent 70%);
+  transform: rotate(-15deg);
+}
+.card-admin:hover{ transform: translateY(-6px); box-shadow: 0 22px 44px rgba(122,30,44,.25); }
+
+.card-admin img{
+  width:90px; height:auto;
+  filter: drop-shadow(0 10px 18px rgba(122,30,44,.12));
+}
+.card-admin h2{
+  margin:0;
+  font-size:1.8rem;
+  color:var(--burgundy);
+  font-weight:700;
+  letter-spacing:.01em;
+}
+
+/* Botón Ver resultados */
+.btn-ver{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+   gap:.4rem;
+  padding: .9rem 1.6rem;
+  border-radius: 10px;
+  background: var(--burgundy);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.2rem;
+  box-shadow: 0 12px 24px rgba(122,30,44,.25);
+  transition: background .3s, transform .3s, box-shadow .3s, color .3s;
+  position: relative;
+  z-index: 1;
+}
+.btn-ver:hover {
+  background: var(--gold);      
+  color: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(212,176,86,.28);
+}
+
+
+
+
+/* ==========================================
+   NUEVO: BOTÓN MODIFICAR ENCUESTA
+========================================== */
+.btn-editar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: .9rem 1.6rem;
+  border-radius: 10px;
+  background: var(--burgundy);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.2rem;
+  box-shadow: 0 12px 24px rgba(122,30,44,.25);
+  transition: background .3s, transform .3s, box-shadow .3s, color .3s;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-editar:hover {
+  background: var(--gold);      /* AQUÍ SE AGREGA EL FONDO AMARILLO */
+  color: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(212,176,86,.28);
+}
+
+
+/* ==========================================
+   SECCIÓN REPORTES Y COMENTARIOS
+========================================== */
+.comentarios-section {
+  background: rgba(255,255,255,.75);
+  backdrop-filter: blur(4px);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--muted);
+}
+
+.comentarios-box {
+  background: var(--panel-cream);
+  border-radius: var(--radius-md);
+  padding: 2rem 1.8rem;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  transition: transform .3s ease, box-shadow .3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.comentarios-box::before {
+  content: "";
+  position: absolute;
+  inset: auto -60px -60px auto;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle at center, rgba(212,176,86,.2), transparent 70%);
+  transform: rotate(-15deg);
+}
+
+
+
+.comentarios-icon {
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, var(--burgundy), rgba(122,30,44,.8));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(122,30,44,.25);
+  position: relative;
+  z-index: 1;
+}
+
+.comentarios-icon svg {
+  width: 48px;
+  height: 48px;
+  stroke-width: 2;
+}
+
+.comentarios-box h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--burgundy);
+  font-weight: 700;
+  letter-spacing: .01em;
+  position: relative;
+  z-index: 1;
+}
+
+.comentarios-box p {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(45,27,31,.78);
+  max-width: 500px;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-comentarios {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.8rem;
+  border-radius: 10px;
+  background: var(--burgundy);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  box-shadow: 0 12px 24px rgba(122,30,44,.25);
+  transition: background .3s, transform .3s, box-shadow .3s;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-comentarios svg {
+  width: 18px;
+  height: 18px;
+  transition: transform .3s ease;
+}
+
+.btn-comentarios:hover {
+  background: var(--gold);
+  color: var(--burgundy);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(212,176,86,.28);
+}
+
+.btn-comentarios:hover svg {
+  transform: translateX(3px);
+}
+
+.btn-comentarios:focus-visible {
+  outline: 3px solid rgba(212,176,86,.6);
+  outline-offset: 2px;
+}
+
+/* ==========================================
+   LOGIN ADMIN – CONTENEDOR Y FORMULARIO
+========================================== */
+
+.login-container {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(3rem, 5vw, 6rem) 1.5rem 8vh;
+  gap: 1rem; /* Reducido ligeramente para acercar el botón de regreso */
+  text-align: center;
+}
+
+/* --- NUEVO: Botón de Regresar (Alineado con el formulario) --- */
+.login-back-wrapper {
+  width: min(750px, 95%); /* Mismo ancho que el formulario */
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.btn-back-home {
+  text-decoration: none;
+  color: var(--burgundy); /* Usa el color guinda de tus variables */
+  font-family: var(--font-body, sans-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  padding: 0.5rem 0;
+}
+
+.btn-back-home:hover {
+  color: var(--gold); /* Efecto dorado al pasar el mouse */
+  transform: translateX(-4px); /* Pequeña animación hacia la izquierda */
+}
+
+.btn-back-home i {
+  font-size: 1rem;
+}
+
+/* --- Título del Login --- */
+.login-title {
+  font-size: clamp(2.4rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--burgundy);
+  letter-spacing: 0.02em;
+  margin: 0.5rem 0 1.5rem;
+}
+
+/* --- Tarjeta del Formulario --- */
+.login-form {
+  width: min(750px, 95%);
+  background: var(--panel-cream);
+  border: 1px solid var(--muted);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+  padding: clamp(2.5rem, 4vw, 3rem);
+  text-align: left;
+}
+
+.form-group { 
+  margin-bottom: 1.15rem; 
+}
+
+label {
+  display: block;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: .45rem;
+  color: var(--text-dark);
+}
+
+input {
+  width: 100%;
+  padding: .8rem .9rem;
+  border: 1px solid rgba(0,0,0,.18);
+  border-radius: .5rem;
+  font-size: 1.3rem;
+  transition: border-color .25s ease, box-shadow .25s ease;
+  background: #fff;
+  box-sizing: border-box; /* Asegura que el padding no rompa el ancho */
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212,176,86,.25);
+}
+
+/* --- Botón Principal (Iniciar Sesión) --- */
+.btn-login {
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center;
+  background: var(--burgundy); 
+  color: #fff;
+  border: none; 
+  border-radius: 10px;
+  padding: .85rem 1.6rem;
+  font-size: 1.4rem; 
+  font-weight: 700;
+  letter-spacing: .02rem; 
+  cursor: pointer;
+  transition: background .3s, transform .15s, box-shadow .3s;
+  box-shadow: 0 10px 20px rgba(122,30,44,.25);
+  width: 100%; /* Opcional: hace que el botón ocupe todo el ancho */
+  margin-top: 1rem;
+}
+
+.btn-login:hover { 
+  background: var(--gold); 
+  color: var(--burgundy); 
+  transform: translateY(-1px); 
+  box-shadow: 0 14px 28px rgba(212,176,86,.28); 
+}
+
+.btn-login:active { 
+  transform: scale(.98); 
+}
+
+.btn-login:focus-visible { 
+  outline: 3px solid rgba(212,176,86,.6); 
+  outline-offset: 2px; 
+}
+
+/* --- Nota al pie del formulario --- */
+.login-note {
+  text-align: center;
+  font-size: .95rem;
+  margin-top: 1.5rem;
+  color: rgba(45,27,31,.75);
+}
+
+/* TARJETAS EN ADMIN */
+    .admin-icon {
+      width: 100px;
+      height: 100px;
+      display: block;
+      margin: 0 auto 1.5rem auto;
+      fill: currentColor; /* Toma el color definido abajo */
+      transition: transform 0.3s ease;
+
+
+    }
+
+
+
+    /* Colores específicos por tarjeta */
+    .card-admin.preescolar .admin-icon { color: #7acb55; } /* Verde */
+    .card-admin.primaria .admin-icon   { color: #4385f4; } /* Azul */
+    .card-admin.secundaria .admin-icon { color: #e04e4e; } /* Rojo */
+    .card-admin.preparatoria .admin-icon { color: #c7479c; } /* Magenta */
+/* ==========================================
+   RESPONSIVE
+========================================== */
+@media (max-width: 768px){
+  .encuestas-section__header{
+    text-align:center; justify-content:center;
+  }
+  .encuestas-section__header p{ max-width:none; }
+  .admin-quick-actions{ justify-content:center; }
+  .comentarios-box { padding: 1.6rem 1.4rem; }
+}
+
+@media (max-width: 480px){
+  .card-admin{ padding: 1.6rem 1.2rem; }
+  .btn-ver{ width:100%; }
+  .btn-comentarios { width: 100%; }
+}
+@media (max-width: 768px) {
+    .header-admin {
+        flex-direction: column;
+        padding: 1rem 1.5rem;
+        gap: 1rem;
+        height: auto;
+        min-height: auto;
+        text-align: center;
+    }
+
+    .header-admin .header-izq {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .admin-info {
+        align-items: center; /* Centrado en móvil */
+    }
+
+    /* Reducción proporcional en móvil */
+    .header-admin .logo-simpinna {
+        height: 3.8rem;
+    }
+    
+    .header-admin .logo-gobierno {
+        height: 3.2rem;
+    }
+
+    .admin-title {
+        font-size: 1.4rem;
+    }
+}
