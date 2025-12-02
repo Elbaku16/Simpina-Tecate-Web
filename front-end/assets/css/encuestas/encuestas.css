@@ -139,6 +139,7 @@ main {
   height: 1.5rem;
   accent-color: var(--burgundy);
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 /* Input Otro */
@@ -432,7 +433,65 @@ textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px
   cursor: not-allowed; 
   box-shadow: none;
 }
-/* === Responsive === */
+
+/* ============================================================
+   IMÁGENES EN PREGUNTAS Y OPCIONES
+   ============================================================ */
+
+/* Imagen de la pregunta - Tamaño controlado */
+.img-pregunta {
+  max-width: 280px;
+  max-height: 220px;
+  width: auto;
+  height: auto;
+  margin-bottom: 1.2rem;
+  display: block;
+  border-radius: 10px;
+  object-fit: contain;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
+}
+
+/* Contenedor de opción - Imagen a la derecha */
+.opcion-contenedor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* El texto de la opción crece para ocupar el espacio */
+.opcion-contenedor span {
+  flex: 1;
+  order: 1;
+}
+
+/* Imagen de opción a la derecha */
+.img-opcion {
+  width: 55px;
+  height: 55px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  order: 2;
+  margin-left: auto;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Imagen en ranking - A la derecha antes de los botones */
+.img-opcion-ranking {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #ddd;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 768px) {
   .encuesta-card { padding: 2rem 1.5rem; }
   .card-header-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
@@ -442,29 +501,20 @@ textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px
   .canvas-paint .cp-canvas { height: 300px; }
   .ranking-item { flex-wrap: wrap; gap: 1rem; }
   .ranking-actions { width: 100%; justify-content: flex-end; }
-}
-
-.img-pregunta {
-    max-width: 100%;
-    margin-bottom: 10px;
-    display: block;
-}
-
-.opcion-contenedor {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.img-opcion {
-    width: 70px;
-    height: auto;
-    border-radius: 6px;
-    object-fit: contain;
-}
-
-.img-opcion-ranking {
-    width: 60px;
-    margin-right: 10px;
-    border-radius: 6px;
+  
+  /* Imágenes responsive */
+  .img-pregunta {
+    max-width: 200px;
+    max-height: 160px;
+  }
+  
+  .img-opcion {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .img-opcion-ranking {
+    width: 40px;
+    height: 40px;
+  }
 }

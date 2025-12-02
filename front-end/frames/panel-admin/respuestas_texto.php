@@ -73,6 +73,14 @@ if ($accion === 'obtener') {
 }
 
 elseif ($accion === 'eliminar') {
+
+      if (!tiene_permiso('eliminar_respuestas')) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'No tienes permiso para eliminar respuestas.'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
     // Eliminar respuesta
     $idRespuesta = isset($_POST['id_respuesta']) ? (int)$_POST['id_respuesta'] : 0;
 
