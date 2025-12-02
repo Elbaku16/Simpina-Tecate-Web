@@ -218,6 +218,29 @@ requerir_admin();
         </a>
       </div>
       
+      <!-- NUEVO BLOQUE: Códigos QR de Encuestas -->
+      <div class="comentarios-box" style="margin-top: 1.5rem;">
+        <div class="comentarios-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+          </svg>
+        </div>
+        <h2>Códigos QR de Encuestas</h2>
+        <p>Genera códigos QR para acceso rápido a las encuestas desde dispositivos móviles</p>
+
+        <a href="/front-end/frames/panel-admin/generar-qr.php" class="btn-comentarios">
+          Generar Códigos QR
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+      
       <?php if (rol_es('admin')): ?>
       <div class="comentarios-box" style="margin-top: 1.5rem; text-align: center;">
         <div class="comentarios-icon">
