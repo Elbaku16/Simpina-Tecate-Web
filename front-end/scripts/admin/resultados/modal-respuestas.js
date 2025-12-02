@@ -264,7 +264,7 @@
     return html;
   }
   
-  function generarCardTexto(resp) {
+function generarCardTexto(resp) {
     const fecha = new Date(resp.fecha);
     const fechaFormateada = formatearFecha(fecha);
     const horaFormateada = formatearHora(fecha);
@@ -278,29 +278,35 @@
               ${fechaFormateada} • ${horaFormateada}
             </span>
           </div>
-          <button class="respuesta-eliminar" 
-                  onclick="eliminarRespuesta(${resp.id})"
-                  title="Eliminar respuesta">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              <line x1="10" y1="11" x2="10" y2="17"></line>
-              <line x1="14" y1="11" x2="14" y2="17"></line>
-            </svg>
-          </button>
+
+          ${window.SIMPINNA_PUEDE_ELIMINAR ? `
+            <button class="respuesta-eliminar" 
+                    onclick="eliminarRespuesta(${resp.id})"
+                    title="Eliminar respuesta">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          ` : ''}
+
         </div>
+
         <div class="respuesta-contenido">
           <p>${escapeHtml(resp.texto)}</p>
         </div>
       </div>
     `;
-  }
+}
+
 
   function generarCardDibujo(resp) {
     const fecha = new Date(resp.fecha);
     const fechaFormateada = formatearFecha(fecha);
     const horaFormateada = formatearHora(fecha);
-    
+
     const existeArchivo = resp.existe_archivo;
     const rutaDibujo = resp.ruta_dibujo || '';
     const tamano = resp.tamano || resp.tamaño || '';
@@ -314,19 +320,25 @@
               ${fechaFormateada} • ${horaFormateada}
             </span>
           </div>
-          <button class="respuesta-eliminar" 
-                  onclick="eliminarRespuesta(${resp.id})"
-                  title="Eliminar respuesta">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-              <line x1="10" y1="11" x2="10" y2="17"></line>
-              <line x1="14" y1="11" x2="14" y2="17"></line>
-            </svg>
-          </button>
+
+          ${window.SIMPINNA_PUEDE_ELIMINAR ? `
+            <button class="respuesta-eliminar" 
+                    onclick="eliminarRespuesta(${resp.id})"
+                    title="Eliminar respuesta">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          ` : ''}
+
         </div>
+
         <div class="respuesta-contenido respuesta-imagen-wrapper">
-          ${existeArchivo 
+          ${
+            existeArchivo 
             ? `<img src="${rutaDibujo}" alt="Dibujo" class="respuesta-imagen" onclick="abrirImagenCompleta('${rutaDibujo}')">
                ${tamano ? `<span class="imagen-tamano">${tamano}</span>` : ''}`
             : '<div class="imagen-no-disponible">Imagen no disponible</div>'
@@ -334,7 +346,8 @@
         </div>
       </div>
     `;
-  }
+}
+
 
   window.eliminarRespuesta = function(idRespuesta) {
     if (!confirm('¿Estas seguro de que deseas eliminar esta respuesta?')) {

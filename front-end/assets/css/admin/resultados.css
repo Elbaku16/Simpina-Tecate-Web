@@ -35,6 +35,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  margin:10px;
   padding: 10px 20px;
   border: none;
   border-radius: 10px;
@@ -72,7 +73,9 @@
   margin-left: auto;
   align-items: center;
 }
-
+.btn-print-global{  
+  margin-right: 10px;
+}
 /* Botones de exportación global */
 .btn-export-global {
   padding: 8px 14px;
