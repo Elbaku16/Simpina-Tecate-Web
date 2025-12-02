@@ -1,15 +1,15 @@
-// components/pregunta-multiple.js
-
 import { setRespuesta } from '../utils/progreso.js';
 
 export function plantillaMultiple(p) {
     return `
+        ${p.icono ? `<img src="/${p.icono}" class="img-pregunta">` : ""}
         <h3>${p.texto}</h3>
         <div class="opciones">
             ${p.opciones.map(op => `
-                <label>
+                <label class="opcion-contenedor">
                     <input type="checkbox" name="pregunta_${p.id}" value="${op.id}" data-texto="${op.texto}">
-                    ${op.texto}
+                    ${op.icono ? `<img src="/${op.icono}" class="img-opcion">` : ""}
+                    ${op.texto ? `<span>${op.texto}</span>` : ""}
                 </label>
             `).join('')}
             <input type="text" class="input-otro oculto" id="otro_${p.id}" placeholder="Especifica tu respuesta...">

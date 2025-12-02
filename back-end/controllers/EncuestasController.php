@@ -76,8 +76,10 @@ class EncuestasController
                 p.texto_pregunta,
                 p.tipo_pregunta,
                 p.orden,
+                p.icono AS icono_pregunta,
                 o.id_opcion,
-                o.texto_opcion
+                o.texto_opcion,
+                o.icono AS icono_opcion
             FROM preguntas p
             LEFT JOIN opciones_respuesta o ON p.id_pregunta = o.id_pregunta
             WHERE p.id_encuesta = ?
@@ -95,10 +97,14 @@ class EncuestasController
             $pid = (int)$row['id_pregunta'];
 
             if (!isset($preguntas[$pid])) {
+                // Aseguramos que el icono de la pregunta se pase correctamente
+                $row['icono'] = $row['icono_pregunta'];
                 $preguntas[$pid] = new Pregunta($row);
             }
 
             if ($row['id_opcion'] !== null) {
+                // Aseguramos que el icono de la opción se pase correctamente
+                $row['icono'] = $row['icono_opcion'];
                 $preguntas[$pid]->agregarOpcion($row);
             }
         }

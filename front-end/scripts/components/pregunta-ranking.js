@@ -1,16 +1,16 @@
-// components/pregunta-ranking.js
-
 import { setRespuesta } from '../utils/progreso.js';
-
-// Exportamos para uso local, pero también usaremos window para asegurar compatibilidad
 export const respuestasRanking = {};
 
 export function plantillaRanking(p) {
     return `
+        ${p.icono ? `<img src="/${p.icono}" class="img-pregunta">` : ""}
         <h3>${p.texto}</h3>
+
         <div class="ranking-container" id="rankingContainer_${p.id}">
             ${p.opciones.map((op, i) => `
                 <div class="ranking-item" data-opcion-id="${op.id}" data-posicion="${i+1}">
+                    
+                    ${op.icono ? `<img src="/${op.icono}" class="img-opcion-ranking">` : ""}
                     
                     <span class="ranking-numero">${i+1}</span>
                     
@@ -26,6 +26,7 @@ export function plantillaRanking(p) {
         </div>
     `;
 }
+
 
 export function activarDragAndDrop(idPregunta) {
     const container = document.getElementById(`rankingContainer_${idPregunta}`);

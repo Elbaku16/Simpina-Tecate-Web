@@ -443,3 +443,28 @@ textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px
   .ranking-item { flex-wrap: wrap; gap: 1rem; }
   .ranking-actions { width: 100%; justify-content: flex-end; }
 }
+
+.img-pregunta {
+    max-width: 100%;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.opcion-contenedor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.img-opcion {
+    width: 70px;
+    height: auto;
+    border-radius: 6px;
+    object-fit: contain;
+}
+
+.img-opcion-ranking {
+    width: 60px;
+    margin-right: 10px;
+    border-radius: 6px;
+}
