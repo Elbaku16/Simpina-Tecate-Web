@@ -1,9 +1,8 @@
-// components/pregunta-texto.js
-
 import { setRespuesta } from '../utils/progreso.js';
 
 export function plantillaTexto(p) {
     return `
+        ${p.icono ? `<img src="/${p.icono}" class="img-pregunta">` : ""}
         <h3>${p.texto}</h3>
         <textarea id="texto_${p.id}" rows="5" placeholder="Escribe tu respuesta aquí..."></textarea>
     `;
@@ -17,3 +16,4 @@ export function initTextoListeners(page) {
         });
     });
 }
+
