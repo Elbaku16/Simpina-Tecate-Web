@@ -1,0 +1,445 @@
+/* ============================================================
+   ENCUESTA UNIFICADO - ESTILO INSTITUCIONAL (Corregido)
+   ============================================================ */
+
+:root {
+  --burgundy: #611232;
+  --gold: #d6bd55;
+  --cream-bg: #fbf8eb;  
+  --white: #ffffff;     
+  --text-dark: #333333;
+  --border-color: #e0e0e0;
+}
+
+/* === Layout Base === */
+main {
+  background-color: var(--white);
+  min-height: 80vh;
+  padding: 3rem 5%;
+}
+
+.encuesta-wrap {
+  /* AJUSTE 1: Contenedor más ancho */
+  max-width: 1250px; 
+  margin: 0 auto;
+}
+
+/* === Tarjeta Principal === */
+.encuesta-card {
+  background-color: var(--cream-bg);
+  border-radius: 16px;
+  /* Padding generoso */
+  padding: 3rem 4rem;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+  border-top: 6px solid var(--burgundy);
+}
+
+/* === Nuevo Header Interno (Título + Progreso) === */
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end; /* Alinear abajo */
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.header-titles h1 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2.5rem;
+  color: var(--burgundy);
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* Estilo de Progreso (Limpio y a la derecha) */
+.header-progress {
+  min-width: 200px;
+  text-align: right;
+}
+
+.progress-text {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0; /* Gris claro */
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--burgundy);
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+.card-divider {
+  border: 0;
+  height: 1px;
+  background: rgba(97, 18, 50, 0.15);
+  margin-bottom: 3rem;
+}
+
+/* === Preguntas === */
+.pagina-encuesta {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+.pregunta h3 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.6rem;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+/* === Opciones (Radio/Checkbox) === */
+.opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.opciones label {
+  background: var(--white);
+  border: 1px solid #d0d0d0;
+  padding: 1.2rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.opciones label:hover {
+  border-color: var(--gold);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.opciones input[type="radio"],
+.opciones input[type="checkbox"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  accent-color: var(--burgundy);
+  cursor: pointer;
+}
+
+/* Input Otro */
+.input-otro {
+  width: 100%; margin-top: 1rem; padding: 1rem;
+  border: 1px solid #ccc; border-radius: 8px;
+  font-family: 'Open Sans', sans-serif; font-size: 1.1rem;
+}
+.input-otro:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(214, 189, 85, 0.2); }
+.oculto { display: none; }
+
+/* Textarea */
+textarea {
+  width: 100%; min-height: 160px; padding: 1.2rem;
+  border: 1px solid #ccc; border-radius: 8px;
+  font-family: 'Open Sans', sans-serif; font-size: 1.1rem;
+  resize: vertical; background: var(--white);
+}
+textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(214, 189, 85, 0.2); }
+
+
+/* === AJUSTE 2: RANKING (Corregido) === */
+.ranking-item {
+  background: var(--white);
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #d0d0d0;
+  border-left: 6px solid var(--gold); /* Acento lateral */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: background 0.2s;
+}
+
+.ranking-item:hover {
+  background: #fffdf5;
+}
+
+/* AJUSTE 4: Números bonitos */
+.ranking-numero {
+  background: var(--burgundy);
+  color: white;
+  width: 36px; 
+  height: 36px;
+  border-radius: 50%;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  flex-shrink: 0; /* Evita que se aplaste */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.ranking-texto {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  flex-grow: 1; /* Ocupa todo el espacio posible */
+  line-height: 1.4;
+}
+
+/* AJUSTE: Botones siempre a la derecha */
+.ranking-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto; /* ESTO EMPUJA LOS BOTONES AL FINAL */
+  flex-shrink: 0;
+}
+
+.btn-rank {
+  width: 42px; /* Más grandes y clicables */
+  height: 42px;
+  border: 1px solid #ccc; 
+  background: white;
+  border-radius: 8px; 
+  cursor: pointer;
+  color: #555; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+}
+
+.btn-rank:hover:not(:disabled) { 
+  background: var(--burgundy); 
+  color: white; 
+  border-color: var(--burgundy);
+}
+
+.btn-rank:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: #f0f0f0;
+}
+
+/* === Botones Navegación === */
+.acciones-encuesta {
+  margin-top: 4rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.btn-nav {
+  padding: 1rem 3rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+
+.btn-prev {
+  background: transparent;
+  border: 2px solid var(--burgundy);
+  color: var(--burgundy);
+}
+.btn-prev:hover { background: #fff0f0; }
+
+.btn-next {
+  background: var(--burgundy);
+  color: white;
+  min-width: 200px;
+}
+.btn-next:hover {
+  background: #4a0e26;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(97, 18, 50, 0.2);
+}
+
+/* === Canvas Paint === */
+.canvas-paint { width: 100%; margin-top: 1rem; }
+.canvas-paint .paleta {
+  background: var(--white);
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center;
+}
+.canvas-paint .cp-canvas {
+  width: 100%; height: 450px; /* Más alto */
+  background: white;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* === Modal Escuela === */
+.modal-overlay {
+  position: fixed; 
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7); 
+  z-index: 2000;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  background: var(--white);
+  /* CAMBIO: Quitamos padding global para que el header toque los bordes */
+  padding: 0; 
+  
+  border-radius: 16px;
+  width: 90%; 
+  max-width: 500px; 
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+  border: 1px solid #eee;
+  overflow: hidden; /* Mantiene las esquinas redondeadas con el header */
+}
+
+/* Botón de cerrar estilizado */
+.modal-close {
+  position: absolute; 
+  top: 1rem; 
+  right: 1rem;
+  background: var(--white); 
+  border: none; 
+  width: 40px; height: 40px; border-radius: 50%;
+  font-size: 2rem; 
+  cursor: pointer; 
+  color: var(--burgundy);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1; 
+  z-index: 10;
+}
+
+.modal-close:hover {
+  background: #f0f0f0;
+}
+
+/* Header Institucional (Fondo Crema) */
+.modal-header { 
+  background-color: var(--cream-bg); 
+  text-align: center; 
+  /* Aumentamos el padding arriba y abajo para que no se sienta apretado */
+  padding: 3rem 2rem 2.5rem; 
+  border-bottom: 4px solid var(--burgundy); 
+  display:flex ;
+  flex-direction: column;
+}
+
+.modal-header h3 { 
+  font-family: 'Quicksand', sans-serif; 
+  color: var(--burgundy); 
+  font-size: 2rem; 
+  margin: 0 0 0.5rem 0; 
+  font-weight: 800; 
+}
+
+.modal-header p { 
+  color: #555; 
+  margin: 0; 
+  font-size: 1.1rem; 
+  line-height: 1.4;
+}
+
+/* Cuerpo del modal (Donde van los inputs) */
+.modal-body {
+  padding: 2.5rem 2.5rem 1.5rem; /* Padding específico aquí */
+}
+
+.form-group { 
+  margin-bottom: 1.8rem; 
+}
+
+.form-group label { 
+  display: block; 
+  font-weight: 700; 
+  margin-bottom: 0.8rem; 
+  color: var(--text-dark); 
+  font-size: 1.15rem;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.select-wrapper select { 
+  width: 100%; 
+  padding: 1rem; 
+  border-radius: 10px; 
+  border: 1px solid #ccc; 
+  background: #fff; 
+  font-size: 1.1rem; 
+  font-family: 'Open Sans', sans-serif;
+  cursor: pointer;
+}
+
+.select-wrapper select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(214, 189, 85, 0.2);
+}
+
+/* Pie del modal (Botón) */
+.modal-actions {
+  padding: 0 2.5rem 2.5rem; /* Padding inferior */
+}
+
+.btn-full { 
+  width: 100%; 
+  padding: 1.2rem; 
+  font-size: 1.2rem; 
+  border-radius: 50px; /* Píldora */
+  background: var(--burgundy); 
+  color: white; 
+  border: none; 
+  font-weight: 700; 
+  cursor: pointer; 
+  transition: 0.3s; 
+  box-shadow: 0 4px 15px rgba(97, 18, 50, 0.2);
+}
+
+.btn-full:hover:not(:disabled) { 
+  background: #4a0e26; 
+  transform: translateY(-2px);
+}
+
+.btn-full:disabled { 
+  background: #e0e0e0; 
+  color: #999;
+  cursor: not-allowed; 
+  box-shadow: none;
+}
+/* === Responsive === */
+@media (max-width: 768px) {
+  .encuesta-card { padding: 2rem 1.5rem; }
+  .card-header-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .header-progress { width: 100%; text-align: left; }
+  .acciones-encuesta { flex-direction: column-reverse; }
+  .btn-nav { width: 100%; }
+  .canvas-paint .cp-canvas { height: 300px; }
+  .ranking-item { flex-wrap: wrap; gap: 1rem; }
+  .ranking-actions { width: 100%; justify-content: flex-end; }
+}

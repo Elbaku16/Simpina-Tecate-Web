@@ -1,0 +1,433 @@
+/* ======== INICIO - DISEÑO INSTITUCIONAL MODERNO ======== */
+
+:root {
+  --burgundy: #611232;       /* Guinda */
+  --burgundy-dark: #4a0e26;
+  --gold: #d6bd55;           /* Dorado */
+  --cream-bg: #fbf8eb;       /* Crema suave */
+  --white: #ffffff;
+  --text-dark: #333333;
+  --text-light: #555555;
+  --border-radius: 12px;
+}
+
+/* Hero Banner */
+.hero-banner {
+  background-color: var(--cream-bg); /* Fondo crema limpio */
+  padding: clamp(4rem, 8vw, 6rem) 5%;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Elemento decorativo sutil */
+.hero-banner::after {
+  content: '';
+  position: absolute;
+  top: -50px; right: -50px;
+  width: 300px; height: 300px;
+  background: rgba(214, 189, 85, 0.1);
+  border-radius: 50%;
+  filter: blur(60px);
+}
+
+.hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr; /* Más espacio para texto */
+  gap: 4rem;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-badge {
+  display: inline-block;
+  background-color: rgba(97, 18, 50, 0.1);
+  color: var(--burgundy);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 1rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-family: 'Quicksand', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  color: var(--burgundy);
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0 0 1.5rem 0;
+}
+
+.hero-subtitle {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1.2rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin: 0 0 2.5rem 0;
+  max-width: 600px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Imagen/Icono Hero */
+.hero-image-content {
+  display: flex;
+  justify-content: center;
+}
+
+.hero-icon-group {
+  width: 350px;
+  height: 350px;
+  background: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 50px rgba(97, 18, 50, 0.08);
+  border: 1px solid rgba(214, 189, 85, 0.3);
+  position: relative;
+}
+
+.hero-icon-group svg {
+  color: var(--burgundy);
+  opacity: 0.9;
+}
+
+/* --- Botones Unificados --- */
+.btn-primary {
+  background-color: var(--burgundy);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(97, 18, 50, 0.2);
+}
+.fa-solid{
+color: white;
+}
+.btn-primary:hover {
+  background-color: var(--burgundy-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(97, 18, 50, 0.3);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--burgundy);
+  border: 2px solid var(--burgundy);
+  padding: 0.9rem 2rem;
+  border-radius: 50px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--burgundy);
+  color: white;
+}
+
+/* --- Sección Info Cards (Fondo Blanco) --- */
+.info-section {
+  padding: 6rem 5%;
+  background-color: var(--white);
+}
+
+.section-header-center {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 4rem;
+}
+
+.section-header-center h2 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2.5rem;
+  color: var(--burgundy);
+  margin-bottom: 1rem;
+}
+
+.section-header-center p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.info-card {
+  background: var(--cream-bg); /* Tarjetas Crema */
+  padding: 3rem 2rem;
+  border-radius: var(--border-radius);
+  text-align: center;
+  transition: transform 0.3s ease;
+  border-top: 4px solid var(--burgundy); /* Detalle institucional */
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.card-icon {
+  width: 70px;
+  height: 70px;
+  background: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: var(--burgundy);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.info-card h3 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1.5rem;
+  color: var(--burgundy);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.info-card p {
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+/* --- Sección Encuesta (Destacada) --- */
+.encuesta-section {
+  padding: 6rem 5%;
+  background-color: var(--white); /* Blanco para limpiar */
+}
+
+.encuesta-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  padding: 4rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.05);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.encuesta-badge {
+  color: var(--gold);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.encuesta-left h2 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2.5rem;
+  color: var(--burgundy);
+  margin-bottom: 1.5rem;
+}
+
+.encuesta-left p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.encuesta-beneficios {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2.5rem;
+}
+
+.encuesta-beneficios li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.encuesta-beneficios svg {
+  color: var(--gold);
+}
+
+.encuesta-icon-wrapper {
+  background: var(--cream-bg);
+  border-radius: 50%;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: var(--burgundy);
+  position: relative;
+}
+
+/* Decoración circular */
+.encuesta-icon-wrapper::before {
+  content: '';
+  position: absolute;
+  width: 100%; height: 100%;
+  border: 2px dashed var(--gold);
+  border-radius: 50%;
+  animation: spin 20s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* --- CTA Ayuda (Franja Guinda) --- */
+.ayuda-cta-section {
+  background-color: var(--burgundy);
+  padding: 4rem 5%;
+  text-align: center;
+  color: white;
+}
+
+.ayuda-cta-box h2 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  color:#ffffff;
+}
+
+.ayuda-cta-box p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-outline-white {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2.5rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50px;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-white:hover {
+  background-color: white;
+  color: var(--burgundy);
+  border-color: white;
+}
+
+/* --- Responsive --- */
+@media (max-width: 992px) {
+  .hero-container,
+  .encuesta-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 3rem;
+  }
+  
+  .hero-buttons,
+  .encuesta-beneficios li {
+    justify-content: center;
+  }
+  
+  .hero-icon-group {
+    width: 280px; height: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title { font-size: 2.5rem; }
+  .encuesta-content { padding: 2rem; }
+  .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+}
+
+/* =========================================
+   CORRECCIÓN RESPONSIVA: SECCIÓN ENCUESTA
+   ========================================= */
+
+/* 1. Ajuste para Tablets y Laptops pequeñas (menos de 992px) */
+@media (max-width: 992px) {
+  .encuesta-content {
+    /* Cambiar de 2 columnas a 1 columna apilada */
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 3rem;
+    /* Reducir el padding interno de la caja blanca */
+    padding: 3rem 2rem; 
+  }
+
+  /* Centrar la lista de beneficios */
+  .encuesta-beneficios li {
+    justify-content: center;
+    text-align: left; /* Mantiene el texto legible aunque el bloque esté centrado */
+  }
+
+  /* Ordenar elementos: si quieres que el icono aparezca primero, usa esto (opcional) */
+  /* .encuesta-right { order: -1; } */
+}
+
+/* 2. Ajuste Crítico para Celulares (menos de 576px) */
+@media (max-width: 576px) {
+  .encuesta-section {
+    padding: 3rem 5%; /* Menos espacio exterior */
+  }
+
+  .encuesta-content {
+    padding: 2rem 1.2rem; /* Mucho menos espacio interior para ganar aire */
+    border-radius: 15px; /* Bordes un poco menos redondos para aprovechar espacio */
+  }
+
+  .encuesta-left h2 {
+    font-size: 1.8rem; /* Título más pequeño para que no ocupe toda la pantalla */
+  }
+
+  /* --- AJUSTE VITAL: EL CÍRCULO GIRATORIO --- */
+  /* El original mide 300px, aquí lo bajamos a 200px o menos */
+  .encuesta-icon-wrapper {
+    width: 200px;
+    height: 200px;
+    margin-top: 1rem;
+  }
+  
+  /* Ajustar el tamaño del SVG dentro del círculo */
+  .encuesta-icon-wrapper svg {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Botón ancho completo para facilitar el 'tap' con el dedo */
+  .encuesta-left .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}

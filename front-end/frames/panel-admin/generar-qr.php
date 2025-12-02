@@ -1,0 +1,465 @@
+<?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
+requerir_admin();
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Códigos QR - SIMPINA</title>
+    <link rel="stylesheet" href="../../estilos/estilos-panel.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f9f5e4 0%, #fffef9 100%);
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .qr-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(107, 46, 46, 0.15);
+        }
+        
+        h1 {
+            color: #6b2e2e;
+            text-align: center;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 50px;
+            font-size: 1.1em;
+        }
+        
+        /* Grid 2x2 */
+        .nivel-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Estilos idénticos a las encuestas */
+        .nivel-card {
+            background: white;
+            border: 3px solid;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Colores por nivel (igual que las encuestas) */
+        .nivel-card.preescolar {
+            border-color: #86C232;
+        }
+
+        .nivel-card.primaria {
+            border-color: #3B82F6;
+        }
+
+        .nivel-card.secundaria {
+            border-color: #EF4444;
+        }
+
+        .nivel-card.preparatoria {
+            border-color: #A855F7;
+        }
+
+        .nivel-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+        }
+
+        .nivel-card.preescolar:hover {
+            background: rgba(134, 194, 50, 0.1);
+        }
+
+        .nivel-card.primaria:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .nivel-card.secundaria:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .nivel-card.preparatoria:hover {
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        /* Iconos SVG - EXACTOS DE LAS ENCUESTAS */
+        .nivel-card .level-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        .nivel-card.preescolar .level-icon {
+            fill: #86C232;
+        }
+
+        .nivel-card.primaria .level-icon {
+            fill: #3B82F6;
+        }
+
+        .nivel-card.secundaria .level-icon {
+            fill: #EF4444;
+        }
+
+        .nivel-card.preparatoria .level-icon {
+            fill: #A855F7;
+        }
+
+        .nivel-card h3 {
+            color: #6b2e2e;
+            margin: 15px 0;
+            font-size: 1.6em;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+        }
+        
+        #qrResult {
+            display: none;
+            text-align: center;
+            margin-top: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, #f9f5e4 0%, #fffef9 100%);
+            border-radius: 12px;
+            border: 2px solid #d6bd55;
+        }
+        
+        #qrResult h2 {
+            color: #6b2e2e;
+            font-family: 'Quicksand', sans-serif;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        #qrResult img {
+            max-width: 320px;
+            margin: 20px auto;
+            display: block;
+            border: 4px solid #6b2e2e;
+            border-radius: 12px;
+            padding: 15px;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .btn-download {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 14px 35px;
+            background: #6b2e2e;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 1.05em;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-download:hover {
+            background: #4a1f1f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(107, 46, 46, 0.3);
+        }
+
+        .btn-reset {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 30px;
+            background: white;
+            color: #6b2e2e;
+            border: 2px solid #6b2e2e;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-reset:hover {
+            background: #6b2e2e;
+            color: white;
+        }
+        
+        .url-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            font-size: 14px;
+            word-break: break-all;
+            border: 1px solid #d6bd55;
+        }
+
+        .url-info strong {
+            color: #6b2e2e;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .btn-volver {
+            display: inline-block;
+            margin: 40px auto 0;
+            padding: 12px 25px;
+            background: white;
+            color: #6b2e2e;
+            border: 2px solid #6b2e2e;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-volver:hover {
+            background: #6b2e2e;
+            color: white;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #6b2e2e;
+            font-size: 1.2em;
+            margin: 20px 0;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6b2e2e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nivel-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="qr-container">
+        <h1>Generar Códigos QR</h1>
+        <p class="subtitle">Selecciona el nivel educativo para generar el código QR de acceso a la encuesta</p>
+
+        <div class="nivel-grid">
+            <!-- Preescolar -->
+            <div class="nivel-card preescolar" onclick="generarQR('preescolar')">
+                <svg class="level-icon" viewBox="0 0 512.001 512.001" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd">
+                    <g>
+                        <path d="M152.683,100.688c-0.007-0.069-0.022-0.134-0.031-0.201c-0.03-0.23-0.066-0.457-0.115-0.681
+                            c-0.018-0.078-0.04-0.153-0.06-0.23c-0.052-0.211-0.111-0.421-0.178-0.625c-0.028-0.083-0.06-0.163-0.09-0.246
+                            c-0.072-0.195-0.149-0.386-0.236-0.574c-0.019-0.041-0.031-0.083-0.05-0.124l-41.247-86.417c-0.232-0.486-0.51-0.948-0.832-1.38
+                            C105.017,3.72,97.61,0,89.523,0S74.03,3.72,69.203,10.209c-0.322,0.433-0.6,0.894-0.832,1.38L27.123,98.007
+                            c-0.02,0.041-0.032,0.083-0.051,0.124c-0.086,0.187-0.164,0.379-0.236,0.574c-0.03,0.082-0.062,0.163-0.09,0.246
+                            c-0.069,0.205-0.126,0.414-0.178,0.625c-0.02,0.076-0.042,0.153-0.06,0.23c-0.049,0.224-0.084,0.451-0.115,0.681
+                            c-0.009,0.068-0.023,0.134-0.031,0.201c-0.032,0.294-0.05,0.592-0.05,0.895v348.223v25.305c0,20.341,16.549,36.889,36.89,36.889
+                            h52.639c20.341,0,36.89-16.548,36.89-36.889v-25.305V101.582C152.733,101.28,152.715,100.981,152.683,100.688z M82.948,19.591
+                            c1.657-1.906,4.017-2.987,6.575-2.987c2.559,0,4.919,1.081,6.576,2.987l35.171,73.69H47.777L82.948,19.591z M136.13,475.11
+                            c0,11.185-9.101,20.286-20.287,20.286H63.203c-11.186,0-20.287-9.101-20.287-20.286v-17.003h93.213V475.11z M136.13,441.503
+                            H42.916v-32.7h93.213V441.503z M136.13,362.849H42.916V188.54h93.213V362.849z M136.13,142.584H42.916v-32.7h93.213V142.584z"/>
+                        <ellipse cx="89.526" cy="275.693" rx="24.551" ry="54.725"/>
+                        
+                        <path d="M319.16,100.688c-0.007-0.069-0.022-0.134-0.031-0.201c-0.03-0.23-0.066-0.457-0.115-0.681
+                            c-0.018-0.078-0.04-0.153-0.06-0.23c-0.052-0.211-0.111-0.421-0.178-0.625c-0.028-0.083-0.06-0.163-0.09-0.246
+                            c-0.072-0.195-0.149-0.386-0.236-0.574c-0.019-0.041-0.031-0.083-0.05-0.124l-41.246-86.417c-0.232-0.486-0.51-0.948-0.832-1.38
+                            C271.494,3.72,264.087,0,256,0c-8.087,0-15.493,3.72-20.32,10.209c-0.322,0.433-0.6,0.894-0.832,1.38L193.6,98.007
+                            c-0.02,0.041-0.032,0.083-0.051,0.124c-0.086,0.187-0.164,0.379-0.236,0.574c-0.03,0.082-0.062,0.163-0.09,0.246
+                            c-0.069,0.205-0.126,0.414-0.178,0.625c-0.02,0.076-0.042,0.153-0.06,0.23c-0.049,0.224-0.084,0.451-0.115,0.681
+                            c-0.009,0.068-0.023,0.134-0.031,0.201c-0.032,0.294-0.05,0.592-0.05,0.895v348.223v25.305c0,20.341,16.549,36.889,36.89,36.889
+                            h52.639c20.341,0,36.89-16.548,36.89-36.889v-25.305V101.582C319.211,101.28,319.192,100.981,319.16,100.688z M249.425,19.591
+                            c1.657-1.907,4.017-2.987,6.575-2.987c2.559,0,4.919,1.081,6.576,2.987l35.171,73.69h-83.494L249.425,19.591z M282.321,495.396
+                            h-52.64c-11.186,0-20.287-9.101-20.287-20.286v-17.003h93.213v17.003h0.001C302.608,486.295,293.507,495.396,282.321,495.396z
+                            M302.608,441.503h-93.213v-32.7h93.213V441.503z M302.608,362.849h-93.213V188.54h93.213V362.849z M302.608,142.584h-93.213
+                            v-32.7h93.213V142.584z"/>
+                        <ellipse cx="256.002" cy="275.693" rx="24.551" ry="54.725"/>
+
+                        <g transform="translate(333, 0)">
+                            <path d="M152.683,100.688c-0.007-0.069-0.022-0.134-0.031-0.201c-0.03-0.23-0.066-0.457-0.115-0.681
+                                c-0.018-0.078-0.04-0.153-0.06-0.23c-0.052-0.211-0.111-0.421-0.178-0.625c-0.028-0.083-0.06-0.163-0.09-0.246
+                                c-0.072-0.195-0.149-0.386-0.236-0.574c-0.019-0.041-0.031-0.083-0.05-0.124l-41.247-86.417c-0.232-0.486-0.51-0.948-0.832-1.38
+                                C105.017,3.72,97.61,0,89.523,0S74.03,3.72,69.203,10.209c-0.322,0.433-0.6,0.894-0.832,1.38L27.123,98.007
+                                c-0.02,0.041-0.032,0.083-0.051,0.124c-0.086,0.187-0.164,0.379-0.236,0.574c-0.03,0.082-0.062,0.163-0.09,0.246
+                                c-0.069,0.205-0.126,0.414-0.178,0.625c-0.02,0.076-0.042,0.153-0.06,0.23c-0.049,0.224-0.084,0.451-0.115,0.681
+                                c-0.009,0.068-0.023,0.134-0.031,0.201c-0.032,0.294-0.05,0.592-0.05,0.895v348.223v25.305c0,20.341,16.549,36.889,36.89,36.889
+                                h52.639c20.341,0,36.89-16.548,36.89-36.889v-25.305V101.582C152.733,101.28,152.715,100.981,152.683,100.688z M82.948,19.591
+                                c1.657-1.906,4.017-2.987,6.575-2.987c2.559,0,4.919,1.081,6.576,2.987l35.171,73.69H47.777L82.948,19.591z M136.13,475.11
+                                c0,11.185-9.101,20.286-20.287,20.286H63.203c-11.186,0-20.287-9.101-20.287-20.286v-17.003h93.213V475.11z M136.13,441.503
+                                H42.916v-32.7h93.213V441.503z M136.13,362.849H42.916V188.54h93.213V362.849z M136.13,142.584H42.916v-32.7h93.213V142.584z"/>
+                            <ellipse cx="89.526" cy="275.693" rx="24.551" ry="54.725"/>
+                        </g>
+                    </g>
+                </svg>
+                <h3>Preescolar</h3>
+            </div>
+            
+            <!-- Primaria -->
+            <div class="nivel-card primaria" onclick="generarQR('primaria')">
+                <svg class="level-icon" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                    <g>
+                        <path d="M463.313,346.29c-0.758-2.274-2.224-4.747-4.085-6.608l-83.683-83.682l131.503-131.502c6.603-6.603,6.603-17.307,0-23.909
+                            L411.411,4.952C408.241,1.782,403.941,0,399.456,0s-8.785,1.782-11.954,4.952c-4.677,4.677-123.793,123.793-131.502,131.502
+                            l-71.724-71.725c-0.001-0.001-0.002-0.002-0.003-0.005c-0.001-0.002-0.002-0.002-0.005-0.003l-47.815-47.815
+                            c-19.819-19.821-51.904-19.826-71.727,0L16.908,64.726c-19.776,19.775-19.776,51.952,0,71.727l119.547,119.547
+                            C134.263,258.19,16.761,375.691,4.952,387.5c-6.603,6.603-6.603,17.307,0,23.909l95.637,95.639
+                            c3.171,3.17,7.47,4.952,11.954,4.952s8.785-1.782,11.954-4.952l131.502-131.502l83.682,83.682
+                            c1.853,1.853,4.317,3.322,6.608,4.085l143.456,47.818c6.058,2.02,12.762,0.455,17.301-4.085c4.529-4.528,6.11-11.226,4.085-17.301
+                            L463.313,346.29z M303.82,136.453l23.909,23.91c3.301,3.301,7.628,4.952,11.954,4.952s8.654-1.651,11.954-4.952
+                            c6.603-6.601,6.603-17.307,0-23.909l-23.909-23.909l23.909-23.909l23.91,23.909c3.301,3.301,7.628,4.952,11.954,4.952
+                            c4.326,0,8.654-1.65,11.954-4.952c6.603-6.603,6.603-17.307,0-23.909l-23.909-23.909l23.909-23.909l71.728,71.728L351.638,232.09
+                            l-71.728-71.728L303.82,136.453z M423.366,351.637l-23.91,23.91L148.408,124.499l23.909-23.909L423.366,351.637z M76.681,148.408
+                            l-35.864-35.864c-6.591-6.592-6.591-17.318,0-23.909l47.819-47.819c6.607-6.606,17.301-6.609,23.909,0l35.864,35.864
+                            C145.133,79.956,79.944,145.145,76.681,148.408z M112.545,471.183l-71.728-71.728l23.91-23.909l23.909,23.91
+                            c3.301,3.301,7.628,4.952,11.954,4.952c4.326,0,8.654-1.651,11.954-4.952c6.603-6.601,6.603-17.307,0-23.909l-23.908-23.91
+                            l23.909-23.909l23.91,23.909c3.301,3.301,7.628,4.952,11.954,4.952c4.326,0,8.654-1.65,11.954-4.952
+                            c6.603-6.603,6.603-17.307,0-23.909l-23.91-23.909l23.909-23.909l71.728,71.728L112.545,471.183z M351.637,423.366L100.59,172.317
+                            l23.909-23.909l251.048,251.048L351.637,423.366z M382.935,439.886l56.952-56.952l28.475,85.427L382.935,439.886z"/>
+                    </g>
+                </svg>
+                <h3>Primaria</h3>
+            </div>
+            
+            <!-- Secundaria -->
+            <div class="nivel-card secundaria" onclick="generarQR('secundaria')">
+                <svg class="level-icon" viewBox="0 0 28.359 32" xmlns="http://www.w3.org/2000/svg">
+                    <g id="atom">
+                        <path d="M24.236,16c3.262-3.119,4.854-6.176,3.799-8.001c-0.602-1.042-1.979-1.54-3.859-1.54c-1.408,0-3.109,0.297-4.967,0.838
+                            C18.14,2.908,16.287,0,14.179,0c-2.11,0-3.962,2.908-5.031,7.297C7.293,6.756,5.591,6.459,4.183,6.459
+                            C2.304,6.459,0.924,6.957,0.323,8c-1.055,1.825,0.536,4.881,3.798,8c-3.262,3.118-4.852,6.174-3.798,7.999
+                            c0.602,1.043,1.979,1.541,3.859,1.541c1.408,0,3.109-0.297,4.965-0.838C10.217,29.091,12.07,32,14.179,32
+                            c2.107,0,3.961-2.909,5.029-7.298c1.855,0.541,3.559,0.838,4.967,0.838c1.879,0,3.26-0.498,3.859-1.54
+                            C29.09,22.175,27.498,19.119,24.236,16z M24.176,8.459c1.438,0,2.021,0.354,2.129,0.54c0.371,0.646-0.68,2.917-3.568,5.664
+                            c-0.828-0.692-1.727-1.379-2.695-2.048c-0.094-1.173-0.24-2.291-0.426-3.354C21.318,8.752,22.89,8.459,24.176,8.459z
+                             M16.179,19.463c-0.664,0.383-1.332,0.735-2,1.072c-0.669-0.337-1.338-0.689-2-1.072c-0.667-0.385-1.308-0.786-1.933-1.193
+                            c-0.04-0.729-0.067-1.478-0.067-2.27c0-0.793,0.027-1.541,0.067-2.27c0.611-0.399,1.245-0.8,1.933-1.195
+                            c0.662-0.383,1.331-0.734,2-1.072c0.668,0.338,1.336,0.689,2,1.072c0.666,0.385,1.307,0.787,1.932,1.195
+                            c0.039,0.729,0.068,1.477,0.068,2.27c0,0.792-0.029,1.541-0.068,2.27C17.498,18.668,16.865,19.066,16.179,19.463z M17.896,20.763
+                            c-0.059,0.458-0.121,0.899-0.191,1.324c-0.412-0.155-0.826-0.321-1.246-0.499c0.24-0.133,0.48-0.255,0.721-0.394
+                            C17.424,21.054,17.656,20.907,17.896,20.763z M11.899,21.589c-0.42,0.178-0.835,0.343-1.247,0.499
+                            c-0.07-0.425-0.134-0.867-0.19-1.325c0.238,0.146,0.473,0.291,0.718,0.434C11.419,21.334,11.658,21.456,11.899,21.589z
+                             M8.194,16.83c-0.365-0.275-0.719-0.553-1.062-0.832c0.336-0.276,0.689-0.555,1.062-0.835C8.189,15.441,8.178,15.717,8.178,16
+                            C8.179,16.28,8.189,16.553,8.194,16.83z M10.461,11.236c0.058-0.458,0.12-0.9,0.19-1.324c0.412,0.154,0.827,0.32,1.247,0.498
+                            c-0.24,0.133-0.479,0.254-0.721,0.394C10.934,10.945,10.699,11.092,10.461,11.236z M16.457,10.41
+                            c0.42-0.178,0.836-0.344,1.248-0.499c0.07,0.425,0.133,0.867,0.189,1.325c-0.238-0.146-0.473-0.291-0.717-0.434
+                            C16.937,10.664,16.697,10.543,16.457,10.41z M20.162,15.168c0.365,0.275,0.719,0.553,1.063,0.834
+                            c-0.336,0.275-0.689,0.554-1.063,0.834c0.006-0.278,0.018-0.554,0.018-0.836C20.179,15.719,20.168,15.445,20.162,15.168z M14.179,2
+                            c0.746,0,2.188,2.047,3.121,5.926c-1.014,0.371-2.059,0.81-3.121,1.313c-1.066-0.505-2.109-0.942-3.123-1.313
+                            C11.989,4.047,13.431,2,14.179,2z M3.805,12.746C1.928,10.465,1.911,9.247,2.056,9c0.106-0.188,0.689-0.541,2.127-0.541
+                            c1.284,0,2.854,0.293,4.56,0.805c-0.186,1.062-0.331,2.181-0.426,3.353c-0.971,0.67-1.869,1.356-2.697,2.051
+                            C4.942,14.027,4.328,13.384,3.805,12.746z M4.183,23.54c-1.437,0-2.021-0.354-2.127-0.541c-0.374-0.647,0.677-2.917,3.566-5.663
+                            c0.827,0.692,1.725,1.379,2.693,2.048c0.095,1.173,0.24,2.291,0.426,3.354C7.037,23.247,5.467,23.54,4.183,23.54z M14.179,30
+                            c-0.749,0-2.19-2.047-3.123-5.927c1.014-0.371,2.058-0.81,3.123-1.313c1.064,0.505,2.107,0.942,3.121,1.313
+                            C16.367,27.953,14.926,30,14.179,30z M26.304,23c-0.107,0.188-0.691,0.54-2.129,0.54c-1.285,0-2.855-0.293-4.561-0.804
+                            c0.186-1.063,0.33-2.181,0.426-3.354c0.973-0.67,1.869-1.357,2.697-2.052c0.678,0.641,1.291,1.284,1.816,1.922
+                            C26.431,21.535,26.445,22.753,26.304,23z"/>
+                    </g>
+                </svg>
+                <h3>Secundaria</h3>
+            </div>
+            
+            <!-- Preparatoria -->
+            <div class="nivel-card preparatoria" onclick="generarQR('preparatoria')">
+                <svg class="level-icon" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M220,110.93335V165.4541a7.95668,7.95668,0,0,1-1.58936,4.78687C211.67383,179.20532,183.25293,212,128,212s-83.67383-32.79468-90.41064-41.759A7.95668,7.95668,0,0,1,36,165.4541V110.93335L128,160Z" opacity="0.2"/>
+                    <path d="M251.76465,88.94141l-120-64a7.99984,7.99984,0,0,0-7.5293,0l-120,64a7.99956,7.99956,0,0,0,0,14.11718L28,115.73315v49.721a16.05975,16.05975,0,0,0,3.19434,9.59326C39.11914,185.59277,69.51953,220,128,220a128.69017,128.69017,0,0,0,52-10.45557V240a8,8,0,0,0,16,0V201.06665a110.42518,110.42518,0,0,0,28.80469-26.01831A16.05929,16.05929,0,0,0,228,165.4541v-49.721l23.76465-12.67456a7.99956,7.99956,0,0,0,0-14.11718ZM128,204c-51.06641,0-77.21582-29.51807-84-38.5459V124.26636l80.23535,42.79223a7.998,7.998,0,0,0,7.5293,0L180,141.333v50.51343C166.87305,198.66748,149.69287,204,128,204Zm84.01465-38.56494A89.67257,89.67257,0,0,1,196,181.53931V132.7998l16.00342-8.5354Zm4.20605-61.55274-.05713.03052L188,118.93359,131.76465,88.94141a7.99977,7.99977,0,0,0-7.5293,14.11718L171.00049,128,128,150.93359,39.83643,103.91284l-.05713-.03052L25,96,128,41.06641,231,96Z"/>
+                </svg>
+                <h3>Preparatoria</h3>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Generando código QR...</p>
+        </div>
+        
+        <div id="qrResult">
+            <h2 id="nivelTitle"></h2>
+            <img id="qrImage" src="" alt="Código QR">
+            <div class="url-info">
+                <strong>URL de la encuesta:</strong>
+                <span id="encuestaUrl"></span>
+            </div>
+            <a id="downloadLink" href="#" download class="btn-download">Descargar Código QR</a>
+            <br>
+            <button onclick="resetQR()" class="btn-reset">Generar otro código</button>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="/front-end/frames/panel/panel-admin.php" class="btn-volver">Volver al Panel</a>
+        </div>
+    </div>
+
+    <script>
+        async function generarQR(nivel) {
+            try {
+                // Mostrar loading
+                document.getElementById('loading').style.display = 'block';
+                document.querySelector('.nivel-grid').style.display = 'none';
+                
+                const response = await fetch(`/back-end/routes/qr/generar.php?nivel=${nivel}`);
+                const data = await response.json();
+                
+                // Ocultar loading
+                document.getElementById('loading').style.display = 'none';
+                
+                if (!data.success) {
+                    alert('Error: ' + data.error);
+                    document.querySelector('.nivel-grid').style.display = 'grid';
+                    return;
+                }
+                
+                console.log('QR generado:', data);
+                
+                // Mostrar resultado
+                document.getElementById('nivelTitle').textContent = `Código QR - ${data.nivel}`;
+                document.getElementById('qrImage').src = data.qr_url;
+                document.getElementById('encuestaUrl').textContent = data.encuesta_url;
+                document.getElementById('downloadLink').href = data.qr_url;
+                document.getElementById('downloadLink').download = `QR-${nivel}-SIMPINA.png`;
+                
+                document.getElementById('qrResult').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error completo:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.querySelector('.nivel-grid').style.display = 'grid';
+                alert('Error al generar el código QR. Revisa la consola para más detalles.');
+            }
+        }
+        
+        function resetQR() {
+            document.querySelector('.nivel-grid').style.display = 'grid';
+            document.getElementById('qrResult').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
