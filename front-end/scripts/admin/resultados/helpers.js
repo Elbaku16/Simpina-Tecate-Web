@@ -8,12 +8,12 @@
     const nivel = urlParams.get("nivel") || "No especificado";
     const escuela = parseInt(urlParams.get("escuela") || "0", 10);
     // Captura de los nuevos filtros
-    const ciclo = urlParams.get("ciclo") || "Todos";
-    const genero = urlParams.get("genero") || "Todos";
+    const ciclo = urlParams.get("ciclo") || ""; // Usar "" si no está en la URL (que significa 'Todos')
+    const genero = urlParams.get("genero") || ""; // Usar "" si no está en la URL (que significa 'Todos')
 
     let filtroText = `Nivel: ${ns.escapeHtml(nivel)}`;
 
-    // Filtro Escuela
+    // Filtro Escuela (siempre incluido)
     if (escuela > 0) {
       const selectEscuela = document.getElementById("escuela-filter");
       const nombreEscuela =
@@ -26,21 +26,27 @@
       filtroText += " | Escuela: Todas las escuelas";
     }
 
-    // Filtro Género (Mostrar el valor legible si no es "Todos")
-    if (genero !== 'Todos' && genero !== '') {
-        const selectGenero = document.getElementById("genero-filter");
-        const nombreGenero =
+    // Filtro Género (Siempre incluido en la metadata)
+    const selectGenero = document.getElementById("genero-filter");
+    let nombreGenero = "Todos";
+    if (genero !== '') { 
+        nombreGenero = 
             selectGenero && selectGenero.selectedIndex >= 0
                 ? selectGenero.options[selectGenero.selectedIndex].text
                 : genero;
-
-        filtroText += ` | Género: ${ns.escapeHtml(nombreGenero)}`;
     }
-
-    // Filtro Ciclo (Mostrar el valor si no es "Todos")
-    if (ciclo !== 'Todos' && ciclo !== '') {
-        filtroText += ` | Ciclo: ${ns.escapeHtml(ciclo)}`;
+    filtroText += ` | Género: ${ns.escapeHtml(nombreGenero)}`;
+    
+    // Filtro Ciclo (Siempre incluido en la metadata)
+    const selectCiclo = document.getElementById("ciclo-filter");
+    let nombreCiclo = "Todos";
+    if (ciclo !== '') { 
+      nombreCiclo =
+          selectCiclo && selectCiclo.selectedIndex >= 0
+              ? selectCiclo.options[selectCiclo.selectedIndex].text
+              : ciclo;
     }
+    filtroText += ` | Ciclo: ${ns.escapeHtml(nombreCiclo)}`;
 
     return filtroText;
   };

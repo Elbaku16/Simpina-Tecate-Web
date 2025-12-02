@@ -45,7 +45,7 @@ $nivelTitulo = ucfirst($nivel);
 
     <div class="editor-card">
         
-        <p class="editor-intro">Configura las preguntas, el orden y las opciones de respuesta que verán los usuarios.</p>
+        <p class="editor-intro">Configura las preguntas, el orden, las opciones y ahora también imágenes por pregunta y por opción.</p>
         
         <div id="editorPreguntas" class="preguntas-list" data-nivel="<?= htmlspecialchars($nivel) ?>"></div>
 
