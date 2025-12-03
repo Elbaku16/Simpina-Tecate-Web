@@ -133,33 +133,80 @@ function crearBloquePregunta(p, numero) {
 
   // Label visual
   const labelImg = document.createElement("label");
-  labelImg.textContent = "Imagen de pregunta (opcional): ";
+  labelImg.className = "label-imagen";
+  labelImg.textContent = "Imagen de pregunta (opcional):";
   imgWrap.appendChild(labelImg);
+
+  // Contenedor del input file personalizado
+  const inputContainer = document.createElement("div");
+  inputContainer.className = "input-file-container";
 
   const inputImg = document.createElement("input");
   inputImg.type = "file";
   inputImg.accept = "image/*";
+  inputImg.className = "input-file-hidden";
+  inputImg.id = `imgPregunta_${p.id_pregunta || 'new_' + numero}`;
+
+  const labelFile = document.createElement("label");
+  labelFile.className = "btn-elegir-archivo";
+  labelFile.htmlFor = inputImg.id;
+  labelFile.innerHTML = '<span class="icon">📁</span> Elegir archivo';
+
+  const fileNameSpan = document.createElement("span");
+  fileNameSpan.className = "file-name";
+  fileNameSpan.textContent = "Sin archivo seleccionado";
+
+  inputContainer.append(inputImg, labelFile, fileNameSpan);
+  imgWrap.appendChild(inputContainer);
+
+  // Contenedor de preview con botón eliminar
+  const previewContainer = document.createElement("div");
+  previewContainer.className = "preview-container";
+
+  const preview = document.createElement("img");
+  preview.className = "preview-img-pregunta";
+  
+  const btnEliminarImg = document.createElement("button");
+  btnEliminarImg.type = "button";
+  btnEliminarImg.className = "btn-eliminar-img";
+  btnEliminarImg.innerHTML = "✕";
+  btnEliminarImg.title = "Eliminar imagen";
+  
+  previewContainer.append(preview, btnEliminarImg);
+  
+  // Mostrar/ocultar preview según si hay imagen
+  if (p.icono || p.archivoImagen) {
+    preview.src = p.archivoImagen ? URL.createObjectURL(p.archivoImagen) : "/" + p.icono;
+    previewContainer.classList.add("visible");
+  }
+
+  imgWrap.appendChild(previewContainer);
+
+  // Eventos
   inputImg.onchange = () => {
     p.archivoImagen = inputImg.files[0] || null;
     if (p.archivoImagen) {
+      fileNameSpan.textContent = p.archivoImagen.name.length > 20 
+        ? p.archivoImagen.name.substring(0, 17) + "..." 
+        : p.archivoImagen.name;
       const reader = new FileReader();
       reader.onload = () => {
         preview.src = reader.result;
-        preview.style.display = "block";
+        previewContainer.classList.add("visible");
       };
       reader.readAsDataURL(p.archivoImagen);
     }
   };
 
-  const preview = document.createElement("img");
-  preview.className = "preview-img-pregunta";
-  preview.style.maxWidth = "180px";
-  preview.style.marginTop = "10px";
-  // Mostrar si hay imagen en BD (p.icono) o nueva
-  preview.style.display = p.icono ? "block" : "none";
-  if (p.icono) preview.src = "/" + p.icono;
+  btnEliminarImg.onclick = () => {
+    p.archivoImagen = null;
+    p.icono = null;
+    inputImg.value = "";
+    fileNameSpan.textContent = "Sin archivo seleccionado";
+    preview.src = "";
+    previewContainer.classList.remove("visible");
+  };
 
-  imgWrap.append(inputImg, preview);
   wrapper.appendChild(imgWrap);
 
   /* ---------------- TIPO ---------------- */
@@ -226,45 +273,81 @@ function crearBloquePregunta(p, numero) {
 function crearFilaOpcion(p, op) {
   const fila = document.createElement("div");
   fila.className = "opcion-item";
-  fila.style.display = "flex";
-  fila.style.alignItems = "center";
-  fila.style.gap = "10px";
-  fila.style.marginTop = "5px";
 
+  // Input de texto
   const input = document.createElement("input");
   input.type = "text";
   input.className = "opcion-texto";
   input.value = op.texto;
   input.placeholder = "Texto opción";
-  input.style.flex = "1";
   input.oninput = () => (op.texto = input.value);
 
-  /* -------- IMAGEN OPCIÓN -------- */
+  // Contenedor de imagen de opción
+  const imgContainer = document.createElement("div");
+  imgContainer.className = "opcion-img-container";
+
   const inputImg = document.createElement("input");
   inputImg.type = "file";
   inputImg.accept = "image/*";
-  inputImg.style.width = "200px";
+  inputImg.className = "input-file-hidden";
+  inputImg.id = `imgOpcion_${p.id_pregunta}_${op.id || Math.random()}`;
+
+  const labelFile = document.createElement("label");
+  labelFile.className = "btn-elegir-archivo-sm";
+  labelFile.htmlFor = inputImg.id;
+  labelFile.innerHTML = '📷';
+  labelFile.title = "Seleccionar imagen";
+
+  imgContainer.append(inputImg, labelFile);
+
+  // Preview de imagen con botón eliminar
+  const previewWrap = document.createElement("div");
+  previewWrap.className = "opcion-preview-wrap";
+
+  const preview = document.createElement("img");
+  preview.className = "opcion-preview-img";
+  
+  const btnEliminarImg = document.createElement("button");
+  btnEliminarImg.type = "button";
+  btnEliminarImg.className = "btn-eliminar-img-sm";
+  btnEliminarImg.innerHTML = "✕";
+  btnEliminarImg.title = "Eliminar imagen";
+
+  previewWrap.append(preview, btnEliminarImg);
+
+  // Mostrar si hay imagen
+  if (op.icono || op.archivoImagen) {
+    preview.src = op.archivoImagen ? URL.createObjectURL(op.archivoImagen) : "/" + op.icono;
+    previewWrap.classList.add("visible");
+  }
+
+  imgContainer.appendChild(previewWrap);
+
+  // Eventos
   inputImg.onchange = () => {
     op.archivoImagen = inputImg.files[0] || null;
-
     if (op.archivoImagen) {
       const reader = new FileReader();
       reader.onload = () => {
         preview.src = reader.result;
-        preview.style.display = "block";
+        previewWrap.classList.add("visible");
       };
       reader.readAsDataURL(op.archivoImagen);
     }
   };
 
-  const preview = document.createElement("img");
-  preview.style.maxWidth = "50px";
-  preview.style.maxHeight = "50px";
-  preview.style.objectFit = "cover";
-  preview.style.display = op.icono ? "block" : "none";
-  if (op.icono) preview.src = "/" + op.icono;
+  btnEliminarImg.onclick = (e) => {
+    e.stopPropagation();
+    op.archivoImagen = null;
+    op.icono = null;
+    inputImg.value = "";
+    preview.src = "";
+    previewWrap.classList.remove("visible");
+  };
 
+  // Botón eliminar opción completa
   const btnDel = document.createElement("button");
+  btnDel.type = "button";
   btnDel.className = "btn-icon btn-danger";
   btnDel.textContent = "✕";
   btnDel.title = "Eliminar opción";
@@ -273,7 +356,7 @@ function crearFilaOpcion(p, op) {
     renderPreguntas();
   };
 
-  fila.append(input, inputImg, preview, btnDel);
+  fila.append(input, imgContainer, btnDel);
   return fila;
 }
 
