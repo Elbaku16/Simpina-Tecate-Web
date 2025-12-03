@@ -34,7 +34,7 @@ if ($DOMINIO_PUBLICO === 'https://simpina.gob.mx') {
 // Mapeo de niveles a URLs
 $urls = [
     'preescolar'   => "{$DOMINIO_PUBLICO}/front-end/frames/encuestas/preescolar.php",
-    'primaria'     => "{$DOMINIO_PUBLICO}/front-end/frames/encuestas/primaria.php",
+    'primaria'     => "{$DOMINIO_PUBLICO}/front-end/frames/encuestas/demo-encuestas.php?nivel=primaria",
     'secundaria'   => "{$DOMINIO_PUBLICO}/front-end/frames/encuestas/secundaria.php",
     'preparatoria' => "{$DOMINIO_PUBLICO}/front-end/frames/encuestas/preparatoria.php",
 ];
