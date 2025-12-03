@@ -33,7 +33,7 @@ $mensaje = $_GET['m'] ?? '';
     
     <div class="login-back-wrapper">
         <a href="/front-end/frames/inicio/inicio.php" class="btn-back-home" title="Regresar al inicio">
-            <span class="icon">↩</span>Regresar
+            <i class="fa-solid fa-angle-left"></i>Regresar
         </a>
     </div>
 

@@ -2,8 +2,8 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
 requerir_admin();
 
-// RESTRICCIÓN MÁXIMA: Solo el rol 'admin' puede ver esta página
-if (!rol_es('admin')) {
+// CAMBIO 1: Restricción máxima con el nuevo rol
+if (!rol_es('secretario_ejecutivo')) {
     header('Location: /front-end/frames/panel/panel-admin.php');
     exit;
 }
@@ -26,7 +26,7 @@ if (!rol_es('admin')) {
 
     <main class="usuarios-container">
         <a href="/front-end/frames/panel/panel-admin.php" class="btn-back-panel">
-            <span class="icon">↩</span> Regresar al Panel
+            <i class="fa-solid fa-angle-left"></i> Regresar al Panel
         </a>
         
         <div class="form-crear-usuario">
@@ -43,7 +43,7 @@ if (!rol_es('admin')) {
                         <select id="rol" name="rol" required>
                             <option value="acompanamiento">Acompañamiento Social</option>
                             <option value="evaluacion">Evaluación Sociocultural</option>
-                            <option value="admin">Administrador</option>
+                            <option value="secretario_ejecutivo">Secretario Ejecutivo</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -85,19 +85,13 @@ if (!rol_es('admin')) {
     </footer>
 
     <script>
-        // OBTENER EL ID DEL USUARIO LOGUEADO DESDE PHP
         const USUARIO_ACTUAL_ID = <?php echo isset($_SESSION['uid']) ? (int)$_SESSION['uid'] : 0; ?>;
-
-        console.log('🔍 Usuario actual ID:', USUARIO_ACTUAL_ID);
 
         document.addEventListener('DOMContentLoaded', () => {
             cargarUsuarios();
-            
-            // Asignar evento al formulario
             document.getElementById('formCrearUsuario').addEventListener('submit', crearUsuario);
         });
 
-        // Función auxiliar para mostrar mensajes de error de la API
         function mostrarError(mensaje) {
             const errorDiv = document.getElementById('mensaje-error');
             errorDiv.textContent = 'Error: ' + mensaje;
@@ -132,20 +126,19 @@ if (!rol_es('admin')) {
                 return;
             }
 
+            // CAMBIO 3: Diccionario de nombres de roles
             const rolNombres = {
-                'admin': 'Administrador (Total)',
-                'acompanamiento': 'Acompañamiento Social (Admin - CRUD)',
+                'secretario_ejecutivo': 'Secretario Ejecutivo', // Nuevo nombre
+                'admin': 'Administrador (Legacy)', // Mantenemos admin por compatibilidad si quedan en BD
+                'acompanamiento': 'Acompañamiento Social',
                 'evaluacion': 'Evaluación Sociocultural (Solo Lectura)'
             };
 
             usuarios.forEach(user => {
                 const row = document.createElement('tr');
                 
-                // Verificar si es el usuario actual o el principal
                 const isSelf = Number(user.id_admin) === Number(USUARIO_ACTUAL_ID);
                 const isPrincipal = Number(user.id_admin) === 1;
-
-                console.log(`👤 Usuario #${user.id_admin}: isSelf=${isSelf}, isPrincipal=${isPrincipal}, USUARIO_ACTUAL_ID=${USUARIO_ACTUAL_ID}`);
 
                 row.innerHTML = `
                     <td>#${user.id_admin}</td>

@@ -604,7 +604,44 @@ tbody td {
   font-family: inherit;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
+/* Estilo base para el badge */
+.badge {
+    display: inline-block;
+    padding: 0.35em 0.8em;
+    font-size: 0.85em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 50px; /* Bordes redondeados estilo "pill" */
+    color: #fff;
+    background-color: #6c757d; /* Color gris por defecto si falla el estado */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra suave para profundidad */
+}
 
+/* =========================================
+   COLORES POR ESTADO
+   ========================================= */
+
+/* Pendiente: Amarillo/Naranja (Atención requerida) */
+.badge-pendiente {
+    background-color: #f59e0b; 
+    border: 1px solid #d97706;
+}
+
+/* En Revisión: Azul o Dorado (Proceso activo) */
+.badge-en_revision {
+    background-color: #3b82f6; /* Azul moderno */
+    /* Opción B: Si prefieres dorado institucional: background-color: #D4B056; */
+    border: 1px solid #2563eb;
+}
+
+/* Resuelto: Verde (Éxito) */
+.badge-resuelto {
+    background-color: #10b981; 
+    border: 1px solid #059669;
+}
 .estado-selector select:focus {
   outline: none;
   border-color: var(--gold);

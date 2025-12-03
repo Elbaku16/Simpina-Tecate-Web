@@ -169,25 +169,20 @@ contenedor.addEventListener('input', (e) => {
         const id = target.id.replace('texto_', '');
         respuestasGlobal.texto[id] = target.value.trim();
     }
-    if (target.id && target.id.startsWith('otro_')) {
-        const id = target.id.replace('otro_', '');
-        const val = target.value.trim();
-        if (respuestasGlobal.opcion[id]) respuestasGlobal.opcion[id].texto_otro = val || undefined;
-        if (respuestasGlobal.multiple[id]) respuestasGlobal.multiple[id].texto_otro = val || undefined;
-    }
+ 
 });
 
 contenedor.addEventListener('change', (e) => {
     const target = e.target;
-    if (target.matches('input[type="radio"]')) {
+ if (target.matches('input[type="radio"]')) {
         const id = target.name.replace('pregunta_', '');
-        const esOtro = target.dataset.texto.toLowerCase().startsWith('otro');
-        const obj = { id_opcion: parseInt(target.value), texto_opcion: target.dataset.texto };
         
-        if (esOtro) {
-            const inp = document.getElementById(`otro_${id}`);
-            if (inp?.value.trim()) obj.texto_otro = inp.value.trim();
-        }
+        // Simplemente guardamos el ID y el texto normal, ignorando inputs extra
+        const obj = { 
+            id_opcion: parseInt(target.value), 
+            texto_opcion: target.dataset.texto 
+        };
+        
         respuestasGlobal.opcion[id] = obj;
     }
     if (target.matches('input[type="checkbox"]')) {
@@ -212,10 +207,7 @@ function restaurarRespuestasEnDOM() {
         if (!v?.id_opcion) return;
         const r = document.querySelector(`input[name="pregunta_${id}"][value="${v.id_opcion}"]`);
         if (r) r.checked = true;
-        if (v.texto_otro) {
-            const o = document.getElementById(`otro_${id}`);
-            if (o) { o.value = v.texto_otro; o.classList.remove('oculto'); }
-        }
+       
     });
     Object.entries(respuestasGlobal.multiple).forEach(([id, arr]) => {
         if (!Array.isArray(arr)) return;
@@ -240,7 +232,6 @@ function validarEncuestaCompleta() {
         if (tipo === 'opcion') {
             const d = respuestasGlobal.opcion[id];
             if (!d?.id_opcion) err.push(`"${label}" requiere opción.`);
-            else if (d.texto_opcion.toLowerCase().startsWith('otro') && !d.texto_otro) err.push(`"${label}" requiere especificar "Otro".`);
         }
         if (tipo === 'multiple' && (!respuestasGlobal.multiple[id] || respuestasGlobal.multiple[id].length === 0)) err.push(`"${label}" requiere al menos una opción.`);
         

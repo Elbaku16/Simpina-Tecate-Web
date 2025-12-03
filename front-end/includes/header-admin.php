@@ -3,11 +3,13 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-// Lógica de tu compañero: Verificar si existe CUALQUIER rol, no solo admin
+// Verificar si existe CUALQUIER rol logueado
 $esUsuarioAdmin = isset($_SESSION['rol']);
 
 // Lógica de nombre de usuario
-$textoUsuario = 'Administrador';
+// CAMBIO AQUÍ: Cambiamos el default visual
+$textoUsuario = 'Secretario Ejecutivo'; 
+
 if ($esUsuarioAdmin) {
     if (isset($_SESSION['nombre_completo']) && !empty($_SESSION['nombre_completo'])) {
         $textoUsuario = $_SESSION['nombre_completo']; 

@@ -4,8 +4,9 @@ declare(strict_types=1);
 require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
 requerir_admin(); 
 
-// RESTRICCIÓN MÁXIMA: Solo el rol 'admin' puede crear/eliminar otros usuarios
-if (!rol_es('admin')) {
+// RESTRICCIÓN MÁXIMA: Solo el rol 'secretario_ejecutivo' puede crear/eliminar otros usuarios
+// CAMBIO AQUÍ: Reemplazamos 'admin' por 'secretario_ejecutivo'
+if (!rol_es('secretario_ejecutivo')) {
     header('Location: /front-end/frames/panel/panel-admin.php');
     exit;
 }
@@ -50,4 +51,3 @@ try {
 $conn->close();
 
 echo json_encode($response, JSON_UNESCAPED_UNICODE);
-exit;

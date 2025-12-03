@@ -8,16 +8,15 @@ class UsuarioAdmin
     private string $usuario;
     private string $passwordHash;
     private string $nombre;
-    private string $rol; // 1. Nueva propiedad para el rol
+    private string $rol;
 
-    // 2. Actualizamos el constructor para recibir el rol
     private function __construct(int $id, string $usuario, string $passwordHash, string $nombre, string $rol)
     {
         $this->id = $id;
         $this->usuario = $usuario;
         $this->passwordHash = $passwordHash;
         $this->nombre = $nombre;
-        $this->rol = $rol; // Asignación del rol
+        $this->rol = $rol;
     }
 
     /** Factory que crea entidad desde DB */
@@ -27,16 +26,17 @@ class UsuarioAdmin
             (int) $row['id_admin'],
             (string) $row['usuario'],
             (string) $row['password'],
-            (string) ($row['nombre'] ?? 'Administrador'), 
-            // 3. Extraemos el rol. Por defecto 'admin' si no existe (compatibilidad).
-            (string) ($row['rol'] ?? 'admin') 
+            // Opcional: Cambié el nombre por defecto visual también
+            (string) ($row['nombre'] ?? 'Secretario Ejecutivo'), 
+            
+            // CAMBIO AQUÍ: El valor por defecto ahora es el nuevo rol
+            (string) ($row['rol'] ?? 'secretario_ejecutivo') 
         );
     }
 
     /** Obtiene admin por username, o null si no existe */
     public static function findByUsername(mysqli $conn, string $usuario): ?UsuarioAdmin
     {
-        // Aseguramos que la consulta seleccione también el campo 'rol' (asumo que se añade en el SQL)
         $sql = "SELECT * FROM usuarios_admin WHERE usuario = ? LIMIT 1";
         $stmt = $conn->prepare($sql);
 
@@ -54,8 +54,6 @@ class UsuarioAdmin
     /** Valida el password del usuario */
     public function verificarPassword(string $passwordPlano): bool
     {
-        // Nota: Idealmente deberías usar password_verify() si usas hashes reales (bcrypt/argon2)
-        // Pero respeto tu lógica actual:
         return hash_equals($this->passwordHash, $passwordPlano);
     }
 
@@ -63,5 +61,5 @@ class UsuarioAdmin
     public function getId(): int { return $this->id; }
     public function getUsuario(): string { return $this->usuario; }
     public function getNombre(): string { return $this->nombre; }
-    public function getRol(): string { return $this->rol; } // 4. Nuevo Getter para el Rol
+    public function getRol(): string { return $this->rol; }
 }
