@@ -69,6 +69,7 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
         flex-direction: column;
         width: 100%;
         gap: 0.75rem;
+        padding: 0 1rem;
       }
 
       .export-legend {
@@ -82,9 +83,11 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
 
       .export-buttons-global {
         width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
+        gap: 0.75rem;
         justify-content: center;
       }
 
@@ -96,12 +99,31 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
     }
 
     @media (max-width: 480px) {
+      .export-buttons-global {
+        max-width: 400px;
+        gap: 0.6rem;
+      }
+
       .btn-export-global {
-        padding: 0.8rem 0.4rem;
+        padding: 0.7rem 0.4rem;
         font-size: 0.85rem;
       }
     }
+
+    @media (max-width: 360px) {
+      .export-buttons-global {
+        max-width: 320px;
+        gap: 0.5rem;
+      }
+
+      .btn-export-global {
+        padding: 0.65rem 0.35rem;
+        font-size: 0.8rem;
+      }
+    }
   </style>
+```
+
 </head>
 <body>
   <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/header-admin.php'; ?>
