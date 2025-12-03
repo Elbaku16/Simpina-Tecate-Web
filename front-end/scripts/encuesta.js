@@ -221,6 +221,9 @@ function restaurarRespuestasEnDOM() {
 /* ==========================================================
    VALIDAR
 ========================================================== */
+/* ==========================================================
+   VALIDAR
+========================================================== */
 function validarEncuestaCompleta() {
     const err = [];
     preguntas.forEach(p => {
@@ -242,8 +245,15 @@ function validarEncuestaCompleta() {
         }
         
         if (tipo === 'dibujo') {
-            const b64 = respuestasGlobal.dibujo[id];
-            if (!b64 || b64.length < 50) err.push(`"${label}" requiere dibujo.`);
+            // Solo validar si NO es la pregunta opcional
+            const esOpcional = label.includes('Si tu respuesta es sí') || 
+                             label.includes('Sí tu respuesta es sí') ||
+                             label.includes('puedes no contestar si no quieres');
+            
+            if (!esOpcional) {
+                const b64 = respuestasGlobal.dibujo[id];
+                if (!b64 || b64.length < 50) err.push(`"${label}" requiere dibujo.`);
+            }
         }
     });
     return err;
