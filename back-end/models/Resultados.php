@@ -211,12 +211,19 @@ class Resultados
         }
         
         // Aplica filtro de ciclo (usando fecha_respuesta)
+        // Aplica filtro de ciclo (CORREGIDO: Rango de fechas exacto)
         if ($cicloRango !== null && count($cicloRango) === 2) {
-            // Asume que la fecha de inicio es el año de inicio (Agosto)
-            $sql     .= " AND YEAR(r.fecha_respuesta) >= ? AND YEAR(r.fecha_respuesta) < ?";
-            $types   .= 'ii';
-            $params[] = $cicloRango[0]; 
-            $params[] = $cicloRango[1];
+            $inicio = $cicloRango[0]; // Ej: 2023
+            $fin    = $cicloRango[1]; // Ej: 2024
+
+            // Definimos el ciclo: 1 Ago del año inicio -> 31 Jul del año fin
+            $fechaInicio = "$inicio-08-01 00:00:00";
+            $fechaFin    = "$fin-07-31 23:59:59";
+
+            $sql      .= " AND r.fecha_respuesta BETWEEN ? AND ?";
+            $types    .= 'ss'; // 'ss' porque ahora enviamos strings de fecha
+            $params[]  = $fechaInicio; 
+            $params[]  = $fechaFin;
         }
 
         $sql .= " GROUP BY r.id_pregunta, r.id_opcion";
@@ -371,11 +378,18 @@ class Resultados
         }
 
         // Aplica filtro de ciclo (usando fecha_respuesta en respuestas_usuario)
+        // Aplica filtro de ciclo (CORREGIDO: Rango de fechas exacto)
         if ($cicloRango !== null && count($cicloRango) === 2) {
-            $sql     .= " AND YEAR(ru.fecha_respuesta) >= ? AND YEAR(ru.fecha_respuesta) < ?";
-            $types   .= 'ii';
-            $params[] = $cicloRango[0]; 
-            $params[] = $cicloRango[1];
+            $inicio = $cicloRango[0];
+            $fin    = $cicloRango[1];
+
+            $fechaInicio = "$inicio-08-01 00:00:00";
+            $fechaFin    = "$fin-07-31 23:59:59";
+
+            $sql      .= " AND ru.fecha_respuesta BETWEEN ? AND ?";
+            $types    .= 'ss';
+            $params[]  = $fechaInicio; 
+            $params[]  = $fechaFin;
         }
 
 

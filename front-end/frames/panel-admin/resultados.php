@@ -122,14 +122,14 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
       }
     }
   </style>
-```
+
 
 </head>
 <body>
   <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/header-admin.php'; ?>
 
   <div class="toolbar">
-    <a class="btn" href="/front-end/frames/panel/panel-admin.php"><span class="icon">↩</span> Regresar al Panel</a>
+    <a class="btn" href="/front-end/frames/panel/panel-admin.php"><i class="fa-solid fa-angle-left"></i> Regresar al Panel</a>
 
     <div class="export-controls">
       <span class="export-legend">

@@ -15,11 +15,11 @@ $id     = (int)($_POST['id'] ?? 0);
 $estado = $_POST['estado'] ?? '';
 
 // Usuario que realiza la acción
-$usuario = $_SESSION['usuario'] ?? 'Administrador';
+// CAMBIO AQUÍ: Actualizamos el texto por defecto para consistencia
+$usuario = $_SESSION['usuario'] ?? 'Secretario Ejecutivo';
 
 $controller = new ComentariosController();
 $controller->cambiarEstado($id, $estado, $usuario);
-
 
 $conn->close();
 

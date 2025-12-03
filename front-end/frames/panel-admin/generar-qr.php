@@ -414,7 +414,7 @@ requerir_admin();
         </div>
 
         <div style="text-align: center;">
-            <a href="/front-end/frames/panel/panel-admin.php" class="btn-volver">Volver al Panel</a>
+            <a href="/front-end/frames/panel/panel-admin.php" class="btn-volver"><i class="fa-solid fa-angle-left"></i>Regresar al Panel</a>
         </div>
     </div>
 

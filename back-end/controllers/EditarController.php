@@ -17,6 +17,9 @@ class EditarController
     /* ==================================================================
        GUARDADO MASIVO CON IMÁGENES
     ================================================================== */
+    /* ==================================================================
+       GUARDADO MASIVO CON IMÁGENES (OPTIMIZADO)
+    ================================================================== */
     public function guardarCambios(string $nivel, array $preguntas, array $eliminadas): array
     {
         $idEncuesta = $this->obtenerIdEncuestaPorNivel($nivel);
@@ -24,109 +27,107 @@ class EditarController
             return ['success' => false, 'error' => 'Nivel no válido o encuesta no encontrada'];
         }
 
+        // Iniciamos la transacción
         $this->db->begin_transaction();
 
         try {
             /* -------------------------------------------
-               A) BORRAR PREGUNTAS ELIMINADAS
+               1. PREPARAR TODAS LAS SENTENCIAS SQL UNA SOLA VEZ
+               (Esto es lo que acelera el proceso)
             ------------------------------------------- */
-            foreach ($eliminadas as $idDel) {
-                $idDel = (int)$idDel;
-                if ($idDel > 0) {
-                    $this->borrarPreguntaCompleta($idDel);
+            
+            // A) Para borrar preguntas eliminadas
+            $stmtDelRespUser  = $this->db->prepare("DELETE FROM respuestas_usuario WHERE id_pregunta = ?");
+            $stmtDelRanking   = $this->db->prepare("DELETE FROM respuestas_ranking WHERE id_pregunta = ?");
+            $stmtDelOpciones  = $this->db->prepare("DELETE FROM opciones_respuesta WHERE id_pregunta = ?");
+            $stmtDelPregunta  = $this->db->prepare("DELETE FROM preguntas WHERE id_pregunta = ?");
+
+            // B) Para preguntas (Update e Insert)
+            $stmtUpdateP = $this->db->prepare("UPDATE preguntas SET texto_pregunta=?, tipo_pregunta=?, orden=?, icono=? WHERE id_pregunta=?");
+            $stmtInsertP = $this->db->prepare("INSERT INTO preguntas (id_encuesta, texto_pregunta, tipo_pregunta, orden, icono) VALUES (?, ?, ?, ?, ?)");
+
+            // C) Para opciones (Limpiar e Insertar)
+            $stmtCleanOp  = $this->db->prepare("DELETE FROM opciones_respuesta WHERE id_pregunta=?");
+            $stmtInsertOp = $this->db->prepare("INSERT INTO opciones_respuesta (id_pregunta, texto_opcion, icono) VALUES (?, ?, ?)");
+
+            /* -------------------------------------------
+               2. EJECUTAR BORRADOS (SI HAY)
+            ------------------------------------------- */
+            if (!empty($eliminadas)) {
+                foreach ($eliminadas as $idDel) {
+                    $idDel = (int)$idDel;
+                    if ($idDel > 0) {
+                        // Solo pasamos el ID y ejecutamos (ya está preparado arriba)
+                        $stmtDelRespUser->bind_param("i", $idDel); $stmtDelRespUser->execute();
+                        $stmtDelRanking->bind_param("i", $idDel);  $stmtDelRanking->execute();
+                        $stmtDelOpciones->bind_param("i", $idDel); $stmtDelOpciones->execute();
+                        $stmtDelPregunta->bind_param("i", $idDel); $stmtDelPregunta->execute();
+                    }
                 }
             }
 
             /* -------------------------------------------
-               B) PROCESAR PREGUNTAS (INSERT O UPDATE)
+               3. EJECUTAR EL BUCLE PRINCIPAL
             ------------------------------------------- */
             foreach ($preguntas as $p) {
-
                 $texto = trim($p['texto'] ?? "");
                 if ($texto === "") continue;
 
                 $idPregunta = (int)($p['id'] ?? 0);
-                $tipo = strtolower(trim($p['tipo'] ?? "texto"));
-                $orden = (int)($p['orden'] ?? 0);
-                
-                // Aquí llega la ruta final (ya sea la nueva o la vieja) procesada por guardar.php
-                $icono = $p['icono'] ?? null; 
+                $tipo       = strtolower(trim($p['tipo'] ?? "texto"));
+                $orden      = (int)($p['orden'] ?? 0);
+                $icono      = $p['icono'] ?? null;
 
-                $tiposValidos = ['opcion','multiple','ranking','texto','dibujo'];
-                if (!in_array($tipo, $tiposValidos, true)) {
+                if (!in_array($tipo, ['opcion','multiple','ranking','texto','dibujo'], true)) {
                     $tipo = 'texto';
                 }
 
-                /* -----------------------------
-                   1. ACTUALIZAR O INSERTAR PREGUNTA
-                ----------------------------- */
+                // --- Guardar Pregunta ---
                 if ($idPregunta > 0) {
-                    // UPDATE: Actualizamos TODO, incluyendo el icono (sea null, viejo o nuevo)
-                    $stmt = $this->db->prepare("
-                        UPDATE preguntas 
-                        SET texto_pregunta=?, tipo_pregunta=?, orden=?, icono=?
-                        WHERE id_pregunta=?
-                    ");
-                    // Tipos: s=string, s=string, i=int, s=string(path), i=int
-                    $stmt->bind_param("ssisi", $texto, $tipo, $orden, $icono, $idPregunta);
-                    $stmt->execute();
-                    $stmt->close();
-
+                    // UPDATE
+                    $stmtUpdateP->bind_param("ssisi", $texto, $tipo, $orden, $icono, $idPregunta);
+                    $stmtUpdateP->execute();
                 } else {
-                    // INSERT: Nueva pregunta
-                    $stmt = $this->db->prepare("
-                        INSERT INTO preguntas (id_encuesta, texto_pregunta, tipo_pregunta, orden, icono)
-                        VALUES (?, ?, ?, ?, ?)
-                    ");
-                    // Tipos: i=int, s=string, s=string, i=int, s=string(path)
-                    $stmt->bind_param("issis", $idEncuesta, $texto, $tipo, $orden, $icono);
-                    $stmt->execute();
-                    $idPregunta = $stmt->insert_id;
-                    $stmt->close();
+                    // INSERT
+                    $stmtInsertP->bind_param("issis", $idEncuesta, $texto, $tipo, $orden, $icono);
+                    $stmtInsertP->execute();
+                    $idPregunta = $stmtInsertP->insert_id; // Recuperar ID nuevo para usarlo en opciones
                 }
 
-                /* -----------------------------
-                   2. GESTIONAR OPCIONES
-                ----------------------------- */
+                // --- Guardar Opciones ---
                 
-                // a) Borrar opciones anteriores para evitar duplicados/desorden
-                $stmtDel = $this->db->prepare("DELETE FROM opciones_respuesta WHERE id_pregunta=?");
-                $stmtDel->bind_param("i", $idPregunta);
-                $stmtDel->execute();
-                $stmtDel->close();
+                // 1. Borrar opciones viejas de esta pregunta (limpieza)
+                $stmtCleanOp->bind_param("i", $idPregunta);
+                $stmtCleanOp->execute();
 
-                // b) Insertar las opciones actuales
-                if (in_array($tipo, ['opcion','multiple','ranking'], true)
-                    && !empty($p['opciones'])
-                    && is_array($p['opciones'])) {
-
-                    $stmtOp = $this->db->prepare("
-                        INSERT INTO opciones_respuesta (id_pregunta, texto_opcion, icono)
-                        VALUES (?, ?, ?)
-                    ");
-
+                // 2. Insertar nuevas (si aplica)
+                if (in_array($tipo, ['opcion','multiple','ranking'], true) && !empty($p['opciones']) && is_array($p['opciones'])) {
                     foreach ($p['opciones'] as $op) {
                         $textoOp = trim($op['texto'] ?? "");
-                        // Aquí llega la ruta final de la opción (vieja o nueva)
                         $iconoOp = $op['icono'] ?? null;
 
-                        // Si no hay texto ni imagen, saltamos
-                        if ($textoOp === "" && !$iconoOp) {
-                            continue; 
-                        }
+                        if ($textoOp === "" && !$iconoOp) continue;
 
-                        $stmtOp->bind_param("iss", $idPregunta, $textoOp, $iconoOp);
-                        $stmtOp->execute();
+                        $stmtInsertOp->bind_param("iss", $idPregunta, $textoOp, $iconoOp);
+                        $stmtInsertOp->execute();
                     }
-
-                    $stmtOp->close();
                 }
             }
 
+            /* -------------------------------------------
+               4. LIMPIEZA Y CIERRE
+            ------------------------------------------- */
+            // Cerramos todas las sentencias para liberar memoria
+            $stmtDelRespUser->close(); $stmtDelRanking->close(); $stmtDelOpciones->close(); $stmtDelPregunta->close();
+            $stmtUpdateP->close(); $stmtInsertP->close();
+            $stmtCleanOp->close(); $stmtInsertOp->close();
+
+            // Confirmamos la transacción
             $this->db->commit();
             return ['success' => true];
 
         } catch (Throwable $e) {
+            // Si algo falla, revertimos todo
             $this->db->rollback();
             return ['success' => false, 'error' => $e->getMessage()];
         }

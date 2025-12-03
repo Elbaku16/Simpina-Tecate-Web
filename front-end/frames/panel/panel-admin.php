@@ -241,7 +241,7 @@ requerir_admin();
         </a>
       </div>
       
-      <?php if (rol_es('admin')): ?>
+      <?php if (rol_es('secretario_ejecutivo')): ?>
       <div class="comentarios-box" style="margin-top: 1.5rem; text-align: center;">
         <div class="comentarios-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -250,7 +250,7 @@ requerir_admin();
             </svg>
         </div>
         <h2>Administrar Credenciales</h2>
-        <p>Crea, modifica o elimina las cuentas de acceso al panel administrativo (Solo Admin Total)</p>
+        <p>Crea, modifica o elimina las cuentas de acceso al panel administrativo (Solo secretario ejecutivo)</p>
 
         <a href="/front-end/frames/panel-admin/usuarios.php" class="btn-comentarios">
             Gestionar Usuarios

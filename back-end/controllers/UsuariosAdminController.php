@@ -33,15 +33,14 @@ class UsuariosAdminController
             return ['success' => false, 'error' => 'Datos incompletos.'];
         }
 
-        // Validación de rol (solo si es uno de los permitidos para ser creados)
-        $rolesValidos = ['admin', 'acompanamiento', 'evaluacion'];
+        // CAMBIO AQUÍ: Reemplazamos 'admin' por 'secretario_ejecutivo'
+        $rolesValidos = ['secretario_ejecutivo', 'acompanamiento', 'evaluacion'];
+        
         if (!in_array($rol, $rolesValidos, true)) {
             return ['success' => false, 'error' => 'Rol inválido.'];
         }
 
-        // Asumo que el campo 'password' en la BD guarda el hash del password plano.
-        // **IMPORTANTE**: En un sistema real, deberías usar `password_hash()` aquí.
-        // Manteniendo la consistencia de tu código (que parece usar el password plano o una encriptación simple):
+        // Manteniendo la consistencia de tu código actual:
         $passwordGuardar = $password;
 
         // Verificar si el usuario ya existe
@@ -74,7 +73,7 @@ class UsuariosAdminController
      */
     public function eliminar(int $id): array
     {
-        // No permitir la eliminación del ID 1 (admin principal)
+        // No permitir la eliminación del ID 1 (generalmente el usuario principal/root)
         if ($id === 1) {
             return ['success' => false, 'error' => 'No se puede eliminar el usuario principal.'];
         }
