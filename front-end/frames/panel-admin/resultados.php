@@ -31,203 +31,74 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
   <link rel="stylesheet" href="/front-end/assets/css/admin/modal-respuestas.css">
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
- <style>
-    /* ============================================
-       REDISEÑO DE TOOLBAR Y BOTONES - VERSIÓN GRANDE GUINDA
-       ============================================ */
-    
+  <style>
+    /* Estilo para la leyenda de exportación global */
+    .export-legend {
+        font-size: 1rem;
+        color: #9aa4b2;
+        font-style: italic;
+        line-height: 2.5rem; 
+        padding-right: 15px;
+        white-space: nowrap;
+    }
+
+    /* Ajuste al toolbar para alinear elementos */
     .toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.5rem 0;
-      gap: 2rem;
-      background: linear-gradient(135deg, #ffffff 0%, #f9f5f0 100%);
-      border-radius: 12px;
-      padding: 1.5rem 2rem;
-      box-shadow: 0 2px 8px rgba(107, 46, 46, 0.08);
-      margin-bottom: 2rem;
+      padding: 1rem 0;
     }
-
-    /* Botón Regresar mejorado */
-    .toolbar .btn {
-      background: white;
-      color: #6b2e2e;
-      border: 2px solid #6b2e2e;
-      padding: 0.9rem 1.8rem;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      white-space: nowrap;
-      box-shadow: 0 2px 4px rgba(107, 46, 46, 0.1);
-    }
-
-    .toolbar .btn:hover {
-      background: #6b2e2e;
-      color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(107, 46, 46, 0.2);
-    }
-
-    .toolbar .btn .icon {
-      font-size: 1.2em;
-    }
-
-    /* Contenedor de exportación */
+    
     .export-controls {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
+        display: flex;
+        align-items: center;
     }
-
-    /* Leyenda mejorada */
-    .export-legend {
-      font-size: 1rem;
-      color: #6b2e2e;
-      font-weight: 600;
-      padding-right: 1rem;
-      border-right: 2px solid #d6bd55;
-    }
-
-    /* Botones de exportación GRANDES con color GUINDA */
+    
+    /* El div original de botones se mantiene a la derecha dentro de export-controls */
     .export-buttons-global {
-      display: flex;
-      gap: 0.75rem;
+        display: flex;
+        gap: 5px;
     }
 
-    .btn-export-global {
-      padding: 1rem 2rem;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 1.05rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 8px rgba(107, 46, 46, 0.2);
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(135deg, #7A1E2C 0%, #6b2e2e 100%);
-      color: white;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .btn-export-global::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn-export-global:hover::before {
-      left: 100%;
-    }
-
-    .btn-export-global:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(107, 46, 46, 0.35);
-      background: linear-gradient(135deg, #611232 0%, #4a1f1f 100%);
-    }
-
-    .btn-export-global:active {
-      transform: translateY(-1px);
-    }
-
-    /* Colores específicos para cada botón - TODOS GUINDA */
-    .btn-csv-global {
-      background: linear-gradient(135deg, #7A1E2C 0%, #6b2e2e 100%);
-    }
-
-    .btn-csv-global:hover {
-      background: linear-gradient(135deg, #611232 0%, #4a1f1f 100%);
-    }
-
-    .btn-excel-global {
-      background: linear-gradient(135deg, #8B2635 0%, #7A1E2C 100%);
-    }
-
-    .btn-excel-global:hover {
-      background: linear-gradient(135deg, #7A1E2C 0%, #611232 100%);
-    }
-
-    .btn-pdf-global {
-      background: linear-gradient(135deg, #611232 0%, #4a1f1f 100%);
-    }
-
-    .btn-pdf-global:hover {
-      background: linear-gradient(135deg, #4a1f1f 0%, #2d1212 100%);
-    }
-
-    .btn-print-global {
-      background: linear-gradient(135deg, #4a1f1f 0%, #2d1212 100%);
-    }
-
-    .btn-print-global:hover {
-      background: linear-gradient(135deg, #2d1212 0%, #1a0808 100%);
-    }
-
-    /* RESPONSIVE MÓVIL */
+    /* ============================================
+       RESPONSIVE SOLO PARA BOTONES DE EXPORTACIÓN
+       ============================================ */
     @media (max-width: 768px) {
-      .toolbar {
-        flex-direction: column;
-        gap: 1.5rem;
-        padding: 1.25rem 1rem;
-      }
-
-      .toolbar .btn {
-        width: 100%;
-        justify-content: center;
-        font-size: 1rem;
-      }
-
       .export-controls {
         flex-direction: column;
         width: 100%;
-        gap: 1rem;
+        gap: 0.75rem;
       }
 
       .export-legend {
         text-align: center;
-        border-right: none;
-        border-bottom: 2px solid #d6bd55;
-        padding-right: 0;
-        padding-bottom: 0.75rem;
+        white-space: normal;
+        padding: 0;
         width: 100%;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
       }
 
       .export-buttons-global {
         width: 100%;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
         justify-content: center;
-        gap: 0.75rem;
       }
 
       .btn-export-global {
-        flex: 1;
-        min-width: calc(50% - 0.375rem);
-        padding: 1.1rem 1rem;
-        font-size: 1rem;
+        width: 100%;
+        padding: 0.75rem 0.5rem;
+        font-size: 0.9rem;
       }
     }
 
     @media (max-width: 480px) {
-      .export-buttons-global {
-        flex-direction: column;
-      }
-
       .btn-export-global {
-        width: 100%;
-        min-width: 100%;
-        padding: 1.2rem 1rem;
+        padding: 0.8rem 0.4rem;
+        font-size: 0.85rem;
       }
     }
   </style>
@@ -236,25 +107,23 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
   <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/header-admin.php'; ?>
 
   <div class="toolbar">
-    <a class="btn" href="/front-end/frames/panel/panel-admin.php">
-      <span class="icon">↩</span> Regresar al Panel
-    </a>
+    <a class="btn" href="/front-end/frames/panel/panel-admin.php"><span class="icon">↩</span> Regresar al Panel</a>
 
     <div class="export-controls">
       <span class="export-legend">
-        Exportar datos de preguntas gráficas
+        Exportar datos de preguntas gráficas.
       </span>
       <div class="export-buttons-global">
-        <button class="btn-export-global btn-csv-global" onclick="exportarTodosCSV()" title="Exportar a CSV">
+        <button class="btn-export-global btn-csv-global" onclick="exportarTodosCSV()" title="Exportar todas las respuestas a CSV">
           CSV
         </button>
-        <button class="btn-export-global btn-excel-global" onclick="exportarTodosExcel()" title="Exportar a Excel">
+        <button class="btn-export-global btn-excel-global" onclick="exportarTodosExcel()" title="Exportar todas las respuestas a Excel">
           Excel
         </button>
-        <button class="btn-export-global btn-pdf-global" onclick="exportarTodosPDF()" title="Exportar a PDF">
+        <button class="btn-export-global btn-pdf-global" onclick="exportarTodosPDF()" title="Exportar todas las respuestas a PDF">
           PDF
         </button>
-        <button class="btn-export-global btn-print-global" onclick="exportarTodosPrint()" title="Imprimir">
+        <button class="btn-export-global btn-print-global" onclick="exportarTodosPrint()" title="Imprimir todas las respuestas">
           Imprimir
         </button>
       </div>
@@ -272,12 +141,17 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
       <div class="filtro-item">
         <label class="filtro-label" for="escuela-filter">Escuela:</label>
         <select name="escuela" id="escuela-filter" class="filtro-select">
+            <!-- Mostrar todas -->
             <option value="0" <?php echo ($escuelaFiltro ?? 0) == 0 ? 'selected' : ''; ?>>
                 Todas las escuelas
             </option>
+
+            <!-- NUEVO: opcion de no escolarizado -->
             <option value="9999" <?php echo ($escuelaFiltro ?? 0) == 9999 ? 'selected' : ''; ?>>
                 No estudia actualmente
             </option>
+
+            <!-- Escuelas del nivel -->
             <?php foreach ($escuelasDelNivel as $esc): ?>
                 <option value="<?php echo $esc['id']; ?>" 
                     <?php echo ($escuelaFiltro ?? 0) == $esc['id'] ? 'selected' : ''; ?>>
@@ -330,9 +204,10 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
       <?php foreach ($preguntas as $i => $p):
         $pid   = (int)$p['id_pregunta'];
         $tipo  = strtolower(trim($p['tipo_pregunta'])); 
-        $qNum = $i + 1;
+        $qNum = $i + 1; // Número de pregunta secuencial
         $lista = $opcionesPorPregunta[$pid] ?? [];
         
+        // Asignar color y preparar lista para Ranking o Pie Chart
         foreach ($lista as $k => $op) { $lista[$k]['color'] = $palette[$k % count($palette)]; }
         
         $esNoGraficable = in_array($tipo, ['texto', 'dibujo', 'imagen', 'canvas']);
@@ -373,14 +248,17 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
 
           <?php elseif ($esRanking): ?>
             <div class="ranking-slot" id="ranking-q<?php echo $pid; ?>">
+                
                 <div class="ranking-header">
                   <div class="ranking-label">Posición</div>
                   <div class="ranking-label">Opciones</div>
                 </div>
 
                 <?php 
+                  // 1. Ordenar por promedio (menor promedio = mejor ranking = posición 1)
                   usort($lista, fn($a, $b) => $a['promedio'] <=> $b['promedio']);
                   
+                  // 2. Determinar la escala máxima para la longitud de la barra
                   $peorPromedio = 0;
                   foreach ($lista as $op) {
                       if (($op['promedio'] ?? 0) !== 0) {
@@ -393,6 +271,7 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
                   $restantes = array_slice($lista, 3);
                   $tieneRestantes = !empty($restantes);
 
+                  // Mostrar el Top 3
                   foreach ($top3 as $idx => $op): 
                     if ($op['promedio'] === null || $op['total'] === 0) continue;
 
@@ -435,6 +314,7 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
                 <?php if (empty($lista) || $peorPromedio === 0): ?>
                     <div class="sin-respuestas" style="padding: 16px;">No hay datos de ranking para mostrar con estos filtros.</div>
                 <?php endif; ?>
+
             </div>
             
             <?php if ($tieneRestantes): ?>
@@ -532,11 +412,12 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
   <script>
+    // Se añade el nuevo parámetro qNum (número de pregunta)
     function abrirRespuestasYExportar(idPregunta, nivel, escuela, formato, qNum) {
       abrirRespuestas(idPregunta, nivel, escuela, qNum);
       setTimeout(function() {
         exportarRespuestasTexto(formato);
-      }, 1000);
+      }, 1000); // Esperar a que se carguen los datos
     }
   </script>
 </body>
