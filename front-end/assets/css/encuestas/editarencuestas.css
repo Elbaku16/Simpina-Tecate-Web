@@ -365,3 +365,305 @@ body {
         text-align: center;
     }
 }
+
+/* =======================================================
+   ESTILOS PARA IMÁGENES EN EDITOR
+======================================================= */
+
+/* Grupo de imagen de pregunta */
+.grupo-imagen {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: rgba(212, 176, 86, 0.08);
+    border-radius: 0.75rem;
+    border: 1px dashed rgba(212, 176, 86, 0.4);
+}
+
+.label-imagen {
+    display: block;
+    font-weight: 600;
+    color: var(--burgundy);
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+/* Input file oculto */
+.input-file-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* Contenedor del input file */
+.input-file-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Botón elegir archivo */
+.btn-elegir-archivo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--burgundy);
+    color: #fff;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.btn-elegir-archivo:hover {
+    background: var(--gold);
+    color: var(--burgundy);
+    transform: translateY(-2px);
+}
+
+.btn-elegir-archivo .icon {
+    font-size: 1rem;
+}
+
+/* Nombre del archivo */
+.file-name {
+    color: rgba(45, 27, 31, 0.7);
+    font-size: 0.85rem;
+    font-style: italic;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Contenedor de preview */
+.preview-container {
+    display: none;
+    position: relative;
+    margin-top: 1rem;
+    width: fit-content;
+}
+
+.preview-container.visible {
+    display: inline-block;
+}
+
+.preview-img-pregunta {
+    max-width: 180px;
+    max-height: 140px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    border: 2px solid var(--gold);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón eliminar imagen */
+.btn-eliminar-img {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #dc2626;
+    color: #fff;
+    border: 2px solid #fff;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+    transition: all 0.2s;
+}
+
+.btn-eliminar-img:hover {
+    background: #b91c1c;
+    transform: scale(1.1);
+}
+
+/* =======================================================
+   ESTILOS PARA OPCIONES CON IMÁGENES
+======================================================= */
+.opcion-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: #fff;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(212, 176, 86, 0.3);
+    flex-wrap: wrap;
+}
+
+.opcion-item .opcion-texto {
+    flex: 1;
+    min-width: 150px;
+    margin-bottom: 0;
+}
+
+/* Contenedor imagen opción */
+.opcion-img-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Botón pequeño para elegir imagen en opción */
+.btn-elegir-archivo-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: rgba(212, 176, 86, 0.2);
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid rgba(212, 176, 86, 0.4);
+}
+
+.btn-elegir-archivo-sm:hover {
+    background: var(--gold);
+    transform: scale(1.05);
+}
+
+/* Preview wrap de opción */
+.opcion-preview-wrap {
+    display: none;
+    position: relative;
+}
+
+.opcion-preview-wrap.visible {
+    display: inline-block;
+}
+
+.opcion-preview-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 0.4rem;
+    border: 2px solid var(--gold);
+}
+
+/* Botón eliminar imagen pequeño */
+.btn-eliminar-img-sm {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #dc2626;
+    color: #fff;
+    border: 2px solid #fff;
+    font-size: 0.7rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+    transition: all 0.2s;
+    padding: 0;
+    line-height: 1;
+}
+
+.btn-eliminar-img-sm:hover {
+    background: #b91c1c;
+    transform: scale(1.15);
+}
+
+/* =======================================================
+   RESPONSIVE PARA IMÁGENES
+======================================================= */
+@media (max-width: 768px) {
+    .grupo-imagen {
+        padding: 0.75rem;
+    }
+    
+    .input-file-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .btn-elegir-archivo {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .file-name {
+        max-width: 100%;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .preview-container {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .preview-img-pregunta {
+        max-width: 150px;
+        max-height: 120px;
+    }
+    
+    .opcion-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .opcion-item .opcion-texto {
+        width: 100%;
+    }
+    
+    .opcion-img-container {
+        width: 100%;
+        justify-content: flex-start;
+        padding-top: 0.5rem;
+        border-top: 1px dashed rgba(212, 176, 86, 0.3);
+        margin-top: 0.5rem;
+    }
+    
+    .btn-elegir-archivo-sm {
+        flex-shrink: 0;
+    }
+    
+    .opcion-item .btn-icon.btn-danger {
+        align-self: flex-end;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .preview-img-pregunta {
+        max-width: 120px;
+        max-height: 100px;
+    }
+    
+    .opcion-preview-img {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .editor-pregunta {
+        padding: 1rem;
+    }
+    
+    .editor-pregunta h3 {
+        font-size: 0.95rem;
+    }
+}
