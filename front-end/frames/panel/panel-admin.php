@@ -266,7 +266,7 @@ requerir_admin();
   </main>
 
   <footer>
-    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer-admin.php'; ?>
   </footer>
 
 </body>
