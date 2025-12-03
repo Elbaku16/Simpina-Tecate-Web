@@ -110,7 +110,7 @@ $nivelTitulo = ucfirst($nivel);
             </div>
         </div>
         <div class="form-group">
-            <label>2. Tu Género:</label>
+            <label>2. Tu Sexo:</label>
             <div class="select-wrapper">
                 <select id="selectGeneroModal">
                     <option value="">-- Selecciona --</option>
