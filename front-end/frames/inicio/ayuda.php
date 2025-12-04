@@ -184,7 +184,7 @@
           </div>
 
           <div class="dir-group">
-              <h4>Instituciones</h4>
+              <h4>Ayuntamiento</h4>
               <div class="dir-card municipal">
                   <div class="d-top">
                       <div class="contact-icon">
@@ -214,16 +214,13 @@
                   <div class="d-top">
                       <div class="contact-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                          <circle cx="9" cy="7" r="4"/>
-                          <path d="M23 21v-2a4 4 0 00-3-3.87"/>
-                          <path d="M16 3.13a4 4 0 010 7.75"/>
+                          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                          <line x1="12" y1="18" x2="12.01" y2="18"/>
                         </svg>
                       </div>
-                      <span class="d-num">079</span>
+                      <span class="d-num">665-120-4036</span>
                   </div>
-                  <span class="d-title">INMUJERES</span>
-                  <small>Atención especializada a mujeres.</small>
+                  <span class="d-title">TKTiende</span>
               </div>
           </div>
 
