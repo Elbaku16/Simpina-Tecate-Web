@@ -1,18 +1,10 @@
 <?php
-/**
- * DibujoHelper.php
- * Helper para guardar, eliminar y gestionar archivos de dibujos
- * 
- * Ubicación: /back-end/helpers/DibujoHelper.php
- */
 
 declare(strict_types=1);
 
 class DibujoHelper
 {
-    /**
-     * Directorio base para los dibujos (relativo a DOCUMENT_ROOT)
-     */
+  =
     private const BASE_DIR = '/uploads/dibujos';
 
     /**

@@ -177,9 +177,10 @@
                           <line x1="12" y1="18" x2="12.01" y2="18"/>
                         </svg>
                       </div>
-                      <span class="d-num">665-120-4036</span>
+                      <span class="d-num">079</span>
                   </div>
-                  <span class="d-title">TKTiende (WhatsApp)</span>
+                  <span class="d-title">INMUJERES</span>
+                  <small>Atencion especializada a mujeres.</small>
               </div>
           </div>
 
