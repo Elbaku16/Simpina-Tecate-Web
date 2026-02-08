@@ -10,7 +10,6 @@ header('Content-Type: application/json; charset=utf-8');
 $controller = new ContactoController();
 $data = $controller->obtenerDatosFormulario();
 
-// CERRAR conexión ANTES de responder
 $conn->close();
 
 echo json_encode([

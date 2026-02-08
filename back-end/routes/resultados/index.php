@@ -12,14 +12,12 @@ try {
     // Extraemos variables para la vista
     extract($data);
 
-    // CERRAR conexión ANTES de cargar la vista (la vista no usa DB)
     $conn->close();
 
     require $_SERVER['DOCUMENT_ROOT'].'/front-end/frames/panel-admin/resultados.php';
 
 } catch (Exception $e) {
 
-    // Cerrar conexión también en errores
     if (isset($conn)) {
         $conn->close();
     }

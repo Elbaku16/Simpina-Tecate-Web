@@ -108,12 +108,9 @@ foreach ($datosPreguntas as $i => $pData) {
     $finalPreguntas[] = $pregArr;
 }
 
-/* ======================================================
-   GUARDAR EN CONTROLADOR
-====================================================== */
+
 
 $controller = new EditarController();
-// El controlador recibirá ahora las rutas correctas en el campo 'icono'
 $respuesta = $controller->guardarCambios($nivel, $finalPreguntas, $eliminadas);
 
 global $conn;

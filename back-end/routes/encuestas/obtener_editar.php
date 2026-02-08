@@ -12,7 +12,6 @@ $nivel = $_GET['nivel'] ?? 'primaria';
 $controller = new EncuestasController();
 $data = $controller->obtenerEncuestaPorNivel($nivel);
 
-// Cerrar la conexión ANTES de responder
 $conn->close();
 
 echo json_encode($data, JSON_UNESCAPED_UNICODE);

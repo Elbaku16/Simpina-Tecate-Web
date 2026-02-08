@@ -10,10 +10,8 @@ $controller = new ContactoController();
 // El controlador se encarga de validar, insertar y devolver ok=1/0
 $result = $controller->procesarFormulario($_POST);
 
-// CERRAR conexión ANTES de redirigir
 $conn->close();
 
-// Redirigir de vuelta al formulario
 if ($result['ok']) {
     header("Location: /front-end/frames/inicio/contacto.php?ok=1");
 } else {

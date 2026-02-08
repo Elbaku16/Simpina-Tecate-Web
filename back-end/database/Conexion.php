@@ -9,10 +9,10 @@ class Conexion
     {
         if (self::$instancia === null) {
 
-            $servername = "svdm056.serverneubox.com.mx";
-            $username   = "glevanco_simpina";
-            $password   = "zMHnH2u8cbQuqsFsZjUh";
-            $dbname     = "glevanco_simpina";
+            $servername = "sql107.infinityfree.com";
+            $username   = "if0_40468916";
+            $password   = "cugiL98bGoD0";
+            $dbname     = "if0_40468916_simpinna";
 
             $db = new mysqli($servername, $username, $password, $dbname);
 
