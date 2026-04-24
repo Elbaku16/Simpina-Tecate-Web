@@ -3,7 +3,7 @@
 // ------------------------------
 async function cargarOpciones() {
   try {
-    const res = await fetch('/simpinna/back-end/routes/contacto/listar-opciones.php');
+    const res = await fetch(window.BASE_URL + '/back-end/routes/contacto/listar-opciones.php');
     const data = await res.json();
 
     if (!data.ok) {

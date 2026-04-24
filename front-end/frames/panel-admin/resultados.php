@@ -1,5 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/simpinna/back-end/auth/verificar-sesion.php';
+require_once __DIR__ . '/../../../back-end/auth/verificar-sesion.php';
+require_once __DIR__ . '/../../includes/config.php';
 requerir_admin();
 
 
@@ -21,10 +22,10 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
   <title>Resultados <?php echo $nombreNivel; ?> | Panel Admin</title>
   
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/layout.css">
-  <link rel="stylesheet" href="/simpinna/front-end/assets/css/admin/admin.css">
-  <link rel="stylesheet" href="/simpinna/front-end/assets/css/admin/resultados.css">
-  <link rel="stylesheet" href="/simpinna/front-end/assets/css/admin/modal-respuestas.css">
+  <link rel="stylesheet" href="<?php echo CSS_URL; ?>global/layout.css">
+  <link rel="stylesheet" href="<?php echo CSS_URL; ?>admin/admin.css">
+  <link rel="stylesheet" href="<?php echo CSS_URL; ?>admin/resultados.css">
+  <link rel="stylesheet" href="<?php echo CSS_URL; ?>admin/modal-respuestas.css">
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
@@ -122,10 +123,10 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
 
 </head>
 <body>
-  <?php include $_SERVER['DOCUMENT_ROOT'].'/simpinna/front-end/includes/header-admin.php'; ?>
+  <?php require_once __DIR__ . '/../../includes/header-admin.php'; ?>
 
   <div class="toolbar">
-    <a class="btn" href="/simpinna/front-end/frames/panel/panel-admin.php"><i class="fa-solid fa-angle-left"></i> Regresar al Panel</a>
+    <a class="btn" href="<?php echo FRAMES_URL; ?>panel/panel-admin.php"><i class="fa-solid fa-angle-left"></i> Regresar al Panel</a>
 
     <div class="export-controls">
       <span class="export-legend">
@@ -418,13 +419,13 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
     </div>
   </div>
 
-  <?php include $_SERVER['DOCUMENT_ROOT'].'/simpinna/front-end/includes/footer-admin.php'; ?>
+  <?php require_once __DIR__ . '/../../includes/footer-admin.php'; ?>
 
-  <script src="/simpinna/front-end/scripts/admin/resultados/helpers.js"></script>
-  <script src="/simpinna/front-end/scripts/admin/resultados/graficas.js"></script>
-  <script src="/simpinna/front-end/scripts/admin/resultados/export-pregunta.js"></script>
-  <script src="/simpinna/front-end/scripts/admin/resultados/export-global.js"></script>
-  <script src="/simpinna/front-end/scripts/admin/resultados/modal-respuestas.js"></script>
+  <script src="<?php echo JS_URL; ?>admin/resultados/helpers.js"></script>
+  <script src="<?php echo JS_URL; ?>admin/resultados/graficas.js"></script>
+  <script src="<?php echo JS_URL; ?>admin/resultados/export-pregunta.js"></script>
+  <script src="<?php echo JS_URL; ?>admin/resultados/export-global.js"></script>
+  <script src="<?php echo JS_URL; ?>admin/resultados/modal-respuestas.js"></script>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

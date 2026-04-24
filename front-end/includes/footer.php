@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/config.php';
 $currentScript = basename($_SERVER['SCRIPT_NAME'] ?? '');
 $isInicio      = ($currentScript === 'inicio.php' || $currentScript === 'index.php');
 ?>
@@ -7,7 +8,7 @@ $isInicio      = ($currentScript === 'inicio.php' || $currentScript === 'index.p
 
     <div class="footer-logo">
       <img
-        src="/simpinna/front-end/assets/img/global/tkt-pueblo-magico.png"
+        src="<?php echo IMG_URL; ?>global/tkt-pueblo-magico.png"
         alt="Tecate Pueblo Mágico"
         class="logo-tecate"
       >
@@ -21,7 +22,7 @@ $isInicio      = ($currentScript === 'inicio.php' || $currentScript === 'index.p
 
       <?php if ($isInicio): ?>
         <div class="admin-link-wrapper">
-          <a href="/simpinna/front-end/frames/admin/login.php">
+          <a href="<?php echo FRAMES_URL; ?>admin/login.php">
             <i class="fa-solid fa-user-gear"></i>
             Simpinna — Acceso administrativo
           </a>

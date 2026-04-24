@@ -1,5 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/simpinna/back-end/auth/verificar-sesion.php';
+require_once __DIR__ . '/../../../back-end/auth/verificar-sesion.php';
+require_once __DIR__ . '/../../includes/config.php';
 requerir_admin();
 ?>
 <!DOCTYPE html>
@@ -414,7 +415,7 @@ requerir_admin();
         </div>
 
         <div style="text-align: center;">
-            <a href="/simpinna/front-end/frames/panel/panel-admin.php" class="btn-volver"><i class="fa-solid fa-angle-left"></i>Regresar al Panel</a>
+            <a href="<?php echo FRAMES_URL; ?>panel/panel-admin.php" class="btn-volver"><i class="fa-solid fa-angle-left"></i>Regresar al Panel</a>
         </div>
     </div>
 
@@ -425,7 +426,7 @@ requerir_admin();
                 document.getElementById('loading').style.display = 'block';
                 document.querySelector('.nivel-grid').style.display = 'none';
                 
-                const response = await fetch(`/simpinna/back-end/routes/qr/generar.php?nivel=${nivel}`);
+                const response = await fetch(`${window.BASE_URL}/back-end/routes/qr/generar.php?nivel=${nivel}`);
                 const data = await response.json();
                 
                 // Ocultar loading

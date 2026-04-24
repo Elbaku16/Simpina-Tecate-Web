@@ -10,9 +10,10 @@ $baseBackend = __DIR__ . '/../../';
 
 require_once $baseBackend . 'core/bootstrap_session.php';
 require_once $baseBackend . 'controllers/ContactoController.php';
+require_once __DIR__ . '/../../../front-end/includes/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /simpinna/front-end/frames/inicio/contacto.php');
+    header('Location: ' . FRAMES_URL . 'inicio/contacto.php');
     exit;
 }
 
@@ -22,7 +23,7 @@ $controller = new ContactoController();
 $result = $controller->procesarFormulario($_POST);
 
 
-$urlDestino = '/simpinna/front-end/frames/inicio/contacto.php';
+$urlDestino = FRAMES_URL . 'inicio/contacto.php';
 
 if ($result['ok']) {
     header("Location: $urlDestino?ok=1");
