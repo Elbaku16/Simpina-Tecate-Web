@@ -1,9 +1,10 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/simpinna/back-end/auth/verificar-sesion.php';
+require_once __DIR__ . '/../../../back-end/auth/verificar-sesion.php';
+require_once __DIR__ . '/../../includes/config.php';
 requerir_admin();
 
 if (!tiene_permiso('modificar_encuesta')) {
-    header('Location: /simpinna/front-end/frames/panel/panel-admin.php');
+    header('Location: ' . FRAMES_URL . 'panel/panel-admin.php');
     exit;
 }
 
@@ -18,16 +19,16 @@ $nivelTitulo = ucfirst($nivel);
     <title>SIMPINNA | Editar encuesta</title>
 
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/layout.css">
-    <link rel="stylesheet" href="/simpinna/front-end/assets/css/admin/admin.css">
-    <link rel="stylesheet" href="/simpinna/front-end/assets/css/encuestas/editarencuestas.css">
+    <link rel="stylesheet" href="<?php echo CSS_URL; ?>global/layout.css">
+    <link rel="stylesheet" href="<?php echo CSS_URL; ?>admin/admin.css">
+    <link rel="stylesheet" href="<?php echo CSS_URL; ?>encuestas/editarencuestas.css">
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-<?php include $_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/header-admin.php'; ?>
+<?php require_once __DIR__ . '/../../includes/header-admin.php'; ?>
 
 <main class="editor-wrapper">
     
@@ -37,7 +38,7 @@ $nivelTitulo = ucfirst($nivel);
             <h1>Editar Encuesta</h1>
         </div>
         
-        <a href="/simpinna/front-end/frames/panel/panel-admin.php" class="btn-volver-premium">
+        <a href="<?php echo FRAMES_URL; ?>panel/panel-admin.php" class="btn-volver-premium">
             <i class="fa-solid fa-angle-left"></i> Regresar al Panel
         </a>
     </div>
@@ -65,10 +66,10 @@ $nivelTitulo = ucfirst($nivel);
 </main>
 
 <footer>
-    <?php include $_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/footer.php'; ?>
+    <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
 </footer>
 
-<script src="/simpinna/front-end/scripts/editarencuesta.js" defer></script>
+<script src="<?php echo JS_URL; ?>editarencuesta.js" defer></script>
 
 </body>
 </html>

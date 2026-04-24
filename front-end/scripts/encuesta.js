@@ -54,7 +54,7 @@ function guardarDibujosPaginaActual() {
 ========================================================== */
 async function cargarEncuesta() {
     try {
-        const resp = await fetch(`/simpinna/back-end/routes/encuestas/obtener.php?nivel=${nivel}`);
+        const resp = await fetch(`${window.BASE_URL}/back-end/routes/encuestas/obtener.php?nivel=${nivel}`);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
 
         const data = await resp.json();
@@ -296,7 +296,7 @@ function enviar() {
     console.log('Enviando:', payload);
     btnSiguiente.disabled = true;
 
-    fetch('/simpinna/back-end/routes/encuestas/enviar-respuestas.php', {
+    fetch(window.BASE_URL + '/back-end/routes/encuestas/enviar-respuestas.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -310,7 +310,7 @@ function enviar() {
             localStorage.removeItem('id_escuela_seleccionada');
             localStorage.removeItem('genero_seleccionado');
             
-            window.location.href = '/simpinna/front-end/frames/inicio/inicio.php';
+            window.location.href = window.BASE_URL + '/front-end/frames/inicio/inicio.php';
         } else {
             alert('Error: ' + (data.error || 'Desconocido'));
             btnSiguiente.disabled = false;

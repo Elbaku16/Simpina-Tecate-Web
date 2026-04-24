@@ -1,9 +1,10 @@
+<?php require_once __DIR__ . '/config.php'; ?>
 <footer class="footer-simpinna footer-admin">
   <div class="footer-container">
 
     <div class="footer-logo">
       <img
-        src="/simpinna/front-end/assets/img/global/tkt-pueblo-magico.png"
+        src="<?php echo IMG_URL; ?>global/tkt-pueblo-magico.png"
         alt="Tecate Pueblo Mágico"
         class="logo-tecate"
       >
