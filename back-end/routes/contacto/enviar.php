@@ -1,20 +1,34 @@
 <?php
 declare(strict_types=1);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/core/bootstrap_session.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/ContactoController.php';
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+
+
+$baseBackend = __DIR__ . '/../../';
+
+require_once $baseBackend . 'core/bootstrap_session.php';
+require_once $baseBackend . 'controllers/ContactoController.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: /simpinna/front-end/frames/inicio/contacto.php');
+    exit;
+}
+
 
 $controller = new ContactoController();
 
-// El controlador se encarga de validar, insertar y devolver ok=1/0
 $result = $controller->procesarFormulario($_POST);
 
-$conn->close();
+
+$urlDestino = '/simpinna/front-end/frames/inicio/contacto.php';
 
 if ($result['ok']) {
-    header("Location: /front-end/frames/inicio/contacto.php?ok=1");
+    header("Location: $urlDestino?ok=1");
 } else {
-    header("Location: /front-end/frames/inicio/contacto.php?ok=0");
+    $mensaje = urlencode($result['mensaje'] ?? 'Error desconocido');
+    header("Location: $urlDestino?ok=0&m=$mensaje");
 }
 exit;
+?>

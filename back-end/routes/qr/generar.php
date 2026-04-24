@@ -1,58 +1,68 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
-requerir_admin();
+declare(strict_types=1);
+
+ini_set('display_errors', '0');
+error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 
-$nivel = $_GET['nivel'] ?? '';
+try {
 
-if (empty($nivel)) {
-    echo json_encode(['success' => false, 'error' => 'Nivel no especificado']);
-    exit;
-}
+    $baseBackend = __DIR__ . '/../../';
 
-// ============================================================
-// CONFIGURACIÓN DEL DOMINIO PÚBLICO
-// ============================================================
-// Cambia este valor por tu dominio REAL cuando estés en producción
-// Ejemplos:
-// - 'https://simpina.gob.mx'
-// - 'https://www.simpinna.com'
-// - 'https://tusitio.com'
-// 
-// IMPORTANTE: NO uses localhost, 127.0.0.1 o IP local
-// ============================================================
-$DOMINIO_PUBLICO = 'https://simpina.gob.mx'; // <--- CAMBIA ESTO POR TU DOMINIO REAL
+    if (!file_exists($baseBackend . 'auth/verificar-sesion.php')) {
+        throw new Exception("Error interno: No se encuentra el sistema de autenticación.");
+    }
 
-// Si no has configurado el dominio, detectamos automáticamente (solo para desarrollo local)
-if ($DOMINIO_PUBLICO === 'https://simpina.gob.mx') {
+    require_once $baseBackend . 'auth/verificar-sesion.php';
+    requerir_admin();
+
+    
+    $nivel = $_GET['nivel'] ?? '';
+
+    if (empty($nivel)) {
+        throw new Exception('Nivel educativo no especificado');
+    }
+
+    
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'];
-    $DOMINIO_PUBLICO = "{$protocol}://{$host}";
+    
+
+    $baseUrl = "{$protocol}://{$host}/simpinna";
+
+    $rutaEncuesta = $baseUrl . '/front-end/frames/encuestas/demo-encuestas.php';
+
+
+    $urls = [
+        'preescolar'   => "{$rutaEncuesta}?nivel=preescolar",
+        'primaria'     => "{$rutaEncuesta}?nivel=primaria",
+        'secundaria'   => "{$rutaEncuesta}?nivel=secundaria",
+        'preparatoria' => "{$rutaEncuesta}?nivel=preparatoria",
+    ];
+
+    if (!isset($urls[$nivel])) {
+        throw new Exception('Nivel inválido. Opciones válidas: preescolar, primaria, secundaria, preparatoria.');
+    }
+
+    $urlFinal = $urls[$nivel];
+
+  
+    $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&margin=10&data=' . urlencode($urlFinal);
+
+    echo json_encode([
+        'success'      => true,
+        'qr_url'       => $qrUrl,
+        'encuesta_url' => $urlFinal,
+        'nivel'        => ucfirst($nivel)
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error'   => $e->getMessage()
+    ]);
 }
-
-// Mapeo de niveles a URLs
-$urls = [
-    'preescolar'   => "{$DOMINIO_PUBLICO}/front-end/frames/encuestas/demo-encuestas.php?nivel=preescolar",
-    'primaria'     => "{$DOMINIO_PUBLICO}/front-end/frames/encuestas/demo-encuestas.php?nivel=primaria",
-    'secundaria'   => "{$DOMINIO_PUBLICO}/front-end/frames/encuestas/demo-encuestas.php?nivel=secundaria",
-    'preparatoria' => "{$DOMINIO_PUBLICO}/front-end/frames/encuestas/demo-encuestas.php?nivel=preparatoria",
-];
-
-if (!isset($urls[$nivel])) {
-    echo json_encode(['success' => false, 'error' => 'Nivel inválido']);
-    exit;
-}
-
-$url = $urls[$nivel];
-
-// Usar API de QR Code con mayor tamaño y mejor calidad
-$qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&data=' . urlencode($url);
-
-echo json_encode([
-    'success' => true,
-    'qr_url'  => $qrUrl,
-    'encuesta_url' => $url,
-    'nivel' => ucfirst($nivel)
-], JSON_UNESCAPED_SLASHES);
 exit;
+?>

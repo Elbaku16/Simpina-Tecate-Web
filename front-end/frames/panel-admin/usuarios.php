@@ -1,10 +1,9 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/simpinna/back-end/auth/verificar-sesion.php';
 requerir_admin();
 
-// CAMBIO 1: Restricción máxima con el nuevo rol
 if (!rol_es('secretario_ejecutivo')) {
-    header('Location: /front-end/frames/panel/panel-admin.php');
+    header('Location: /simpinna/front-end/frames/panel/panel-admin.php');
     exit;
 }
 ?>
@@ -16,16 +15,16 @@ if (!rol_es('secretario_ejecutivo')) {
     <title>SIMPINNA | Gestión de Usuarios</title>
 
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
-    <link rel="stylesheet" href="/front-end/assets/css/admin/admin.css">
-    <link rel="stylesheet" href="/front-end/assets/css/admin/usuarios.css">
+    <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="/simpinna/front-end/assets/css/admin/admin.css">
+    <link rel="stylesheet" href="/simpinna/front-end/assets/css/admin/usuarios.css">
 </head>
 
 <body>
-    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header-admin.php'; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/header-admin.php'; ?>
 
     <main class="usuarios-container">
-        <a href="/front-end/frames/panel/panel-admin.php" class="btn-back-panel">
+        <a href="/simpinna/front-end/frames/panel/panel-admin.php" class="btn-back-panel">
             <i class="fa-solid fa-angle-left"></i> Regresar al Panel
         </a>
         
@@ -81,7 +80,7 @@ if (!rol_es('secretario_ejecutivo')) {
     </main>
 
     <footer>
-        <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'; ?>
+        <?php include $_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/footer.php'; ?>
     </footer>
 
     <script>
@@ -103,7 +102,7 @@ if (!rol_es('secretario_ejecutivo')) {
             lista.innerHTML = '<tr><td colspan="5" style="text-align:center;">Cargando usuarios...</td></tr>';
 
             try {
-                const response = await fetch('/back-end/routes/usuarios/gestionar.php?accion=listar');
+                const response = await fetch('/simpinna/back-end/routes/usuarios/gestionar.php?accion=listar');
                 const data = await response.json();
 
                 if (data.success) {
@@ -165,7 +164,7 @@ if (!rol_es('secretario_ejecutivo')) {
             formData.append('accion', 'crear');
 
             try {
-                const response = await fetch('/back-end/routes/usuarios/gestionar.php', {
+                const response = await fetch('/simpinna/back-end/routes/usuarios/gestionar.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -193,7 +192,7 @@ if (!rol_es('secretario_ejecutivo')) {
             formData.append('accion', 'eliminar');
             formData.append('id', id);
 
-            fetch('/back-end/routes/usuarios/gestionar.php', {
+            fetch('/simpinna/back-end/routes/usuarios/gestionar.php', {
                 method: 'POST',
                 body: formData
             })

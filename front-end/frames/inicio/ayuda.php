@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIMPINNA | Ayuda</title>
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
-    <link rel="stylesheet" href="/front-end/assets/css/global/header-responsive.css">
-    <link rel="stylesheet" href="/front-end/assets/css/global/ayuda.css">
+    <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/ayuda.css">
 </head>
 <body>
     
 <header> 
-    <?php include($_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header.php'); ?>
+    <?php include($_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/header.php'); ?>
 </header>
 
 <main class="ayuda-layout">
@@ -89,9 +88,9 @@
       </div>
       
       <div class="emergency-images">
-          <img src="/front-end/assets/img/inicio/911.png" alt="911 Emergencias" class="emg-img">
-          <img src="/front-end/assets/img/inicio/089.png" alt="089 Denuncia Anónima" class="emg-img">
-          <img src="/front-end/assets/img/global/linea de la vida.jpeg" alt="075 Línea de la Vida" class="emg-img">
+          <img src="/simpinna/front-end/assets/img/inicio/911.png" alt="911 Emergencias" class="emg-img">
+          <img src="/simpinna/front-end/assets/img/inicio/089.png" alt="089 Denuncia Anónima" class="emg-img">
+          <img src="/simpinna/front-end/assets/img/global/linea de la vida.jpeg" alt="075 Línea de la Vida" class="emg-img">
       </div>
 
       <button class="btn-directory" onclick="openContactModal()">
@@ -310,16 +309,16 @@
 </main>
 
 <footer>
-  <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'; ?>
+  <?php include $_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/footer.php'; ?>
 </footer>
 
 <script type="module">
-    import { openContactModal, closeContactModal, closeContactModalOnOverlay } from "/front-end/scripts/ayuda/modal-ayuda.js";
+    import { openContactModal, closeContactModal, closeContactModalOnOverlay } from "/simpinna/front-end/scripts/ayuda/modal-ayuda.js";
     window.openContactModal = openContactModal;
     window.closeContactModal = closeContactModal;
     window.closeContactModalOnOverlay = closeContactModalOnOverlay;
 </script>
-<script src="/front-end/scripts/header-menu.js"></script>
+<script src="/simpinna/front-end/scripts/header-menu.js"></script>
 
 </body>
 </html>

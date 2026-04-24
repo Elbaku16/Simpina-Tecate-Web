@@ -1,4 +1,4 @@
-// /front-end/scripts/admin/resultados/export-global.js
+// /simpinna/front-end/scripts/admin/resultados/export-global.js
 (function (global) {
   const ns = (global.SimpinnaResultados = global.SimpinnaResultados || {});
   const helpers = ns;

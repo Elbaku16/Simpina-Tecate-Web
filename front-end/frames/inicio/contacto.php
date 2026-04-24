@@ -9,14 +9,14 @@ $ok = $_GET['ok'] ?? null;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIMPINNA | Contáctanos</title>
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-    <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
-    <link rel="stylesheet" href="/front-end/assets/css/global/header-responsive.css">
-    <link rel="stylesheet" href="/front-end/assets/css/global/contacto.css">
+    <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/layout.css">
+
+    <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/contacto.css">
 </head>
 
 <body>
 <header>
-    <?php include($_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header.php'); ?>
+    <?php include($_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/header.php'); ?>
 </header>
 
 <main class="contacto-layout">
@@ -51,7 +51,7 @@ $ok = $_GET['ok'] ?? null;
       <?php endif; ?>
 
       <form method="post"
-            action="/back-end/routes/contacto/enviar.php"
+            action="/simpinna/back-end/routes/contacto/enviar.php"
             id="contactoForm"
             novalidate>
         
@@ -105,11 +105,11 @@ $ok = $_GET['ok'] ?? null;
 </main>
 
 <footer>
-  <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/footer.php'; ?>
+  <?php include $_SERVER['DOCUMENT_ROOT'].'/simpinna/front-end/includes/footer.php'; ?>
 </footer>
 
-<script src="/front-end/scripts/contacto/contacto.js"></script>
-<script src="/front-end/scripts/header-menu.js"></script>
+<script src="/simpinna/front-end/scripts/contacto/contacto.js"></script>
+<script src="/simpinna/front-end/scripts/header-menu.js"></script>
 
 </body>
 </html>

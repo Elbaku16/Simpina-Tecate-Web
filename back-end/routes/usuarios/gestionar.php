@@ -1,25 +1,35 @@
 <?php
 declare(strict_types=1);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
-requerir_admin(); 
-
-
-if (!rol_es('secretario_ejecutivo')) {
-    header('Location: /front-end/frames/panel/panel-admin.php');
-    exit;
-}
-
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/UsuariosAdminController.php';
-
 header('Content-Type: application/json; charset=utf-8');
 
-$controller = new UsuariosAdminController();
-$action = $_GET['accion'] ?? $_POST['accion'] ?? null;
-$response = ['success' => false];
+ini_set('display_errors', '0');
+error_reporting(E_ALL);
 
 try {
+
+    $baseBackend = __DIR__ . '/../../';
+
+    require_once $baseBackend . 'auth/verificar-sesion.php';
+    requerir_admin(); 
+
+
+    if (!rol_es('secretario_ejecutivo')) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false, 
+            'error' => 'Permiso denegado: Solo el Secretario Ejecutivo puede realizar esta acción.'
+        ]);
+        exit;
+    }
+
+    require_once $baseBackend . 'controllers/UsuariosAdminController.php';
+
+  
+    $controller = new UsuariosAdminController();
+    $action = $_GET['accion'] ?? $_POST['accion'] ?? null;
+    $response = ['success' => false];
+
     switch ($action) {
         case 'listar':
             $response = ['success' => true, 'usuarios' => $controller->listar()];
@@ -30,6 +40,7 @@ try {
             $password = $_POST['password'] ?? '';
             $nombre   = $_POST['nombre'] ?? '';
             $rol      = $_POST['rol'] ?? '';
+            
             $response = $controller->crear($usuario, $password, $nombre, $rol);
             break;
             
@@ -42,10 +53,15 @@ try {
             $response = ['success' => false, 'error' => 'Acción no válida.'];
             break;
     }
+
+    echo json_encode($response, JSON_UNESCAPED_UNICODE);
+
 } catch (Throwable $e) {
-    $response = ['success' => false, 'error' => $e->getMessage()];
+    http_response_code(500);
+    echo json_encode([
+        'success' => false, 
+        'error' => $e->getMessage()
+    ], JSON_UNESCAPED_UNICODE);
 }
-
-$conn->close();
-
-echo json_encode($response, JSON_UNESCAPED_UNICODE);
+exit;
+?>

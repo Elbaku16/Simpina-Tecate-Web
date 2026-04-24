@@ -5,8 +5,8 @@ const contenedor = document.getElementById("editorPreguntas");
 if (!contenedor) console.warn("editorPreguntas no encontrado");
 
 const NIVEL = contenedor?.dataset.nivel || "primaria";
-const API_OBTENER = `/back-end/routes/encuestas/obtener_editar.php?nivel=${encodeURIComponent(NIVEL)}`;
-const API_GUARDAR = `/back-end/routes/encuestas/guardar.php`;
+const API_OBTENER = `/simpinna/back-end/routes/encuestas/obtener_editar.php?nivel=${encodeURIComponent(NIVEL)}`;
+const API_GUARDAR = `/simpinna/back-end/routes/encuestas/guardar.php`;
 
 // Estado
 let preguntas = [];
@@ -446,7 +446,7 @@ async function guardarCambios() {
         if (data.success) {
             // Éxito
             alert("Cambios guardados correctamente");
-            window.location.href = "/front-end/frames/panel/panel-admin.php";
+            window.location.href = "/simpinna/front-end/frames/panel/panel-admin.php";
         } else {
             alert("Error al guardar: " + (data.error || "Desconocido"));
         }
@@ -475,7 +475,7 @@ function cancelarCambios() {
     // Preguntar antes de salir para evitar perder trabajo accidentalmente
     if (confirm("¿Estás seguro de cancelar? Se perderán los cambios no guardados.")) {
         // Redirigir al panel
-        window.location.href = "/front-end/frames/panel/panel-admin.php";
+        window.location.href = "/simpinna/front-end/frames/panel/panel-admin.php";
     }
 }
 

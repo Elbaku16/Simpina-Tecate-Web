@@ -10,10 +10,9 @@ $nivelTitulo = ucfirst($nivel);
   <title>SIMPINNA | Encuesta <?= htmlspecialchars($nivelTitulo) ?></title>
 
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
-  <link rel="stylesheet" href="/front-end/assets/css/global/header-responsive.css">
+  <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/layout.css">
   
-  <link rel="stylesheet" href="/front-end/assets/css/encuestas/encuestas.css">
+  <link rel="stylesheet" href="/simpinna/front-end/assets/css/encuestas/encuestas.css">
 
   <style>
     #contenedorPreguntas {
@@ -55,7 +54,7 @@ $nivelTitulo = ucfirst($nivel);
 
 <body>
 <header>
-  <?php include($_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header.php'); ?>
+  <?php include($_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/header.php'); ?>
 </header>
 
 <main>
@@ -130,7 +129,7 @@ $nivelTitulo = ucfirst($nivel);
 </div>
 
 <footer>
-  <?php include($_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer.php'); ?>
+  <?php include($_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/footer.php'); ?>
 </footer>
 
 <script>
@@ -144,10 +143,10 @@ $nivelTitulo = ucfirst($nivel);
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="/front-end/scripts/modal-escuela.js"></script>
-<script type="module" src="/front-end/scripts/encuesta.js"></script>
-<script src="/front-end/scripts/canvas/canvas-paint.mount.js"></script>
-<script src="/front-end/scripts/header-menu.js"></script>
+<script src="/simpinna/front-end/scripts/modal-escuela.js"></script>
+<script type="module" src="/simpinna/front-end/scripts/encuesta.js"></script>
+<script src="/simpinna/front-end/scripts/canvas/canvas-paint.mount.js"></script>
+<script src="/simpinna/front-end/scripts/header-menu.js"></script>
 
 </body>
 </html>

@@ -1,20 +1,29 @@
 <?php
-$servername = "sql107.infinityfree.com";
-$username   = "if0_40468916";
-$password   = "cugiL98bGoD0";
-$dbname     = "if0_40468916_simpinna";
+require_once __DIR__ . '/../core/env_loader.php';
 
-// Reportar errores de forma estricta
+
+try {
+    cargarEnv(__DIR__ . '/../../.env');
+} catch (Exception $e) {
+    die("Error de configuración: " . $e->getMessage());
+}
+
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 try {
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    // 3. Usamos getenv()
+    $conn = new mysqli(
+        getenv('DB_HOST'), 
+        getenv('DB_USER'), 
+        getenv('DB_PASS'), 
+        getenv('DB_NAME')
+    );
     
-    // Configuración de caracteres
-    $conn->set_charset("utf8mb4");
+    $charset = getenv('DB_CHARSET') ?: 'utf8mb4';
+    $conn->set_charset($charset);
 
 } catch (mysqli_sql_exception $e) {
-    die($e->getMessage());
+    error_log("Error DB: " . $e->getMessage()); 
+    die("Error al conectar con la base de datos.");
 }
 ?>
