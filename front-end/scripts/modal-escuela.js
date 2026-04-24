@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 3. Función para cargar escuelas
     async function cargarEscuelas() {
         try {
-            const res = await fetch('/simpinna/back-end/routes/contacto/listar-opciones.php');
+            const res = await fetch(window.BASE_URL + '/back-end/routes/contacto/listar-opciones.php');
             const data = await res.json();
 
             if (data.ok) {
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Botón cerrar modal
     if (btnClose) {
         btnClose.addEventListener('click', () => {
-            window.location.href = '/simpinna/front-end/frames/inicio/seleccion-encuesta.php';
+            window.location.href = window.BASE_URL + '/front-end/frames/inicio/seleccion-encuesta.php';
         });
     }
 

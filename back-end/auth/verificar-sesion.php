@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../front-end/includes/config.php';
+
 if (file_exists(__DIR__ . '/../core/bootstrap_session.php')) {
     require_once __DIR__ . '/../core/bootstrap_session.php';
 } else {
@@ -73,13 +75,13 @@ function requerir_admin(): void
     // 1. Si no está logueado -> Login
     if (!usuario_autenticado()) {
         // Ajusta esta ruta si tu login está en otro lado
-        header('Location: /simpinna/front-end/frames/admin/login.php');
+        header('Location: ' . FRAMES_URL . 'admin/login.php');
         exit;
     }
     
     // 2. Si está logueado pero no tiene permiso de ver panel -> Inicio
     if (!tiene_permiso('ver_panel')) {
-         header('Location: /simpinna/front-end/frames/inicio/inicio.php');
+         header('Location: ' . FRAMES_URL . 'inicio/inicio.php');
          exit;
     }
 }

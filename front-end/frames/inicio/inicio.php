@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../includes/config.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
 
-    <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/layout.css">
+    <link rel="stylesheet" href="<?php echo CSS_URL; ?>global/layout.css">
 
-    <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/lenin.css"> <title>SIMPINNA | Inicio</title>
+    <link rel="stylesheet" href="<?php echo CSS_URL; ?>global/lenin.css"> <title>SIMPINNA | Inicio</title>
 </head>
 <body>
     <header> 
-        <?php include($_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/header.php'); ?>
+        <?php require_once __DIR__ . '/../../includes/header.php'; ?>
     </header>
     
     <main>
@@ -23,14 +24,14 @@
                     <p class="hero-subtitle">Velamos por el bienestar y los derechos de la niñez y adolescencia en Tecate, construyendo un entorno seguro para su desarrollo.</p>
                     
                     <div class="hero-buttons">
-                        <a href="/simpinna/front-end/frames/inicio/seleccion-encuesta.php" class="btn-primary">
+                        <a href="<?php echo FRAMES_URL; ?>inicio/seleccion-encuesta.php" class="btn-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M9 11l3 3L22 4"></path>
                                 <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
                             </svg>
                             Contestar encuesta
                         </a>
-                        <a href="/simpinna/front-end/frames/inicio/contacto.php" class="btn-secondary">
+                        <a href="<?php echo FRAMES_URL; ?>inicio/contacto.php" class="btn-secondary">
                             Contáctanos
                         </a>
                     </div>
@@ -117,7 +118,7 @@
                             </li>
                         </ul>
 
-                        <a href="/simpinna/front-end/frames/inicio/seleccion-encuesta.php" class="btn-primary">
+                        <a href="<?php echo FRAMES_URL; ?>inicio/seleccion-encuesta.php" class="btn-primary">
                             Iniciar encuesta ahora <i class="fa-solid fa-arrow-pointer"></i>
                         </a>
                     </div>
@@ -143,7 +144,7 @@
                     <h2>¿Necesitas ayuda o quieres reportar algo?</h2>
                     <p>Si conoces alguna situación de riesgo o vulneración de derechos, repórtala de manera segura.</p>
 
-                    <a href="/simpinna/front-end/frames/inicio/contacto.php" class="btn-outline-white">
+                    <a href="<?php echo FRAMES_URL; ?>inicio/contacto.php" class="btn-outline-white">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"></path>
                         </svg>
@@ -155,10 +156,10 @@
     </main>
 
     <footer>
-        <?php include($_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/footer.php'); ?>
+        <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
     </footer>
 
-    <script src="/simpinna/front-end/scripts/header-menu.js"></script>
+    <script src="<?php echo JS_URL; ?>header-menu.js"></script>
       <script src="https://kit.fontawesome.com/cba4ea3b6f.js" crossorigin="anonymous"></script>
 
 </body>

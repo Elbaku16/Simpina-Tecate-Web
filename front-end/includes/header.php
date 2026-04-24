@@ -1,10 +1,11 @@
 <?php
-  $currentPage = $_SERVER['REQUEST_URI'];
+require_once __DIR__ . '/config.php';
+$currentPage = $_SERVER['REQUEST_URI'];
 ?>
-
+<script>window.BASE_URL = '<?php echo BASE_URL; ?>';</script>
 <header class="header">
   <div class="header-izq">
-      <img src="/simpinna/front-end/assets/img/global/logo-simpinna.png" 
+      <img src="<?php echo IMG_URL; ?>global/logo-simpinna.png"
            alt="Logo SIMPINNA" class="logo-simpinna">
   </div>
 
@@ -12,25 +13,25 @@
   <nav class="header-nav">
     <ul>    
         <li>
-          <a href="/simpinna/front-end/frames/inicio/inicio.php"
+          <a href="<?php echo FRAMES_URL; ?>inicio/inicio.php"
              class="<?php echo (strpos($currentPage, 'inicio.php') !== false) ? 'active' : ''; ?>">
              Inicio
           </a>
         </li>
         <li>
-          <a href="/simpinna/front-end/frames/inicio/seleccion-encuesta.php"
+          <a href="<?php echo FRAMES_URL; ?>inicio/seleccion-encuesta.php"
              class="<?php echo (strpos($currentPage, 'encuesta.php') !== false || strpos($currentPage, 'demo-encuestas.php') !== false) ? 'active' : ''; ?>">
              Encuesta
           </a>
         </li>
         <li>
-          <a href="/simpinna/front-end/frames/inicio/contacto.php"
+          <a href="<?php echo FRAMES_URL; ?>inicio/contacto.php"
              class="<?php echo (strpos($currentPage, 'contacto.php') !== false) ? 'active' : ''; ?>">
              Contáctanos
           </a>
         </li>
         <li>
-          <a href="/simpinna/front-end/frames/inicio/ayuda.php"
+          <a href="<?php echo FRAMES_URL; ?>inicio/ayuda.php"
              class="<?php echo (strpos($currentPage, 'ayuda.php') !== false) ? 'active' : ''; ?>">
              Ayuda
           </a>
@@ -48,7 +49,7 @@
   </button>
 
   <div class="header-der">
-      <img src="/simpinna/front-end/assets/img/global/gobierno-logo.png" 
+      <img src="<?php echo IMG_URL; ?>global/gobierno-logo.png"
            alt="Logo Gobierno Tecate" class="logo-gobierno">
   </div>
 </header>
@@ -67,7 +68,7 @@
   <nav class="mobile-nav">
     <ul>
       <li>
-        <a href="/simpinna/front-end/frames/inicio/inicio.php"
+        <a href="<?php echo FRAMES_URL; ?>inicio/inicio.php"
            class="<?php echo (strpos($currentPage, 'inicio.php') !== false) ? 'active' : ''; ?>">
            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
              <path d="M3 10 L10 3 L17 10 L17 17 L3 17 Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -76,7 +77,7 @@
         </a>
       </li>
       <li>
-        <a href="/simpinna/front-end/frames/inicio/seleccion-encuesta.php"
+        <a href="<?php echo FRAMES_URL; ?>inicio/seleccion-encuesta.php"
            class="<?php echo (strpos($currentPage, 'encuesta.php') !== false || strpos($currentPage, 'demo-encuestas.php') !== false) ? 'active' : ''; ?>">
            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
              <path d="M6 3 L14 3 L14 17 L6 17 Z M9 7 L11 7 M9 10 L13 10 M9 13 L12 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -85,7 +86,7 @@
         </a>
       </li>
       <li>
-        <a href="/simpinna/front-end/frames/inicio/contacto.php"
+        <a href="<?php echo FRAMES_URL; ?>inicio/contacto.php"
            class="<?php echo (strpos($currentPage, 'contacto.php') !== false) ? 'active' : ''; ?>">
            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
              <path d="M3 6 L17 6 L17 14 L3 14 Z M3 6 L10 11 L17 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -94,7 +95,7 @@
         </a>
       </li>
       <li>
-        <a href="/simpinna/front-end/frames/inicio/ayuda.php"
+        <a href="<?php echo FRAMES_URL; ?>inicio/ayuda.php"
            class="<?php echo (strpos($currentPage, 'ayuda.php') !== false) ? 'active' : ''; ?>">
            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
              <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>

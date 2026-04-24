@@ -7,14 +7,12 @@ error_reporting(E_ALL);
 
 $baseBackend = __DIR__ . '/../../';
 
-
 require_once $baseBackend . 'core/bootstrap_session.php';
 require_once $baseBackend . 'controllers/AuthController.php';
-
-
+require_once __DIR__ . '/../../../front-end/includes/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /simpinna/front-end/frames/admin/login.php?m=' . urlencode('Método no permitido'));
+    header('Location: ' . FRAMES_URL . 'admin/login.php?m=' . urlencode('Método no permitido'));
     exit;
 }
 
@@ -26,7 +24,7 @@ try {
 
     // CASO A: Login Correcto
     if (isset($res['success']) && $res['success'] === true) {
-        header('Location: /simpinna/front-end/frames/panel/panel-admin.php');
+        header('Location: ' . FRAMES_URL . 'panel/panel-admin.php');
         exit;
     }
 
@@ -42,12 +40,12 @@ try {
         default        => 'Ocurrió un error inesperado.'
     };
 
-    header('Location: /simpinna/front-end/frames/admin/login.php?m=' . urlencode($mensaje));
+    header('Location: ' . FRAMES_URL . 'admin/login.php?m=' . urlencode($mensaje));
     exit;
 
 } catch (Exception $e) {
     error_log("Error critico en login: " . $e->getMessage());
-    header('Location: /simpinna/front-end/frames/admin/login.php?m=' . urlencode('Error del sistema. Contacte soporte.'));
+    header('Location: ' . FRAMES_URL . 'admin/login.php?m=' . urlencode('Error del sistema. Contacte soporte.'));
     exit;
 }
 ?>

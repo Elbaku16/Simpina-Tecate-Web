@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/config.php';
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
@@ -23,10 +24,11 @@ $isLoginPage = (strpos($currentScript, '/frames/admin/login.php') !== false);
 $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
 ?>
 
+<script>window.BASE_URL = '<?php echo BASE_URL; ?>';</script>
 <header class="header header-admin">
   
   <div class="header-izq">
-    <img src="/simpinna/front-end/assets/img/global/logo-simpinna.png" alt="Logo SIMPINNA" class="logo-simpinna">
+    <img src="<?php echo IMG_URL; ?>global/logo-simpinna.png" alt="Logo SIMPINNA" class="logo-simpinna">
     
     <?php if ($esUsuarioAdmin): ?>
     <div class="admin-info-desktop">
@@ -34,7 +36,7 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
             <i class="fa-solid fa-user"></i> 
             <?php echo htmlspecialchars($textoUsuario); ?>
         </span>
-        <a href="/simpinna/back-end/routes/auth/logout.php" class="btn-logout">
+        <a href="<?php echo API_URL; ?>auth/logout.php" class="btn-logout">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
         </a>
     </div>
@@ -54,7 +56,7 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
       </svg>
     </button>
 
-    <img src="/simpinna/front-end/assets/img/global/gobierno-logo.png" alt="Logo Gobierno Tecate" class="logo-gobierno">
+    <img src="<?php echo IMG_URL; ?>global/gobierno-logo.png" alt="Logo Gobierno Tecate" class="logo-gobierno">
   </div>
   
   <script src="https://kit.fontawesome.com/cba4ea3b6f.js" crossorigin="anonymous"></script>
@@ -80,7 +82,7 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
                 <i class="fa-solid fa-user"></i> 
                 <?php echo htmlspecialchars($textoUsuario); ?>
             </span>
-            <a href="/simpinna/back-end/routes/auth/logout.php" class="mobile-btn-logout">
+            <a href="<?php echo API_URL; ?>auth/logout.php" class="mobile-btn-logout">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
             </a>
         </div>

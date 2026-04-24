@@ -5,11 +5,10 @@ error_reporting(E_ALL);
 
 
 require_once __DIR__ . '/../../../back-end/auth/verificar-sesion.php';
+require_once __DIR__ . '/../../includes/config.php';
 
-// Si ya hay sesión activa → redirigir
 if (usuario_autenticado() && rol_es('admin')) {
-    // Usamos ruta relativa para el header también, o ruta absoluta web
-    header('Location: /simpinna/front-end/frames/panel/panel-admin.php');
+    header('Location: ' . FRAMES_URL . 'panel/panel-admin.php');
     exit;
 }
 
@@ -57,7 +56,7 @@ include __DIR__ . '/../../includes/header-admin.php';
       </div>
     <?php endif; ?>
 
-    <form class="login-form" method="POST" action="/simpinna/back-end/routes/auth/login.php">
+    <form class="login-form" method="POST" action="<?php echo API_URL; ?>auth/login.php">
       <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token); ?>">
 
       <div class="form-group">
