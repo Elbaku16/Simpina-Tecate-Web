@@ -1,4 +1,4 @@
-// /front-end/scripts/admin/resultados/graficas.js
+// /simpinna/front-end/scripts/admin/resultados/graficas.js
 (function (global) {
   const ns = (global.SimpinnaResultados = global.SimpinnaResultados || {});
   ns.charts = ns.charts || {};

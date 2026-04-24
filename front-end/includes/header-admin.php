@@ -26,7 +26,7 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
 <header class="header header-admin">
   
   <div class="header-izq">
-    <img src="/front-end/assets/img/global/logo-simpinna.png" alt="Logo SIMPINNA" class="logo-simpinna">
+    <img src="/simpinna/front-end/assets/img/global/logo-simpinna.png" alt="Logo SIMPINNA" class="logo-simpinna">
     
     <?php if ($esUsuarioAdmin): ?>
     <div class="admin-info-desktop">
@@ -34,7 +34,7 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
             <i class="fa-solid fa-user"></i> 
             <?php echo htmlspecialchars($textoUsuario); ?>
         </span>
-        <a href="/back-end/routes/auth/logout.php" class="btn-logout">
+        <a href="/simpinna/back-end/routes/auth/logout.php" class="btn-logout">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
         </a>
     </div>
@@ -54,7 +54,7 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
       </svg>
     </button>
 
-    <img src="/front-end/assets/img/global/gobierno-logo.png" alt="Logo Gobierno Tecate" class="logo-gobierno">
+    <img src="/simpinna/front-end/assets/img/global/gobierno-logo.png" alt="Logo Gobierno Tecate" class="logo-gobierno">
   </div>
   
   <script src="https://kit.fontawesome.com/cba4ea3b6f.js" crossorigin="anonymous"></script>
@@ -80,7 +80,7 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
                 <i class="fa-solid fa-user"></i> 
                 <?php echo htmlspecialchars($textoUsuario); ?>
             </span>
-            <a href="/back-end/routes/auth/logout.php" class="mobile-btn-logout">
+            <a href="/simpinna/back-end/routes/auth/logout.php" class="mobile-btn-logout">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
             </a>
         </div>

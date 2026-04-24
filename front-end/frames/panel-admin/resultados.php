@@ -1,11 +1,7 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/back-end/auth/verificar-sesion.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/simpinna/back-end/auth/verificar-sesion.php';
 requerir_admin();
 
-// Estas variables ya vienen desde el controlador:
-// $nivelNombre, $escuelaFiltro, $escuelasDelNivel
-// $preguntas, $opcionesPorPregunta, $palette
-// $cicloFiltro, $generoFiltro, $ciclosDisponibles, $totalRespuestas
 
 $nombresBonitos = [
     'preescolar'   => 'Preescolar',
@@ -25,10 +21,10 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
   <title>Resultados <?php echo $nombreNivel; ?> | Panel Admin</title>
   
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
-  <link rel="stylesheet" href="/front-end/assets/css/admin/admin.css">
-  <link rel="stylesheet" href="/front-end/assets/css/admin/resultados.css">
-  <link rel="stylesheet" href="/front-end/assets/css/admin/modal-respuestas.css">
+  <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/layout.css">
+  <link rel="stylesheet" href="/simpinna/front-end/assets/css/admin/admin.css">
+  <link rel="stylesheet" href="/simpinna/front-end/assets/css/admin/resultados.css">
+  <link rel="stylesheet" href="/simpinna/front-end/assets/css/admin/modal-respuestas.css">
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
@@ -126,10 +122,10 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
 
 </head>
 <body>
-  <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/header-admin.php'; ?>
+  <?php include $_SERVER['DOCUMENT_ROOT'].'/simpinna/front-end/includes/header-admin.php'; ?>
 
   <div class="toolbar">
-    <a class="btn" href="/front-end/frames/panel/panel-admin.php"><i class="fa-solid fa-angle-left"></i> Regresar al Panel</a>
+    <a class="btn" href="/simpinna/front-end/frames/panel/panel-admin.php"><i class="fa-solid fa-angle-left"></i> Regresar al Panel</a>
 
     <div class="export-controls">
       <span class="export-legend">
@@ -422,13 +418,13 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
     </div>
   </div>
 
-  <?php include $_SERVER['DOCUMENT_ROOT'].'/front-end/includes/footer-admin.php'; ?>
+  <?php include $_SERVER['DOCUMENT_ROOT'].'/simpinna/front-end/includes/footer-admin.php'; ?>
 
-  <script src="/front-end/scripts/admin/resultados/helpers.js"></script>
-  <script src="/front-end/scripts/admin/resultados/graficas.js"></script>
-  <script src="/front-end/scripts/admin/resultados/export-pregunta.js"></script>
-  <script src="/front-end/scripts/admin/resultados/export-global.js"></script>
-  <script src="/front-end/scripts/admin/resultados/modal-respuestas.js"></script>
+  <script src="/simpinna/front-end/scripts/admin/resultados/helpers.js"></script>
+  <script src="/simpinna/front-end/scripts/admin/resultados/graficas.js"></script>
+  <script src="/simpinna/front-end/scripts/admin/resultados/export-pregunta.js"></script>
+  <script src="/simpinna/front-end/scripts/admin/resultados/export-global.js"></script>
+  <script src="/simpinna/front-end/scripts/admin/resultados/modal-respuestas.js"></script>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

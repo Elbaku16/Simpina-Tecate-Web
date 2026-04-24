@@ -1,36 +1,53 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/core/bootstrap_session.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/AuthController.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php'; 
+declare(strict_types=1);
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+
+$baseBackend = __DIR__ . '/../../';
+
+
+require_once $baseBackend . 'core/bootstrap_session.php';
+require_once $baseBackend . 'controllers/AuthController.php';
+
+
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    $conn->close();
-    // CORRECCIÓN: Cambié 'e=metodo' por 'm=...' para que el frontend lo detecte
-    header('Location: /front-end/frames/admin/login.php?m=' . urlencode('Método no permitido'));
+    header('Location: /simpinna/front-end/frames/admin/login.php?m=' . urlencode('Método no permitido'));
     exit;
 }
 
-$controller = new AuthController();
-$res = $controller->login($_POST);
+try {
 
-// Si login correcto
-if ($res['success']) {
-    $conn->close(); 
-    header('Location: /front-end/frames/panel/panel-admin.php');
+    $controller = new AuthController();
+    
+    $res = $controller->login($_POST);
+
+    // CASO A: Login Correcto
+    if (isset($res['success']) && $res['success'] === true) {
+        header('Location: /simpinna/front-end/frames/panel/panel-admin.php');
+        exit;
+    }
+
+   
+    $errorKey = $res['error'] ?? 'default';
+
+    $mensaje = match($errorKey) {
+        'csrf'         => 'Error de seguridad (token inválido). Recarga e intenta de nuevo.',
+        'vacio'        => 'Por favor completa todos los campos.',
+        'credenciales' => 'Usuario o contraseña incorrectos.',
+        'bloqueo'      => 'Has excedido el número de intentos. Espera unos minutos.',
+        'db_error'     => 'Error de conexión con la base de datos.',
+        default        => 'Ocurrió un error inesperado.'
+    };
+
+    header('Location: /simpinna/front-end/frames/admin/login.php?m=' . urlencode($mensaje));
+    exit;
+
+} catch (Exception $e) {
+    error_log("Error critico en login: " . $e->getMessage());
+    header('Location: /simpinna/front-end/frames/admin/login.php?m=' . urlencode('Error del sistema. Contacte soporte.'));
     exit;
 }
-
-// Mensajes de error
-$mensaje = match($res['error']) {
-    'csrf'        => 'Error de seguridad. Intenta de nuevo.',
-    'credenciales'=> 'Usuario o contraseña incorrectos.',
-    'bloqueo'     => 'Demasiados intentos fallidos. Intenta en unos minutos.',
-    'metodo'      => 'Método inválido.',
-    default       => 'Ocurrió un error inesperado.'
-};
-
-$conn->close();
-
-// Esto ya estaba bien, coincide con tu frontend
-header('Location: /front-end/frames/admin/login.php?m=' . urlencode($mensaje));
-exit;
+?>

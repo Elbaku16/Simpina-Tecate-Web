@@ -1,21 +1,44 @@
 <?php
 declare(strict_types=1);
-$start = microtime(true);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/EncuestasController.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 
-$nivel = $_GET['nivel'] ?? 'primaria';
+try {
 
-$controller = new EncuestasController();
-$data = $controller->obtenerEncuestaPorNivel($nivel);
+    $basePath = __DIR__ . '/../../'; 
 
-$phpTime = microtime(true) - $start;
+    $pathController = $basePath . 'controllers/EncuestasController.php';
 
-// CERRAR la conexión ANTES de enviar respuesta
-$conn->close();
+    if (!file_exists($pathController)) {
+        throw new Exception("No encuentro el controlador en: $pathController");
+    }
 
-echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    require_once $pathController;
+
+
+    
+    $nivel = $_GET['nivel'] ?? 'primaria';
+
+    $controller = new EncuestasController();
+    $data = $controller->obtenerEncuestaPorNivel($nivel);
+
+
+
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+
+} catch (Throwable $e) {
+    
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "message" => $e->getMessage(),
+        "file" => $e->getFile(), // Solo para debug
+        "line" => $e->getLine()  // Solo para debug
+    ]);
+}
 exit;
+?>

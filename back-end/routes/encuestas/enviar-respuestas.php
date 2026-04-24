@@ -1,64 +1,54 @@
 <?php
 declare(strict_types=1);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/core/bootstrap_session.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/EncuestasController.php';
+ini_set('display_errors', '0');
+error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Validar método
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    $conn->close();
-    echo json_encode([
-        'success' => false,
-        'error'   => 'Metodo no permitido'
-    ]);
-    exit;
-}
-
-// Obtener JSON crudo
-$rawBody = file_get_contents('php://input');
-$payload = json_decode($rawBody, true);
-
-// Validar JSON
-if (!is_array($payload)) {
-    $conn->close();
-    echo json_encode([
-        'success' => false,
-        'error'   => 'JSON inválido'
-    ]);
-    exit;
-}
-
-// Validación básica
-if (!isset($payload['id_encuesta'])) {
-    $conn->close();
-    echo json_encode([
-        'success' => false,
-        'error'   => 'Falta id_encuesta'
-    ]);
-    exit;
-}
-
 try {
+   
+    $baseBackend = __DIR__ . '/../../';
+
+    if (!file_exists($baseBackend . 'core/bootstrap_session.php')) {
+        throw new Exception("Error interno: Estructura de carpetas inválida.");
+    }
+
+    require_once $baseBackend . 'core/bootstrap_session.php';
+    require_once $baseBackend . 'controllers/EncuestasController.php';
+
+   
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Método no permitido', 405);
+    }
+
+    $rawBody = file_get_contents('php://input');
+    $payload = json_decode($rawBody, true);
+
+    if (!is_array($payload)) {
+        throw new Exception('JSON inválido o mal formado');
+    }
+
+    if (!isset($payload['id_encuesta'])) {
+        throw new Exception('Falta el ID de la encuesta');
+    }
+
+
     $controller = new EncuestasController();
     $resultado  = $controller->enviarRespuestas($payload);
 
-    // CERRAR antes de responder
-    $conn->close();
     echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
 
 } catch (Throwable $e) {
-
-    // CERRAR incluso en excepción
-    $conn->close();
+    // Si la excepción tiene código HTTP (como 405), lo usamos
+    $code = $e->getCode();
+    http_response_code(($code >= 400 && $code < 600) ? $code : 500);
 
     echo json_encode([
         'success' => false,
         'error'   => 'Error interno',
         'detalle' => $e->getMessage()
-    ]);
+    ], JSON_UNESCAPED_UNICODE);
 }
-
 exit;
+?>

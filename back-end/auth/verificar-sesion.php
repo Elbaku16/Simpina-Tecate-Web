@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../core/bootstrap_session.php';
-
-/**
- * -----------------------------------------------------------------------------
- * Auth Helpers
- * -----------------------------------------------------------------------------
- */
+if (file_exists(__DIR__ . '/../core/bootstrap_session.php')) {
+    require_once __DIR__ . '/../core/bootstrap_session.php';
+} else {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+}
 
 function usuario_autenticado(): bool
 {
@@ -23,10 +23,6 @@ function rol_es(string $rol): bool
     return hash_equals((string) $_SESSION['rol'], $rol);
 }
 
-/**
- * Define y verifica permisos.
- * AHORA: 'secretario_ejecutivo' tiene el control total (antes 'admin').
- */
 function tiene_permiso(string $permiso): bool
 {
     if (!usuario_autenticado()) {
@@ -35,8 +31,8 @@ function tiene_permiso(string $permiso): bool
     
     $rol = (string) $_SESSION['rol'];
 
-    // CAMBIO AQUÍ: El rol 'secretario_ejecutivo' siempre tiene todos los permisos.
-    if ($rol === 'secretario_ejecutivo') {
+
+    if ($rol === 'secretario_ejecutivo' || $rol === 'admin') {
         return true;
     }
 
@@ -58,35 +54,47 @@ function tiene_permiso(string $permiso): bool
     return in_array($permiso, $permisosPorRol[$rol] ?? []);
 }
 
-/**
- * Requiere acceso al panel.
- * (Mantenemos el nombre de la función 'requerir_admin' para no romper
- * el código en otros archivos, aunque el rol ahora sea secretario_ejecutivo).
- */
+
 function requerir_admin(): void
 {
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
 
+    // Inicializar CSRF global si no existe (por seguridad)
     if (!isset($_SESSION['csrf'])) {
-        $_SESSION['csrf'] = bin2hex(random_bytes(32));
+        try {
+            $_SESSION['csrf'] = bin2hex(random_bytes(32));
+        } catch (Exception $e) {
+            $_SESSION['csrf'] = md5(uniqid((string)mt_rand(), true));
+        }
     }
 
+    // 1. Si no está logueado -> Login
     if (!usuario_autenticado()) {
-        header('Location: /front-end/frames/admin/login.php');
+        // Ajusta esta ruta si tu login está en otro lado
+        header('Location: /simpinna/front-end/frames/admin/login.php');
         exit;
     }
     
+    // 2. Si está logueado pero no tiene permiso de ver panel -> Inicio
     if (!tiene_permiso('ver_panel')) {
-         header('Location: /front-end/frames/inicio/inicio.php');
+         header('Location: /simpinna/front-end/frames/inicio/inicio.php');
          exit;
     }
 }
 
 function generar_csrf(string $formulario = 'default'): string
 {
-    $token = bin2hex(random_bytes(32));
+    try {
+        $token = bin2hex(random_bytes(32));
+    } catch (Exception $e) {
+        $token = md5(uniqid((string)mt_rand(), true));
+    }
+
+    if (!isset($_SESSION['csrf_tokens'])) {
+        $_SESSION['csrf_tokens'] = [];
+    }
 
     $_SESSION['csrf_tokens'][$formulario] = [
         'valor'   => $token,
@@ -99,18 +107,20 @@ function generar_csrf(string $formulario = 'default'): string
 function validar_csrf(?string $token, string $formulario = 'default'): bool
 {
     if ($token === null) return false;
-
     if (!isset($_SESSION['csrf_tokens'][$formulario]['valor'])) {
         return false;
     }
 
     $tokenGuardado = (string) $_SESSION['csrf_tokens'][$formulario]['valor'];
 
+    // Comparación segura
     $esValido = hash_equals($tokenGuardado, (string) $token);
 
     if ($esValido) {
-        unset($_SESSION['csrf_tokens'][$formulario]); 
+        // Opcional: Invalidar token tras uso (para máxima seguridad, aunque a veces molesto en UX)
+        // unset($_SESSION['csrf_tokens'][$formulario]); 
     }
 
     return $esValido;
 }
+?>

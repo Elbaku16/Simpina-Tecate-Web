@@ -52,7 +52,7 @@
     });
 
     // Peticion AJAX
-    fetch(`/back-end/routes/resultados/respuestas_texto.php?${params}`)
+    fetch(`/simpinna/back-end/routes/resultados/respuestas_texto.php?${params}`)
       .then(res => res.json())
       .then(data => {
         if (!data.success) {
@@ -358,7 +358,7 @@ function generarCardTexto(resp) {
     formData.append('accion', 'eliminar');
     formData.append('id_respuesta', idRespuesta);
 
-    fetch('/back-end/routes/resultados/respuestas_texto.php', {
+    fetch('/simpinna/back-end/routes/resultados/respuestas_texto.php', {
       method: 'POST',
       body: formData
     })

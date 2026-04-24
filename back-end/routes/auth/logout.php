@@ -1,13 +1,26 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/core/bootstrap_session.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/AuthController.php';
+declare(strict_types=1);
 
-$controller = new AuthController();
-$controller->logout();
 
-// Cerrar la conexión ANTES de redirigir
-$conn->close();
+$baseBackend = __DIR__ . '/../../';
 
-header('Location: /front-end/frames/inicio/inicio.php');
+
+require_once $baseBackend . 'core/bootstrap_session.php';
+require_once $baseBackend . 'controllers/AuthController.php';
+
+
+try {
+    $controller = new AuthController();
+    
+    $controller->logout();
+
+} catch (Exception $e) {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_destroy();
+    }
+}
+
+
+header('Location: /simpinna/front-end/frames/inicio/inicio.php');
 exit;
+?>

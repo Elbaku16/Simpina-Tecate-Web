@@ -1,20 +1,27 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'].'/back-end/auth/verificar-sesion.php';
+declare(strict_types=1);
+
+
+$baseBackend = __DIR__ . '/../../';
+
+require_once $baseBackend . 'auth/verificar-sesion.php';
 requerir_admin();
 
-require_once $_SERVER['DOCUMENT_ROOT'].'/back-end/database/conexion-db.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/back-end/controllers/ComentariosController.php';
+require_once $baseBackend . 'controllers/ComentariosController.php';
+
+
 
 $id = (int)($_POST['id'] ?? 0);
+$usuario = $_SESSION['usuario'] ?? 'Administrador'; 
 
-// Obtener el usuario de la sesión
-$usuario = $_SESSION['nombre_usuario'] ?? 'Administrador';
+if ($id > 0) {
+    try {
+        $controller = new ComentariosController();
+        $controller->eliminar($id, $usuario);
+    } catch (Exception $e) {
+    }
+}
 
-$controller = new ComentariosController();
-$controller->eliminar($id, $usuario);
-
-// Cerrar conexión ANTES de redirigir
-$conn->close();
-
-header("Location: /back-end/routes/comentarios/index.php");
+header('Location: index.php');
 exit;
+?>

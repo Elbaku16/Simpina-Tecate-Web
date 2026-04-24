@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/simpinna/back-end/auth/verificar-sesion.php';
 requerir_admin();
 ?>
 <!DOCTYPE html>
@@ -10,15 +10,15 @@ requerir_admin();
   <title>SIMPINNA | Panel administrativo</title>
 
   <link rel="stylesheet" href="https://framework-gb.cdn.gob.mx/gm/v3/assets/styles/main.css">
-  <link rel="stylesheet" href="/front-end/assets/css/global/layout.css">
-  <link rel="stylesheet" href="/front-end/assets/css/admin/admin.css">
+  <link rel="stylesheet" href="/simpinna/front-end/assets/css/global/layout.css">
+  <link rel="stylesheet" href="/simpinna/front-end/assets/css/admin/admin.css">
 
 
 </head>
 
 <body>
 
-  <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/header-admin.php'; ?>
+  <?php include $_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/header-admin.php'; ?>
 
   <main class="admin-encuestas">
 
@@ -83,12 +83,12 @@ requerir_admin();
           </svg>
           <h2>Preescolar</h2>
 
-          <a href="/back-end/routes/resultados/index.php?nivel=preescolar" class="btn-ver">
+          <a href="/simpinna/back-end/routes/resultados/index.php?nivel=preescolar" class="btn-ver">
             Ver resultados
           </a>
 
           <?php if (tiene_permiso('modificar_encuesta')): ?>
-          <a href="/front-end/frames/panel-admin/editar.php?nivel=preescolar" class="btn-editar">
+          <a href="/simpinna/front-end/frames/panel-admin/editar.php?nivel=preescolar" class="btn-editar">
             Modificar encuesta
           </a>
           <?php endif; ?>
@@ -118,12 +118,12 @@ requerir_admin();
           </svg>
           <h2>Primaria</h2>
 
-          <a href="/back-end/routes/resultados/index.php?nivel=primaria" class="btn-ver">
+          <a href="/simpinna/back-end/routes/resultados/index.php?nivel=primaria" class="btn-ver">
             Ver resultados
           </a>
           
           <?php if (tiene_permiso('modificar_encuesta')): ?>
-          <a href="/front-end/frames/panel-admin/editar.php?nivel=primaria" class="btn-editar">
+          <a href="/simpinna/front-end/frames/panel-admin/editar.php?nivel=primaria" class="btn-editar">
             Modificar encuesta
           </a>
           <?php endif; ?>
@@ -165,12 +165,12 @@ requerir_admin();
           </svg>
           <h2>Secundaria</h2>
 
-          <a href="/back-end/routes/resultados/index.php?nivel=secundaria" class="btn-ver">
+          <a href="/simpinna/back-end/routes/resultados/index.php?nivel=secundaria" class="btn-ver">
             Ver resultados
           </a>
 
           <?php if (tiene_permiso('modificar_encuesta')): ?>
-          <a href="/front-end/frames/panel-admin/editar.php?nivel=secundaria" class="btn-editar">
+          <a href="/simpinna/front-end/frames/panel-admin/editar.php?nivel=secundaria" class="btn-editar">
             Modificar encuesta
           </a>
           <?php endif; ?>
@@ -183,12 +183,12 @@ requerir_admin();
           </svg>
           <h2>Preparatoria</h2>
 
-          <a href="/back-end/routes/resultados/index.php?nivel=preparatoria" class="btn-ver">
+          <a href="/simpinna/back-end/routes/resultados/index.php?nivel=preparatoria" class="btn-ver">
             Ver resultados
           </a>
 
           <?php if (tiene_permiso('modificar_encuesta')): ?>
-          <a href="/front-end/frames/panel-admin/editar.php?nivel=preparatoria" class="btn-editar">
+          <a href="/simpinna/front-end/frames/panel-admin/editar.php?nivel=preparatoria" class="btn-editar">
             Modificar encuesta
           </a>
           <?php endif; ?>
@@ -208,7 +208,7 @@ requerir_admin();
         <h2>Reportes y Comentarios</h2>
         <p>Revisa y gestiona los reportes enviados desde el formulario de contacto</p>
 
-        <a href="/back-end/routes/comentarios/index.php" class="btn-comentarios">
+        <a href="/simpinna/back-end/routes/comentarios/index.php" class="btn-comentarios">
           Ver todos los comentarios
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -231,7 +231,7 @@ requerir_admin();
         <h2>Códigos QR de Encuestas</h2>
         <p>Genera códigos QR para acceso rápido a las encuestas desde dispositivos móviles</p>
 
-        <a href="/front-end/frames/panel-admin/generar-qr.php" class="btn-comentarios">
+        <a href="/simpinna/front-end/frames/panel-admin/generar-qr.php" class="btn-comentarios">
           Generar Códigos QR
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -252,7 +252,7 @@ requerir_admin();
         <h2>Administrar Credenciales</h2>
         <p>Crea, modifica o elimina las cuentas de acceso al panel administrativo (Solo secretario ejecutivo)</p>
 
-        <a href="/front-end/frames/panel-admin/usuarios.php" class="btn-comentarios">
+        <a href="/simpinna/front-end/frames/panel-admin/usuarios.php" class="btn-comentarios">
             Gestionar Usuarios
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -266,7 +266,7 @@ requerir_admin();
   </main>
 
   <footer>
-    <?php include $_SERVER['DOCUMENT_ROOT'] . '/front-end/includes/footer-admin.php'; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT'] . '/simpinna/front-end/includes/footer-admin.php'; ?>
   </footer>
 
 </body>

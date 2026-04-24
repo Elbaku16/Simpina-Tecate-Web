@@ -1,18 +1,39 @@
 <?php
 declare(strict_types=1);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/core/bootstrap_session.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/database/conexion-db.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/EncuestasController.php';
-
 header('Content-Type: application/json; charset=utf-8');
 
-$nivel = $_GET['nivel'] ?? 'primaria';
+ini_set('display_errors', 0); 
+error_reporting(E_ALL);
 
-$controller = new EncuestasController();
-$data = $controller->obtenerEncuestaPorNivel($nivel);
+try {
 
-$conn->close();
+    $pathToBackend = __DIR__ . '/../../'; 
 
-echo json_encode($data, JSON_UNESCAPED_UNICODE);
-exit;
+    if (!file_exists($pathToBackend . 'core/bootstrap_session.php')) {
+        throw new Exception("Error de ruta: No encuentro el backend en $pathToBackend");
+    }
+
+    require_once $pathToBackend . 'core/bootstrap_session.php';
+    
+    
+    require_once $pathToBackend . 'controllers/EncuestasController.php';
+
+
+    
+    $nivel = $_GET['nivel'] ?? 'primaria';
+
+    $controller = new EncuestasController();
+    $data = $controller->obtenerEncuestaPorNivel($nivel);
+
+
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'ok' => false,
+        'error' => $e->getMessage()
+    ], JSON_UNESCAPED_UNICODE);
+}
+?>

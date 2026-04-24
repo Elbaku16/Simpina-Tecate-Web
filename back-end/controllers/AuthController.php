@@ -23,7 +23,7 @@ class AuthController
 
     /**
      * Maneja el login usando POST desde la ruta moderna:
-     * /back-end/routes/auth/login.php
+     * /simpinna/back-end/routes/auth/login.php
      */
     public function login(array $input): array
     {

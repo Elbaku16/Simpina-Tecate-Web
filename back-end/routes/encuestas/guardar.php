@@ -1,122 +1,114 @@
 <?php
 declare(strict_types=1);
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/core/bootstrap_session.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/auth/verificar-sesion.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/back-end/controllers/EditarController.php';
-
-if (!tiene_permiso('modificar_encuesta')) {
-    http_response_code(403);
-    echo json_encode(["success" => false, "error" => "Permiso denegado"]);
-    exit;
-}
-
 header("Content-Type: application/json; charset=utf-8");
 
-/* ======================================================
-   RECIBIR FORM-DATA
-====================================================== */
+// Debug
+ini_set('display_errors', '0'); 
+error_reporting(E_ALL);
 
-$nivel = $_POST['nivel'] ?? null;
-$eliminadas = json_decode($_POST['eliminadas'] ?? "[]", true);
-// PHP procesa automáticamente el array 'preguntas' que viene del FormData
-$datosPreguntas = $_POST['preguntas'] ?? [];
+try {
+   
+    $baseBackend = __DIR__ . '/../../';
+    $baseProject = __DIR__ . '/../../../';
 
-if (!$nivel) {
-    echo json_encode(["success" => false, "error" => "Nivel no recibido"]);
-    exit;
-}
+    require_once $baseBackend . 'core/bootstrap_session.php';
+    require_once $baseBackend . 'auth/verificar-sesion.php';
+    
+    if (!file_exists($baseBackend . 'controllers/EditarController.php')) {
+        throw new Exception("No encuentro EditarController.php");
+    }
+    require_once $baseBackend . 'controllers/EditarController.php';
 
-/* ======================================================
-   PROCESAR PREGUNTAS + OPCIONES
-====================================================== */
-$finalPreguntas = [];
+    
+    requerir_admin(); // Asegura sesión iniciada
 
-foreach ($datosPreguntas as $i => $pData) {
-
-    $idPregunta = intval($pData['id'] ?? 0);
-
-    // 1. RECUPERAR RUTA VIEJA (si existe, viene del JS como 'icono_actual')
-    $rutaImagenPregunta = $pData['icono_actual'] ?? null;
-
-    // 2. REVISAR SI HAY IMAGEN NUEVA SUBIDA
-    if (isset($_FILES["preguntas"]["name"][$i]["imagen"]) &&
-        $_FILES["preguntas"]["name"][$i]["imagen"] !== "" &&
-        $_FILES["preguntas"]["error"][$i]["imagen"] === 0) {
-
-        $fileTmp = $_FILES["preguntas"]["tmp_name"][$i]["imagen"];
-        // Prefijo único para evitar conflictos de cache
-        $fileName = uniqid() . "_P_" . basename($_FILES["preguntas"]["name"][$i]["imagen"]);
-
-        // Aseguramos que la carpeta existe
-        $destino = $_SERVER['DOCUMENT_ROOT'] . "/uploads/preguntas/";
-        if (!file_exists($destino)) mkdir($destino, 0777, true);
-
-        if (move_uploaded_file($fileTmp, $destino . $fileName)) {
-            // Sobrescribimos la ruta con la nueva imagen
-            $rutaImagenPregunta = "uploads/preguntas/" . $fileName;
-        }
+    if (!tiene_permiso('modificar_encuesta')) {
+        throw new Exception("Permiso denegado", 403);
     }
 
-    // Construir array final para el controlador
-    $pregArr = [
-        "id"    => $idPregunta,
-        "texto" => $pData["texto"],
-        "tipo"  => $pData["tipo"],
-        "orden" => intval($pData["orden"]),
-        // Aquí pasamos la ruta final (ya sea la vieja recuperada o la nueva subida)
-        "icono" => $rutaImagenPregunta, 
-        "opciones" => []
-    ];
+    $nivel = $_POST['nivel'] ?? null;
+    if (!$nivel) {
+        throw new Exception("Nivel no recibido");
+    }
 
-    /* ==============================================
-       OPCIONES
-    ============================================== */
-    if (isset($pData["opciones"]) && is_array($pData["opciones"])) {
+    $eliminadas = json_decode($_POST['eliminadas'] ?? "[]", true);
+    $datosPreguntas = $_POST['preguntas'] ?? []; 
 
-        foreach ($pData["opciones"] as $j => $opData) {
 
-            $idOp = intval($opData["id"] ?? 0);
+    $finalPreguntas = [];
 
-            // 1. RECUPERAR RUTA VIEJA OPCIÓN
-            $rutaImagenOpcion = $opData['icono_actual'] ?? null;
+    $uploadsDir = $baseProject . 'uploads/';
 
-            // 2. REVISAR SI HAY IMAGEN NUEVA OPCIÓN
-            if (isset($_FILES["preguntas"]["name"][$i]["opciones"][$j]["imagen"]) &&
-                $_FILES["preguntas"]["name"][$i]["opciones"][$j]["imagen"] !== "" &&
-                $_FILES["preguntas"]["error"][$i]["opciones"][$j]["imagen"] === 0) {
+    foreach ($datosPreguntas as $i => $pData) {
+        $idPregunta = intval($pData['id'] ?? 0);
+        $rutaImagenPregunta = $pData['icono_actual'] ?? null;
 
-                $fileTmp = $_FILES["preguntas"]["tmp_name"][$i]["opciones"][$j]["imagen"];
-                $fileName = uniqid() . "_OP_" . basename($_FILES["preguntas"]["name"][$i]["opciones"][$j]["imagen"]);
+        if (isset($_FILES['preguntas']['name'][$i]['imagen']) && 
+            $_FILES['preguntas']['error'][$i]['imagen'] === 0) {
+            
+            $fileName = uniqid() . "_P_" . basename($_FILES['preguntas']['name'][$i]['imagen']);
+            $destino = $uploadsDir . 'preguntas/';
+            
+            if (!file_exists($destino)) mkdir($destino, 0755, true);
 
-                $destino = $_SERVER['DOCUMENT_ROOT'] . "/uploads/opciones/";
-                if (!file_exists($destino)) mkdir($destino, 0777, true);
-
-                if (move_uploaded_file($fileTmp, $destino . $fileName)) {
-                    $rutaImagenOpcion = "uploads/opciones/" . $fileName;
-                }
+            if (move_uploaded_file($_FILES['preguntas']['tmp_name'][$i]['imagen'], $destino . $fileName)) {
+                $rutaImagenPregunta = "uploads/preguntas/" . $fileName;
             }
-
-            $pregArr["opciones"][] = [
-                "id" => $idOp,
-                "texto" => $opData["texto"] ?? "",
-                "icono" => $rutaImagenOpcion
-            ];
         }
+
+        $pregArr = [
+            "id"       => $idPregunta,
+            "texto"    => $pData["texto"],
+            "tipo"     => $pData["tipo"],
+            "orden"    => intval($pData["orden"]),
+            "icono"    => $rutaImagenPregunta, 
+            "opciones" => []
+        ];
+
+        if (isset($pData["opciones"]) && is_array($pData["opciones"])) {
+            foreach ($pData["opciones"] as $j => $opData) {
+                $idOp = intval($opData["id"] ?? 0);
+                $rutaImagenOpcion = $opData['icono_actual'] ?? null;
+
+           
+                $fileOp = $_FILES['preguntas']['name'][$i]['opciones'][$j]['imagen'] ?? null;
+                $errorOp = $_FILES['preguntas']['error'][$i]['opciones'][$j]['imagen'] ?? 4; // 4 = no file
+
+                if ($fileOp && $errorOp === 0) {
+                    $fileNameOp = uniqid() . "_OP_" . basename($fileOp);
+                    $destinoOp = $uploadsDir . 'opciones/';
+                    
+                    if (!file_exists($destinoOp)) mkdir($destinoOp, 0755, true);
+
+                    $tmpOp = $_FILES['preguntas']['tmp_name'][$i]['opciones'][$j]['imagen'];
+                    if (move_uploaded_file($tmpOp, $destinoOp . $fileNameOp)) {
+                        $rutaImagenOpcion = "uploads/opciones/" . $fileNameOp;
+                    }
+                }
+
+                $pregArr["opciones"][] = [
+                    "id"    => $idOp,
+                    "texto" => $opData["texto"] ?? "",
+                    "icono" => $rutaImagenOpcion
+                ];
+            }
+        }
+        $finalPreguntas[] = $pregArr;
     }
 
-    $finalPreguntas[] = $pregArr;
+ 
+    $controller = new EditarController();
+    $respuesta = $controller->guardarCambios($nivel, $finalPreguntas, $eliminadas);
+
+    echo json_encode($respuesta);
+
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode([
+        "success" => false, 
+        "error" => $e->getMessage()
+    ]);
 }
-
-
-
-$controller = new EditarController();
-$respuesta = $controller->guardarCambios($nivel, $finalPreguntas, $eliminadas);
-
-global $conn;
-if (isset($conn) && $conn instanceof mysqli) {
-    $conn->close();
-}
-
-echo json_encode($respuesta);
 exit;
+?>

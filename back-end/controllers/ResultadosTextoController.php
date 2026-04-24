@@ -242,7 +242,7 @@ class ResultadosTextoController
     {
         if (!$ruta) return false;
 
-        $abs = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($ruta, '/');
+        $abs = $_SERVER['DOCUMENT_ROOT'] . '/simpinna/' . ltrim($ruta, '/');
         return is_file($abs);
     }
 
@@ -250,7 +250,7 @@ class ResultadosTextoController
     {
         if (!$ruta) return null;
 
-        $abs = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($ruta, '/');
+        $abs = $_SERVER['DOCUMENT_ROOT'] . '/simpinna/' . ltrim($ruta, '/');
         if (!is_file($abs)) return null;
 
         $bytes = filesize($abs);
