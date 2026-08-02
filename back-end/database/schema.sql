@@ -224,7 +224,7 @@ CREATE TABLE `schema_migrations` (
   `version` varchar(190) NOT NULL,
   `aplicada_en` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`version`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `sesiones_admin`;
 CREATE TABLE `sesiones_admin` (
@@ -249,7 +249,7 @@ CREATE TABLE `storage_delete_queue` (
   `procesado_en` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_storage_delete_pending` (`procesado_en`,`intentos`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `turnos`;
 CREATE TABLE `turnos` (
