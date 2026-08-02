@@ -63,14 +63,7 @@ function requerir_admin(): void
         session_start();
     }
 
-    // Inicializar CSRF global si no existe (por seguridad)
-    if (!isset($_SESSION['csrf'])) {
-        try {
-            $_SESSION['csrf'] = bin2hex(random_bytes(32));
-        } catch (Exception $e) {
-            $_SESSION['csrf'] = md5(uniqid((string)mt_rand(), true));
-        }
-    }
+    obtener_csrf();
 
     // 1. Si no está logueado -> Login
     if (!usuario_autenticado()) {
@@ -88,11 +81,7 @@ function requerir_admin(): void
 
 function generar_csrf(string $formulario = 'default'): string
 {
-    try {
-        $token = bin2hex(random_bytes(32));
-    } catch (Exception $e) {
-        $token = md5(uniqid((string)mt_rand(), true));
-    }
+    $token = bin2hex(random_bytes(32));
 
     if (!isset($_SESSION['csrf_tokens'])) {
         $_SESSION['csrf_tokens'] = [];
@@ -104,6 +93,46 @@ function generar_csrf(string $formulario = 'default'): string
     ];
 
     return $token;
+}
+
+function obtener_csrf(): string
+{
+    if (!isset($_SESSION['csrf']) || !is_string($_SESSION['csrf']) || strlen($_SESSION['csrf']) !== 64) {
+        $_SESSION['csrf'] = bin2hex(random_bytes(32));
+    }
+
+    return $_SESSION['csrf'];
+}
+
+function renovar_csrf(): string
+{
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
+    $_SESSION['csrf_tokens'] = [];
+    return $_SESSION['csrf'];
+}
+
+function validar_csrf_global(?string $token): bool
+{
+    return is_string($token) && hash_equals(obtener_csrf(), $token);
+}
+
+function requerir_post_csrf(bool $json = false): void
+{
+    $metodo = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+    $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? $_POST['csrf_token'] ?? null;
+
+    if ($metodo === 'POST' && validar_csrf_global(is_string($token) ? $token : null)) {
+        return;
+    }
+
+    http_response_code(403);
+    if ($json) {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['success' => false, 'error' => 'Solicitud de seguridad inválida. Recarga la página.']);
+    } else {
+        echo 'Solicitud de seguridad inválida. Recarga la página.';
+    }
+    exit;
 }
 
 function validar_csrf(?string $token, string $formulario = 'default'): bool

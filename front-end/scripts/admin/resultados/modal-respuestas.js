@@ -357,6 +357,7 @@ function generarCardTexto(resp) {
     const formData = new FormData();
     formData.append('accion', 'eliminar');
     formData.append('id_respuesta', idRespuesta);
+    formData.append('csrf_token', window.SIMPINNA_CSRF || '');
 
     fetch(window.BASE_URL + '/back-end/routes/resultados/respuestas_texto.php', {
       method: 'POST',

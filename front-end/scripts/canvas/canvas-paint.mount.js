@@ -1,130 +1,165 @@
-// Monta el canvas en cada bloque .canvas-paint, guarda Base64 al enviar y soporta mouse/touch
-
+// Monta cada lienzo una sola vez y soporta mouse, lápiz y toque con Pointer Events.
 (function () {
-  function mountCanvas(root) {
-    const canvas     = root.querySelector('.cp-canvas');
-    const ctx        = canvas.getContext('2d');
-    const color      = root.querySelector('.cp-color');
-    const size       = root.querySelector('.cp-size');
-    const clearBtn   = root.querySelector('.cp-clear');
-    const hidden     = root.querySelector('.cp-data');
-    const idPregunta = root.getAttribute('data-id-pregunta');
+  const rootsMontados = new WeakSet();
+  const canvasesObservados = new Set();
 
-    // === Ajuste de densidad (DPR) y tamaño real ===
-    function setupDensity() {
-      const dpr  = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      const displayW = Math.max(1, Math.floor(rect.width));
-      const displayH = Math.max(1, Math.floor(rect.height));
-      canvas.width  = Math.floor(displayW * dpr);
-      canvas.height = Math.floor(displayH * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    setupDensity();
-    new ResizeObserver(() => setupDensity()).observe(canvas);
-
-    // Defaults
-    ctx.lineJoin    = 'round';
-    ctx.lineCap     = 'round';
-    ctx.lineWidth   = parseInt(root.dataset.defaultSize || size.value || 5, 10);
+  function configurarContexto(ctx, root, color, size) {
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.lineWidth = Number.parseInt(root.dataset.defaultSize || size.value || '5', 10);
     ctx.strokeStyle = root.dataset.defaultColor || color.value || '#2b2b2b';
+  }
 
-    let drawing = false;
+  function ajustarDensidad(canvas, ctx, root, color, size, conservarContenido = true) {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const displayW = Math.max(1, Math.floor(rect.width));
+    const displayH = Math.max(1, Math.floor(rect.height));
+    const nuevoW = Math.floor(displayW * dpr);
+    const nuevoH = Math.floor(displayH * dpr);
+
+    if (canvas.width === nuevoW && canvas.height === nuevoH) return;
+
+    let copia = null;
+    if (conservarContenido && root.dataset.filled === '1' && canvas.width > 0 && canvas.height > 0) {
+      copia = document.createElement('canvas');
+      copia.width = canvas.width;
+      copia.height = canvas.height;
+      copia.getContext('2d').drawImage(canvas, 0, 0);
+    }
+
+    canvas.width = nuevoW;
+    canvas.height = nuevoH;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    configurarContexto(ctx, root, color, size);
+
+    if (copia) {
+      ctx.drawImage(copia, 0, 0, copia.width, copia.height, 0, 0, displayW, displayH);
+    }
+  }
+
+  const observador = new ResizeObserver(entries => {
+    entries.forEach(entry => {
+      const canvas = entry.target;
+      if (!canvas.isConnected) {
+        observador.unobserve(canvas);
+        canvasesObservados.delete(canvas);
+        return;
+      }
+
+      const datos = canvas.__simpinnaCanvas;
+      if (datos) {
+        ajustarDensidad(canvas, datos.ctx, datos.root, datos.color, datos.size, true);
+      }
+    });
+  });
+
+  function limpiarCanvasesDesconectados() {
+    canvasesObservados.forEach(canvas => {
+      if (!canvas.isConnected) {
+        observador.unobserve(canvas);
+        canvasesObservados.delete(canvas);
+      }
+    });
+  }
+
+  function montarCanvas(root) {
+    if (rootsMontados.has(root)) return;
+
+    const canvas = root.querySelector('.cp-canvas');
+    const color = root.querySelector('.cp-color');
+    const size = root.querySelector('.cp-size');
+    const clearBtn = root.querySelector('.cp-clear');
+    const hidden = root.querySelector('.cp-data');
+    if (!canvas || !color || !size || !clearBtn) return;
+
+    rootsMontados.add(root);
+    const ctx = canvas.getContext('2d');
+    const idPregunta = root.dataset.idPregunta;
+    canvas.style.touchAction = 'none';
+    canvas.__simpinnaCanvas = { ctx, root, color, size };
+
+    ajustarDensidad(canvas, ctx, root, color, size, false);
+    observador.observe(canvas);
+    canvasesObservados.add(canvas);
+
+    let dibujando = false;
     let trazoHecho = false;
 
-    const getMouse = (e) => {
-      const r = canvas.getBoundingClientRect();
-      return { x: e.clientX - r.left, y: e.clientY - r.top };
-    };
-    const getTouch = (e) => {
-      const t = e.touches?.[0] || e.changedTouches?.[0];
-      if (!t) return { x: 0, y: 0 };
-      const r = canvas.getBoundingClientRect();
-      return { x: t.clientX - r.left, y: t.clientY - r.top };
-    };
+    function obtenerPunto(evento) {
+      const rect = canvas.getBoundingClientRect();
+      return { x: evento.clientX - rect.left, y: evento.clientY - rect.top };
+    }
 
     function notificar(filled) {
       root.dataset.filled = filled ? '1' : '0';
       document.dispatchEvent(new CustomEvent('encuesta:dibujo-change', {
-        detail: { id: Number(idPregunta), filled: !!filled }
+        detail: { id: Number(idPregunta), filled: Boolean(filled) }
       }));
     }
 
-    // --- Mouse ---
-    canvas.addEventListener('mousedown', (e) => {
-      const { x, y } = getMouse(e);
-      drawing = true; trazoHecho = false;
-      ctx.beginPath(); ctx.moveTo(x, y);
-    });
-    canvas.addEventListener('mousemove', (e) => {
-      if (!drawing) return;
-      const { x, y } = getMouse(e);
-      ctx.lineTo(x, y); ctx.stroke();
-      trazoHecho = true;
-    });
-    window.addEventListener('mouseup', () => {
-      if (!drawing) return;
-      drawing = false;
+    function terminarTrazo(evento) {
+      if (!dibujando) return;
+      dibujando = false;
+
+      if (canvas.hasPointerCapture?.(evento.pointerId)) {
+        canvas.releasePointerCapture(evento.pointerId);
+      }
       if (trazoHecho) notificar(true);
+    }
+
+    canvas.addEventListener('pointerdown', evento => {
+      if (evento.pointerType === 'mouse' && evento.button !== 0) return;
+      const punto = obtenerPunto(evento);
+      dibujando = true;
+      trazoHecho = false;
+      canvas.setPointerCapture?.(evento.pointerId);
+      ctx.beginPath();
+      ctx.moveTo(punto.x, punto.y);
     });
 
-    // --- Touch ---
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const { x, y } = getTouch(e);
-      drawing = true; trazoHecho = false;
-      ctx.beginPath(); ctx.moveTo(x, y);
-    }, { passive: false });
-    canvas.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      if (!drawing) return;
-      const { x, y } = getTouch(e);
-      ctx.lineTo(x, y); ctx.stroke();
+    canvas.addEventListener('pointermove', evento => {
+      if (!dibujando) return;
+      const punto = obtenerPunto(evento);
+      ctx.lineTo(punto.x, punto.y);
+      ctx.stroke();
       trazoHecho = true;
-    }, { passive: false });
-    window.addEventListener('touchend', () => {
-      if (!drawing) return;
-      drawing = false;
-      if (trazoHecho) notificar(true);
     });
 
-    // --- Controles ---
-    color.addEventListener('change', (ev) => { ctx.strokeStyle = ev.target.value; });
-    size.addEventListener('change',  (ev) => { ctx.lineWidth   = parseInt(ev.target.value || 5, 10); });
+    canvas.addEventListener('pointerup', terminarTrazo);
+    canvas.addEventListener('pointercancel', terminarTrazo);
+
+    color.addEventListener('change', evento => {
+      ctx.strokeStyle = evento.target.value;
+    });
+    size.addEventListener('input', evento => {
+      ctx.lineWidth = Number.parseInt(evento.target.value || '5', 10);
+    });
 
     clearBtn.addEventListener('click', () => {
-      const r = canvas.getBoundingClientRect();
-      ctx.clearRect(0, 0, r.width, r.height);
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
       notificar(false);
     });
 
-    // --- Guardar base64 antes de enviar el formulario ---
     const form = root.closest('form');
-    if (form) {
+    if (form && hidden) {
       form.addEventListener('submit', () => {
-        hidden.value = canvas.toDataURL('image/png'); // data:image/png;base64,...
+        hidden.value = canvas.toDataURL('image/png');
       });
     }
   }
 
-  function initAll() {
-    document.querySelectorAll('.canvas-paint').forEach(mountCanvas);
+  function iniciarTodos() {
+    limpiarCanvasesDesconectados();
+    document.querySelectorAll('.canvas-paint').forEach(montarCanvas);
   }
+
+  window.initCanvasPaint = iniciarTodos;
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAll);
+    document.addEventListener('DOMContentLoaded', iniciarTodos, { once: true });
   } else {
-    initAll();
+    iniciarTodos();
   }
-   window.initCanvasPaint = function () {
-      document.querySelectorAll('.canvas-paint').forEach(root => mountCanvas(root));
-  };
-
-  // Primer montaje: por si ya hay canvas presentes (normalmente no)
-  if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', window.initCanvasPaint);
-  } else {
-      window.initCanvasPaint();
-  }
-
 })();

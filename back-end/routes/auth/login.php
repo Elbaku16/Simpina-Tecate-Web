@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-ini_set('display_errors', 1);
+ini_set('display_errors', '0');
 error_reporting(E_ALL);
 
 
@@ -36,6 +36,7 @@ try {
         'vacio'        => 'Por favor completa todos los campos.',
         'credenciales' => 'Usuario o contraseña incorrectos.',
         'bloqueo'      => 'Has excedido el número de intentos. Espera unos minutos.',
+        'rotacion'      => 'La contraseña de esta cuenta debe ser restablecida por el administrador del sistema.',
         'db_error'     => 'Error de conexión con la base de datos.',
         default        => 'Ocurrió un error inesperado.'
     };

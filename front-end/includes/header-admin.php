@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
 if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
+    require_once __DIR__ . '/../../back-end/core/bootstrap_session.php';
 }
 
 // Verificar si existe CUALQUIER rol logueado
@@ -22,9 +22,13 @@ if ($esUsuarioAdmin) {
 $currentScript = $_SERVER['SCRIPT_NAME'] ?? '';
 $isLoginPage = (strpos($currentScript, '/frames/admin/login.php') !== false);
 $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
+$csrfGlobal = function_exists('obtener_csrf') ? obtener_csrf() : '';
 ?>
 
-<script>window.BASE_URL = '<?php echo BASE_URL; ?>';</script>
+<script>
+window.BASE_URL = <?php echo json_encode(BASE_URL, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+window.SIMPINNA_CSRF = <?php echo json_encode($csrfGlobal); ?>;
+</script>
 <header class="header header-admin">
   
   <div class="header-izq">
@@ -36,9 +40,12 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
             <i class="fa-solid fa-user"></i> 
             <?php echo htmlspecialchars($textoUsuario); ?>
         </span>
-        <a href="<?php echo API_URL; ?>auth/logout.php" class="btn-logout">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
-        </a>
+        <form method="POST" action="<?php echo API_URL; ?>auth/logout.php" class="logout-form">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfGlobal, ENT_QUOTES); ?>">
+            <button type="submit" class="btn-logout">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
+            </button>
+        </form>
     </div>
     <?php endif; ?>
   </div>
@@ -82,9 +89,12 @@ $tituloCentral = $isLoginPage ? 'Inicio de sesión' : 'Panel Administrativo';
                 <i class="fa-solid fa-user"></i> 
                 <?php echo htmlspecialchars($textoUsuario); ?>
             </span>
-            <a href="<?php echo API_URL; ?>auth/logout.php" class="mobile-btn-logout">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
-            </a>
+            <form method="POST" action="<?php echo API_URL; ?>auth/logout.php" class="logout-form">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfGlobal, ENT_QUOTES); ?>">
+                <button type="submit" class="mobile-btn-logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
+                </button>
+            </form>
         </div>
       <?php endif; ?>
   </div>

@@ -1,0 +1,17 @@
+{
+  "name": "simpinna/encuestas",
+  "description": "Aplicación de encuestas SIMPINNA",
+  "type": "project",
+  "require": {
+    "php": ">=8.2",
+    "aws/aws-sdk-php": "^3.0"
+  },
+  "autoload": {
+    "classmap": [
+      "back-end/storage/"
+    ]
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

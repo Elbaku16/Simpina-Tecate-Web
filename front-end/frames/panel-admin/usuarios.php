@@ -52,7 +52,7 @@ if (!rol_es('secretario_ejecutivo')) {
                     </div>
                     <div class="form-group">
                         <label for="password">Contraseña</label>
-                        <input type="password" id="password" name="password" required>
+                        <input type="password" id="password" name="password" minlength="12" maxlength="128" required>
                     </div>
                     <div class="full-width">
                         <button type="submit" class="btn-crear-usuario">Crear Usuario</button>
@@ -109,11 +109,11 @@ if (!rol_es('secretario_ejecutivo')) {
                 if (data.success) {
                     renderizarUsuarios(data.usuarios);
                 } else {
-                    lista.innerHTML = `<tr><td colspan="5" class="error-message" style="text-align:center;">Error al cargar: ${data.error}</td></tr>`;
+                    mostrarFilaMensaje(lista, 'Error al cargar: ' + (data.error || 'Desconocido'), true);
                 }
             } catch (e) {
                 console.error('Error al cargar usuarios:', e);
-                lista.innerHTML = `<tr><td colspan="5" class="error-message" style="text-align:center;">Error de conexión.</td></tr>`;
+                mostrarFilaMensaje(lista, 'Error de conexión.', true);
             }
         }
 
@@ -126,7 +126,6 @@ if (!rol_es('secretario_ejecutivo')) {
                 return;
             }
 
-            // CAMBIO 3: Diccionario de nombres de roles
             const rolNombres = {
                 'secretario_ejecutivo': 'Secretario Ejecutivo', // Nuevo nombre
                 'admin': 'Administrador (Legacy)', // Mantenemos admin por compatibilidad si quedan en BD
@@ -140,20 +139,47 @@ if (!rol_es('secretario_ejecutivo')) {
                 const isSelf = Number(user.id_admin) === Number(USUARIO_ACTUAL_ID);
                 const isPrincipal = Number(user.id_admin) === 1;
 
-                row.innerHTML = `
-                    <td>#${user.id_admin}</td>
-                    <td>${user.nombre}</td>
-                    <td>${user.usuario}</td>
-                    <td>${rolNombres[user.rol] || user.rol}${isSelf ? ' <strong style="color:#7A1E2C;">(Tú)</strong>' : ''}</td>
-                    <td>
-                        ${isPrincipal || isSelf ? 
-                            '' : 
-                            `<button type="button" class="btn-eliminar-usuario" onclick="eliminarUsuario(${user.id_admin})">Eliminar</button>`
-                        }
-                    </td>
-                `;
+                const valores = [`#${Number(user.id_admin)}`, user.nombre, user.usuario];
+                valores.forEach(valor => {
+                    const td = document.createElement('td');
+                    td.textContent = String(valor || '');
+                    row.appendChild(td);
+                });
+
+                const rolTd = document.createElement('td');
+                rolTd.textContent = rolNombres[user.rol] || String(user.rol || '');
+                if (isSelf) {
+                    const self = document.createElement('strong');
+                    self.style.color = '#7A1E2C';
+                    self.textContent = ' (Tú)';
+                    rolTd.appendChild(self);
+                }
+                row.appendChild(rolTd);
+
+                const acciones = document.createElement('td');
+                if (!isPrincipal && !isSelf) {
+                    const boton = document.createElement('button');
+                    boton.type = 'button';
+                    boton.className = 'btn-eliminar-usuario';
+                    boton.textContent = 'Eliminar';
+                    boton.addEventListener('click', () => eliminarUsuario(Number(user.id_admin)));
+                    acciones.appendChild(boton);
+                }
+                row.appendChild(acciones);
                 lista.appendChild(row);
             });
+        }
+
+        function mostrarFilaMensaje(tbody, mensaje, esError = false) {
+            tbody.replaceChildren();
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 5;
+            cell.style.textAlign = 'center';
+            if (esError) cell.className = 'error-message';
+            cell.textContent = mensaje;
+            row.appendChild(cell);
+            tbody.appendChild(row);
         }
 
         async function crearUsuario(e) {
@@ -163,6 +189,7 @@ if (!rol_es('secretario_ejecutivo')) {
 
             const formData = new FormData(form);
             formData.append('accion', 'crear');
+            formData.append('csrf_token', window.SIMPINNA_CSRF);
 
             try {
                 const response = await fetch(window.BASE_URL + '/back-end/routes/usuarios/gestionar.php', {
@@ -192,6 +219,7 @@ if (!rol_es('secretario_ejecutivo')) {
             const formData = new FormData();
             formData.append('accion', 'eliminar');
             formData.append('id', id);
+            formData.append('csrf_token', window.SIMPINNA_CSRF);
 
             fetch(window.BASE_URL + '/back-end/routes/usuarios/gestionar.php', {
                 method: 'POST',

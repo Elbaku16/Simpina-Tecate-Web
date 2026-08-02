@@ -69,11 +69,27 @@ class AuthController
             return ['success' => false, 'error' => 'credenciales'];
         }
 
+        if ($usuarioEntidad->requiereCambioPassword()) {
+            return ['success' => false, 'error' => 'rotacion'];
+        }
+
+        if (PasswordService::necesitaRehash($usuarioEntidad->getPasswordHash())) {
+            $nuevoHash = PasswordService::hash($password);
+            $stmt = $this->db->prepare(
+                'UPDATE usuarios_admin SET password = ?, password_actualizada_en = NOW() WHERE id_admin = ?'
+            );
+            $idAdmin = $usuarioEntidad->getId();
+            $stmt->bind_param('si', $nuevoHash, $idAdmin);
+            $stmt->execute();
+            $stmt->close();
+        }
+
         // 5. Éxito
         $_SESSION['login_intentos'] = 0;
         $_SESSION['login_bloqueado_hasta'] = 0;
 
         session_regenerate_id(true);
+        renovar_csrf();
 
         $_SESSION['uid']          = $usuarioEntidad->getId();
         $_SESSION['usuario']      = $usuarioEntidad->getUsuario();

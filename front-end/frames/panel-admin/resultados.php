@@ -3,6 +3,14 @@ require_once __DIR__ . '/../../../back-end/auth/verificar-sesion.php';
 require_once __DIR__ . '/../../includes/config.php';
 requerir_admin();
 
+if (!isset($nivelNombre, $preguntas, $opcionesPorPregunta, $escuelasDelNivel, $palette)) {
+    $nivelSolicitado = strtolower(trim((string) ($_GET['nivel'] ?? 'preescolar')));
+    if (!in_array($nivelSolicitado, ['preescolar', 'primaria', 'secundaria', 'preparatoria'], true)) {
+        $nivelSolicitado = 'preescolar';
+    }
+    header('Location: ' . API_URL . 'resultados/index.php?nivel=' . rawurlencode($nivelSolicitado));
+    exit;
+}
 
 $nombresBonitos = [
     'preescolar'   => 'Preescolar',
@@ -166,7 +174,7 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
             </option>
 
             <!-- NUEVO: opcion de no escolarizado -->
-            <option value="9999" <?php echo ($escuelaFiltro ?? 0) == 9999 ? 'selected' : ''; ?>>
+            <option value="-1" <?php echo ($escuelaFiltro ?? 0) === -1 ? 'selected' : ''; ?>>
                 No estudia actualmente
             </option>
 
@@ -188,8 +196,9 @@ $nombreNivel = $nombresBonitos[$nivelNombre] ?? 'Resultados';
             if (isset($ciclosDisponibles) && is_array($ciclosDisponibles)):
                 foreach ($ciclosDisponibles as $ciclo): 
           ?>
-            <option value="<?php echo htmlspecialchars($ciclo['label']); ?>" 
-                    <?php echo ($cicloFiltro ?? '') === $ciclo['label'] ? 'selected' : ''; ?>>
+            <?php $valorCiclo = $ciclo['inicio'] . '-' . $ciclo['fin']; ?>
+            <option value="<?php echo htmlspecialchars($valorCiclo); ?>"
+                    <?php echo ($cicloFiltro ?? '') === $valorCiclo ? 'selected' : ''; ?>>
               <?php echo htmlspecialchars($ciclo['label']); ?>
             </option>
           <?php 

@@ -1,4 +1,16 @@
-<?php require_once __DIR__ . '/../../includes/config.php'; ?>
+<?php
+require_once __DIR__ . '/../../../back-end/auth/verificar-sesion.php';
+require_once __DIR__ . '/../../includes/config.php';
+requerir_admin();
+
+// Esta vista recibe sus datos desde la ruta/controlador. Si alguien abre el
+// archivo directamente, enviarlo a la entrada canónica en vez de renderizar
+// variables sin inicializar.
+if (!isset($comentarios, $niveles, $busqueda, $filtroEstado, $filtroNivel)) {
+    header('Location: ' . API_URL . 'comentarios/index.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -158,9 +170,10 @@
                                     <td><?= date('d/m/Y H:i', strtotime($c['fecha_envio'])) ?></td>
                                     <td>
                                         <div class="acciones-cell">
-                                            <button 
-                                                onclick='verDetalle(<?= json_encode($c) ?>)' 
-                                                class="btn-ver"
+                                            <button
+                                                type="button"
+                                                class="btn-ver js-ver-comentario"
+                                                data-comentario="<?= htmlspecialchars(json_encode($c, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT), ENT_QUOTES, 'UTF-8') ?>"
                                                 title="Ver detalles"
                                             >
                                                 Ver
@@ -170,6 +183,7 @@
                                                   style="display:inline;"
                                                   onsubmit="return confirm('¿Estás seguro de eliminar este comentario?')">
                                                 <input type="hidden" name="id" value="<?= $c['id_contacto'] ?>">
+                                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(obtener_csrf(), ENT_QUOTES) ?>">
                                                 <button type="submit" class="btn-eliminar" title="Eliminar">
                                                     Eliminar
                                                 </button>
@@ -228,6 +242,7 @@
                 <!-- CAMBIAR ESTADO -->
                 <form method="POST" action="<?php echo API_URL; ?>comentarios/cambiar-estado.php">
                     <input type="hidden" name="id" id="form-id">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(obtener_csrf(), ENT_QUOTES) ?>">
                     <div class="estado-selector">
                         <div class="estado-selector-title">Cambiar Estado</div>
                         <select name="estado" id="form-estado">
@@ -293,6 +308,16 @@
             document.getElementById('modalDetalle').style.display = 'block';
         }
 
+        document.querySelectorAll('.js-ver-comentario').forEach(button => {
+            button.addEventListener('click', () => {
+                try {
+                    verDetalle(JSON.parse(button.dataset.comentario || '{}'));
+                } catch (_) {
+                    alert('No se pudieron abrir los detalles.');
+                }
+            });
+        });
+
         // Función para cerrar modal
         function cerrarModal() {
             document.getElementById('modalDetalle').style.display = 'none';
@@ -318,27 +343,30 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.historial.length > 0) {
-                        let html = '<div class="historial-timeline">';
-                        
+                        const timeline = document.createElement('div');
+                        timeline.className = 'historial-timeline';
                         data.historial.forEach(item => {
-                            const fecha = new Date(item.fecha_accion).toLocaleString('es-MX');
-                            
-                            html += `
-                                <div class="historial-item">
-                                    <div class="historial-header-item">
-                                        <div class="historial-accion">
-                                            ${item.accion.replace('_', ' ')}
-                                        </div>
-                                        <div class="historial-fecha">${fecha}</div>
-                                    </div>
-                                    <div class="historial-detalles">${item.detalles || 'Sin detalles'}</div>
-                                    <div class="historial-usuario">Usuario: ${item.usuario}</div>
-                                </div>
-                            `;
+                            const card = document.createElement('div');
+                            card.className = 'historial-item';
+                            const header = document.createElement('div');
+                            header.className = 'historial-header-item';
+                            const accion = document.createElement('div');
+                            accion.className = 'historial-accion';
+                            accion.textContent = String(item.accion || '').replace('_', ' ');
+                            const fecha = document.createElement('div');
+                            fecha.className = 'historial-fecha';
+                            fecha.textContent = new Date(item.fecha_accion).toLocaleString('es-MX');
+                            const detalles = document.createElement('div');
+                            detalles.className = 'historial-detalles';
+                            detalles.textContent = item.detalles || 'Sin detalles';
+                            const usuario = document.createElement('div');
+                            usuario.className = 'historial-usuario';
+                            usuario.textContent = 'Usuario: ' + (item.usuario || '');
+                            header.append(accion, fecha);
+                            card.append(header, detalles, usuario);
+                            timeline.appendChild(card);
                         });
-                        
-                        html += '</div>';
-                        contenido.innerHTML = html;
+                        contenido.replaceChildren(timeline);
                     } else {
                         contenido.innerHTML = '<div class="historial-empty">No hay registros en el historial</div>';
                     }

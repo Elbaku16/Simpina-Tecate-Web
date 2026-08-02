@@ -3,263 +3,140 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../database/conexion-db.php';
 require_once __DIR__ . '/../helpers/DibujoHelper.php';
+require_once __DIR__ . '/../../front-end/includes/config.php';
 
-class ResultadosTextoController
+final class ResultadosTextoController
 {
     private mysqli $db;
 
     public function __construct()
     {
-        // Usar conexión global del archivo conexion-db.php
         global $conn;
         $this->db = $conn;
     }
 
-    /**
-     * Obtener respuestas de una pregunta (texto o dibujo)
-     */
-    public function obtener(
-        int $idPregunta, 
-        int $idEscuela = 0, 
-        string $cicloEscolar = '', 
-        string $generoFiltro = '' // <--- NUEVO FILTRO DE GÉNERO
-    ): array
+    public function obtener(int $idPregunta, int $idEscuela = 0, string $ciclo = '', string $genero = ''): array
     {
-        if ($idPregunta <= 0) {
-            return [
-                'success' => false,
-                'error'   => 'id_pregunta inválido'
-            ];
+        $stmt = $this->db->prepare(
+            "SELECT clave_logica,COALESCE(tipo_pregunta,'texto') tipo FROM preguntas WHERE id_pregunta=?"
+        );
+        $stmt->bind_param('i', $idPregunta);
+        $stmt->execute();
+        $pregunta = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+        if (!$pregunta) throw new InvalidArgumentException('La pregunta solicitada no existe.');
+
+        $tipo = in_array(strtolower((string) $pregunta['tipo']), ['dibujo','imagen','canvas'], true)
+            ? 'dibujo' : 'texto';
+        if (!in_array($genero, ['', 'M', 'F', 'O', 'X'], true)) {
+            throw new InvalidArgumentException('Filtro de sexo inválido.');
         }
 
-        // 1) Tipo de pregunta
-        $tipo = $this->obtenerTipoPregunta($idPregunta);
-        $tipoNorm = $this->normalizarTipo($tipo);
-        $esDibujo = ($tipoNorm === 'dibujo');
-
-        // 2) Consulta base
-        $sql = "
-            SELECT 
-                r.id_respuesta_usuario,
-                r.respuesta_texto,
-                r.dibujo_ruta,
-                r.fecha_respuesta,
-                e.nombre_escuela
-            FROM respuestas_usuario r
-            LEFT JOIN escuelas e ON e.id_escuela = r.id_escuela
-            WHERE r.id_pregunta = ?
-        ";
-
-        $types  = "i";
-        $params = [$idPregunta];
-
-        // Filtro por escuela
+        $sql = "SELECT ru.id_respuesta_usuario,ru.respuesta_texto,ru.dibujo_ruta,
+                       ru.dibujo_storage,ru.dibujo_objeto,ru.dibujo_bytes,
+                       ru.fecha_respuesta,e.nombre_escuela
+                FROM respuestas_usuario ru
+                JOIN preguntas p ON p.id_pregunta=ru.id_pregunta
+                LEFT JOIN escuelas e ON e.id_escuela=ru.id_escuela
+                WHERE p.clave_logica=?";
+        $types = 's';
+        $params = [$pregunta['clave_logica']];
         if ($idEscuela > 0) {
-            $sql    .= " AND r.id_escuela = ?";
-            $types  .= "i";
-            $params[] = $idEscuela;
+            $sql .= ' AND ru.id_escuela=?'; $types .= 'i'; $params[] = $idEscuela;
+        } elseif ($idEscuela < 0) {
+            $sql .= ' AND ru.id_escuela IS NULL';
         }
-
-        // Filtro por género <--- INICIO CAMBIO
-        if (!empty($generoFiltro)) {
-            $sql    .= " AND r.genero = ?";
-            $types  .= "s";
-            $params[] = $generoFiltro;
+        if ($genero !== '') {
+            $sql .= ' AND ru.genero=?'; $types .= 's'; $params[] = $genero;
         }
-        // Filtro por ciclo escolar
-        if (!empty($cicloEscolar) && strpos($cicloEscolar, '-') !== false) {
-            list($inicio, $fin) = explode('-', $cicloEscolar);
-            $sql     .= " AND YEAR(r.fecha_respuesta) >= ? AND YEAR(r.fecha_respuesta) < ?";
-            $types   .= 'ii';
-            $params[] = (int)$inicio; 
-            $params[] = (int)$fin;
+        if ($ciclo !== '') {
+            if (!preg_match('/^(\d{4})\s*-\s*(\d{4})$/', $ciclo, $m) || (int) $m[2] !== (int) $m[1] + 1) {
+                throw new InvalidArgumentException('Filtro de ciclo escolar inválido.');
+            }
+            $sql .= ' AND ru.fecha_respuesta BETWEEN ? AND ?';
+            $types .= 'ss';
+            $params[] = $m[1] . '-08-01 00:00:00';
+            $params[] = $m[2] . '-07-31 23:59:59';
         }
-        // <--- FIN CAMBIO
-
-        // Filtro según tipo (texto o dibujo)
-        if ($esDibujo) {
-            $sql .= " AND r.dibujo_ruta IS NOT NULL";
-        } else {
-            $sql .= " AND r.respuesta_texto IS NOT NULL AND r.respuesta_texto <> ''";
-        }
-
-        $sql .= " ORDER BY r.fecha_respuesta DESC, r.id_respuesta_usuario DESC";
+        $sql .= $tipo === 'dibujo'
+            ? ' AND (ru.dibujo_objeto IS NOT NULL OR ru.dibujo_ruta IS NOT NULL)'
+            : " AND ru.respuesta_texto IS NOT NULL AND ru.respuesta_texto<>''";
+        $sql .= ' ORDER BY ru.fecha_respuesta DESC,ru.id_respuesta_usuario DESC';
 
         $stmt = $this->db->prepare($sql);
-        if (!$stmt) {
-            return [
-                'success' => false,
-                'error'   => 'Error al preparar consulta'
-            ];
-        }
-// --- INICIO CORRECCIÓN ---
-        // bind_param requiere que los argumentos se pasen por referencia.
-        // Creamos un array nuevo donde cada elemento es una referencia a los valores de $params.
-        $paramsReferencias = [];
-        foreach ($params as $key => $value) {
-            $paramsReferencias[$key] = &$params[$key];
-        }
-
-        // Unimos los tipos al principio
-        $args = array_merge([$types], $paramsReferencias);
-
-        // Llamamos a bind_param usando call_user_func_array (Funciona en todas las versiones de PHP)
-        call_user_func_array([$stmt, 'bind_param'], $args);
-        // --- FIN CORRECCIÓN ---
-
+        $refs = [];
+        foreach ($params as $i => $_) $refs[$i] = &$params[$i];
+        $stmt->bind_param($types, ...$refs);
         $stmt->execute();
-        $res = $stmt->get_result();
-
+        $result = $stmt->get_result();
         $salida = [];
-
-        while ($row = $res->fetch_assoc()) {
-            $idRespuesta = (int)$row['id_respuesta_usuario'];
-            $rutaDibujo  = $row['dibujo_ruta'] ?? null;
-
+        while ($row = $result->fetch_assoc()) {
+            $id = (int) $row['id_respuesta_usuario'];
             $item = [
-                'id'        => $idRespuesta,
-                'escuela'   => $row['nombre_escuela'] ?? 'Sin escuela',
-                'fecha'     => $row['fecha_respuesta'],
-                'es_dibujo' => $esDibujo,
+                'id' => $id,
+                'escuela' => $row['nombre_escuela'] ?? 'Sin escuela',
+                'fecha' => $row['fecha_respuesta'],
+                'es_dibujo' => $tipo === 'dibujo',
             ];
-
-            if ($esDibujo) {
-                $item['ruta_dibujo']    = $this->resolverRutaPublica($rutaDibujo);
-                $item['existe_archivo'] = $this->existeArchivo($rutaDibujo);
-                $item['tamaño']         = $this->tamañoArchivoLegible($rutaDibujo);
+            if ($tipo === 'dibujo') {
+                $item['ruta_dibujo'] = BASE_URL . '/back-end/routes/resultados/dibujo.php?id_respuesta=' . $id;
+                $item['existe_archivo'] = !empty($row['dibujo_objeto'])
+                    || DibujoHelper::rutaLegacy($row['dibujo_ruta']) !== null;
+                $bytes = (int) ($row['dibujo_bytes'] ?? 0);
+                $item['tamaño'] = $bytes > 0 ? self::formatear($bytes) : '';
             } else {
                 $item['texto'] = $row['respuesta_texto'] ?? '';
             }
-
             $salida[] = $item;
         }
-
         $stmt->close();
-
-        return [
-            'success'       => true,
-            'tipo_pregunta' => $tipoNorm,
-            'respuestas'    => $salida
-        ];
+        return ['success' => true, 'tipo_pregunta' => $tipo, 'respuestas' => $salida];
     }
 
-    /**
-     * Eliminar respuesta (y el dibujo si aplica)
-     */
     public function eliminar(int $idRespuesta): array
     {
-        if ($idRespuesta <= 0) {
-            return [
-                'success' => false,
-                'error'   => 'id_respuesta inválido'
-            ];
-        }
-
-        // 1) Obtener ruta del dibujo
-        $sql = "SELECT dibujo_ruta FROM respuestas_usuario WHERE id_respuesta_usuario = ?";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("i", $idRespuesta);
-        $stmt->execute();
-        $stmt->bind_result($rutaDibujo);
-        $stmt->fetch();
-        $stmt->close();
-
-        // 2) Borrar registro
+        if ($idRespuesta <= 0) return ['success' => false, 'error' => 'Respuesta inválida.'];
         $stmt = $this->db->prepare(
-            "DELETE FROM respuestas_usuario WHERE id_respuesta_usuario = ? LIMIT 1"
+            'SELECT dibujo_ruta,dibujo_storage,dibujo_objeto FROM respuestas_usuario WHERE id_respuesta_usuario=?'
         );
-        $stmt->bind_param("i", $idRespuesta);
+        $stmt->bind_param('i', $idRespuesta);
         $stmt->execute();
-        $afectadas = $stmt->affected_rows;
+        $archivo = $stmt->get_result()->fetch_assoc();
         $stmt->close();
+        if (!$archivo) return ['success' => false, 'error' => 'La respuesta no existe.'];
 
-        if ($afectadas <= 0) {
-            return [
-                'success' => false,
-                'error'   => 'No se encontró la respuesta o no se pudo eliminar'
-            ];
-        }
+        $stmt = $this->db->prepare('DELETE FROM respuestas_usuario WHERE id_respuesta_usuario=? LIMIT 1');
+        $stmt->bind_param('i', $idRespuesta);
+        $stmt->execute();
+        $ok = $stmt->affected_rows === 1;
+        $stmt->close();
+        if (!$ok) return ['success' => false, 'error' => 'No se pudo eliminar la respuesta.'];
 
-        // 3) Borrar archivo del servidor
-        if (!empty($rutaDibujo)) {
-            try {
-                DibujoHelper::eliminar($rutaDibujo);
-            } catch (Throwable $e) {
-                return [
-                    'success' => true,
-                    'warning' => 'Respuesta borrada, pero hubo un problema al eliminar el archivo de dibujo.'
-                ];
+        try {
+            if ($archivo['dibujo_storage'] && $archivo['dibujo_objeto']) {
+                DibujoHelper::eliminar($archivo['dibujo_storage'], $archivo['dibujo_objeto']);
+            } elseif ($legacy = DibujoHelper::rutaLegacy($archivo['dibujo_ruta'])) {
+                @unlink($legacy);
             }
+        } catch (Throwable $e) {
+            $driver = (string) $archivo['dibujo_storage'];
+            $key = (string) $archivo['dibujo_objeto'];
+            $error = substr($e->getMessage(), 0, 500);
+            $stmt = $this->db->prepare(
+                'INSERT INTO storage_delete_queue (driver,object_key,ultimo_error) VALUES (?,?,?)'
+            );
+            $stmt->bind_param('sss', $driver, $key, $error);
+            $stmt->execute();
+            $stmt->close();
+            return ['success' => true, 'warning' => 'La limpieza del archivo quedó programada.'];
         }
-
         return ['success' => true];
     }
 
-    /* ===========================================================
-       Helpers privados
-    =========================================================== */
-
-    private function obtenerTipoPregunta(int $idPregunta): string
+    private static function formatear(int $bytes): string
     {
-        $stmt = $this->db->prepare(
-            "SELECT COALESCE(tipo_pregunta,'texto') FROM preguntas WHERE id_pregunta = ?"
-        );
-
-        $stmt->bind_param("i", $idPregunta);
-        $stmt->execute();
-        $stmt->bind_result($tipo);
-        $stmt->fetch();
-        $stmt->close();
-
-        return $tipo ?? 'texto';
-    }
-
-    private function normalizarTipo(string $tipo): string
-    {
-        $t = strtolower(trim($tipo));
-
-        if (in_array($t, ['dibujo', 'imagen', 'canvas'], true)) {
-            return 'dibujo';
-        }
-
-        return 'texto';
-    }
-
-    private function resolverRutaPublica(?string $ruta): ?string
-    {
-        if (!$ruta) return null;
-
-        if (str_starts_with($ruta, 'http://') ||
-            str_starts_with($ruta, 'https://') ||
-            str_starts_with($ruta, '/')) {
-            return $ruta;
-        }
-
-        return '/' . ltrim($ruta, '/');
-    }
-
-    private function existeArchivo(?string $ruta): bool
-    {
-        if (!$ruta) return false;
-
-        $abs = $_SERVER['DOCUMENT_ROOT'] . '/simpinna/' . ltrim($ruta, '/');
-        return is_file($abs);
-    }
-
-    private function tamañoArchivoLegible(?string $ruta): ?string
-    {
-        if (!$ruta) return null;
-
-        $abs = $_SERVER['DOCUMENT_ROOT'] . '/simpinna/' . ltrim($ruta, '/');
-        if (!is_file($abs)) return null;
-
-        $bytes = filesize($abs);
-        if ($bytes === false) return null;
-
-        $kb = $bytes / 1024;
-        if ($kb < 1024) return round($kb, 1) . ' KB';
-
-        $mb = $kb / 1024;
-        return round($mb, 2) . ' MB';
+        if ($bytes < 1024) return $bytes . ' B';
+        if ($bytes < 1024 * 1024) return round($bytes / 1024, 1) . ' KB';
+        return round($bytes / (1024 * 1024), 1) . ' MB';
     }
 }

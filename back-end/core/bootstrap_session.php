@@ -7,6 +7,7 @@ if (session_status() === PHP_SESSION_DISABLED) {
 }
 
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.use_strict_mode', '1');
     $isHttps = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off')
         || (($_SERVER['SERVER_PORT'] ?? null) === '443');
 
@@ -29,4 +30,10 @@ if (!isset($_SESSION['__init'])) {
     $_SESSION['__init'] = time();
 }
 
-$_SESSION['last_activity'] = time();
+$ahora = time();
+$inactividadMaxima = 30 * 60;
+if (isset($_SESSION['last_activity']) && $ahora - (int) $_SESSION['last_activity'] > $inactividadMaxima) {
+    $_SESSION = [];
+    session_regenerate_id(true);
+}
+$_SESSION['last_activity'] = $ahora;

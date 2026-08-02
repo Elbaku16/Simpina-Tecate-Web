@@ -159,6 +159,8 @@
   <script src="<?php echo JS_URL; ?>header-menu.js"></script>
   <script>
     localStorage.removeItem('id_escuela_seleccionada');
+    localStorage.removeItem('genero_seleccionado');
+    localStorage.removeItem('nivel_encuesta_seleccionado');
   </script>
 </body>
 </html>

@@ -29,7 +29,7 @@ try {
     $host = $_SERVER['HTTP_HOST'];
     
 
-    $baseUrl = "{$protocol}://{$host}/simpinna";
+    $baseUrl = "{$protocol}://{$host}" . BASE_URL;
 
     $rutaEncuesta = $baseUrl . '/front-end/frames/encuestas/demo-encuestas.php';
 

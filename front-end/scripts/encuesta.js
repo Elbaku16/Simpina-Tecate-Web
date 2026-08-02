@@ -1,5 +1,4 @@
 // front-end/scripts/encuesta.js
-console.log("CARGADO encuesta.js", performance.now());
 
 import { construirPaginas } from './utils/paginacion.js';
 import { renderPagina } from './utils/renderer.js';
@@ -34,6 +33,25 @@ const respuestasGlobal = {
     dibujo: {}
 };
 
+function esOpcionOtro(texto) {
+    const valor = String(texto || '').trim().toLowerCase();
+    return valor.startsWith('otro') || valor.startsWith('otra');
+}
+
+function obtenerTextoOtro(idPregunta) {
+    return document.getElementById(`otro_${idPregunta}`)?.value.trim() || '';
+}
+
+function actualizarCampoOtro(idPregunta, mostrar) {
+    const input = document.getElementById(`otro_${idPregunta}`);
+    if (!input) return;
+
+    input.classList.toggle('oculto', !mostrar);
+    input.classList.toggle('visible', mostrar);
+    input.style.display = mostrar ? 'block' : 'none';
+    if (!mostrar) input.value = '';
+}
+
 /* ==========================================================
    GUARDAR DIBUJOS
 ========================================================== */
@@ -59,8 +77,6 @@ async function cargarEncuesta() {
 
         const data = await resp.json();
         preguntas = data.preguntas || [];
-        console.log("PREGUNTAS CRUDAS DEL BACKEND:", preguntas);
-
         idEncuesta = data.id_encuesta;
         window.preguntas = preguntas;
 
@@ -169,7 +185,25 @@ contenedor.addEventListener('input', (e) => {
         const id = target.id.replace('texto_', '');
         respuestasGlobal.texto[id] = target.value.trim();
     }
- 
+
+    if (target.matches('input.input-otro[id^="otro_"]')) {
+        const id = target.id.replace('otro_', '');
+        const textoOtro = target.value.trim();
+        const opcionSimple = respuestasGlobal.opcion[id];
+
+        if (opcionSimple && esOpcionOtro(opcionSimple.texto_opcion)) {
+            opcionSimple.texto_otro = textoOtro;
+        }
+
+        const opcionesMultiples = respuestasGlobal.multiple[id];
+        if (Array.isArray(opcionesMultiples)) {
+            opcionesMultiples.forEach(opcion => {
+                if (esOpcionOtro(opcion.texto_opcion)) {
+                    opcion.texto_otro = textoOtro;
+                }
+            });
+        }
+    }
 });
 
 contenedor.addEventListener('change', (e) => {
@@ -178,20 +212,31 @@ contenedor.addEventListener('change', (e) => {
         const id = target.name.replace('pregunta_', '');
         
         // Simplemente guardamos el ID y el texto normal, ignorando inputs extra
-        const obj = { 
+        const textoOpcion = target.dataset.texto || '';
+        const obj = {
             id_opcion: parseInt(target.value), 
-            texto_opcion: target.dataset.texto 
+            texto_opcion: textoOpcion,
+            texto_otro: esOpcionOtro(textoOpcion) ? obtenerTextoOtro(id) : null
         };
         
         respuestasGlobal.opcion[id] = obj;
+        actualizarCampoOtro(id, esOpcionOtro(textoOpcion));
     }
     if (target.matches('input[type="checkbox"]')) {
         const id = target.name.replace('pregunta_', '');
         const checked = contenedor.querySelectorAll(`input[name="${target.name}"]:checked`);
-        respuestasGlobal.multiple[id] = Array.from(checked).map(c => ({
-            id_opcion: parseInt(c.value),
-            texto_opcion: c.dataset.texto
-        }));
+        respuestasGlobal.multiple[id] = Array.from(checked).map(c => {
+            const textoOpcion = c.dataset.texto || '';
+            return {
+                id_opcion: parseInt(c.value),
+                texto_opcion: textoOpcion,
+                texto_otro: esOpcionOtro(textoOpcion) ? obtenerTextoOtro(id) : null
+            };
+        });
+        actualizarCampoOtro(
+            id,
+            respuestasGlobal.multiple[id].some(opcion => esOpcionOtro(opcion.texto_opcion))
+        );
     }
 });
 
@@ -206,14 +251,36 @@ function restaurarRespuestasEnDOM() {
     Object.entries(respuestasGlobal.opcion).forEach(([id, v]) => {
         if (!v?.id_opcion) return;
         const r = document.querySelector(`input[name="pregunta_${id}"][value="${v.id_opcion}"]`);
-        if (r) r.checked = true;
+        if (r) {
+            r.checked = true;
+            if (esOpcionOtro(v.texto_opcion)) {
+                const inputOtro = document.getElementById(`otro_${id}`);
+                if (inputOtro) {
+                    inputOtro.value = v.texto_otro || '';
+                    inputOtro.classList.remove('oculto');
+                    inputOtro.classList.add('visible');
+                    inputOtro.style.display = 'block';
+                }
+            }
+        }
        
     });
     Object.entries(respuestasGlobal.multiple).forEach(([id, arr]) => {
         if (!Array.isArray(arr)) return;
         arr.forEach(op => {
             const c = document.querySelector(`input[name="pregunta_${id}"][value="${op.id_opcion}"]`);
-            if (c) c.checked = true;
+            if (c) {
+                c.checked = true;
+                if (esOpcionOtro(op.texto_opcion)) {
+                    const inputOtro = document.getElementById(`otro_${id}`);
+                    if (inputOtro) {
+                        inputOtro.value = op.texto_otro || '';
+                        inputOtro.classList.remove('oculto');
+                        inputOtro.classList.add('visible');
+                        inputOtro.style.display = 'block';
+                    }
+                }
+            }
         });
     });
 }
@@ -235,8 +302,18 @@ function validarEncuestaCompleta() {
         if (tipo === 'opcion') {
             const d = respuestasGlobal.opcion[id];
             if (!d?.id_opcion) err.push(`"${label}" requiere opción.`);
+            else if (esOpcionOtro(d.texto_opcion) && !d.texto_otro?.trim()) {
+                err.push(`"${label}" requiere especificar la opción "Otro".`);
+            }
         }
-        if (tipo === 'multiple' && (!respuestasGlobal.multiple[id] || respuestasGlobal.multiple[id].length === 0)) err.push(`"${label}" requiere al menos una opción.`);
+        if (tipo === 'multiple') {
+            const seleccionadas = respuestasGlobal.multiple[id] || [];
+            if (seleccionadas.length === 0) {
+                err.push(`"${label}" requiere al menos una opción.`);
+            } else if (seleccionadas.some(op => esOpcionOtro(op.texto_opcion) && !op.texto_otro?.trim())) {
+                err.push(`"${label}" requiere especificar la opción "Otro".`);
+            }
+        }
         
         if (tipo === 'ranking') {
             // Validar contra window.respuestasRanking que es la fuente de verdad para ranking
@@ -263,7 +340,6 @@ function validarEncuestaCompleta() {
    ENVIAR
 ========================================================== */
 function enviar() {
-    console.log('Iniciando envío...');
     guardarDibujosPaginaActual();
 
     // Sincronizar Ranking final
@@ -277,12 +353,25 @@ function enviar() {
         return;
     }
 
-    let idEscuela = localStorage.getItem('id_escuela_seleccionada') || 1;
-    let genero = localStorage.getItem('genero_seleccionado') || 'X';
+    const idEscuelaGuardada = localStorage.getItem('id_escuela_seleccionada');
+    const generoGuardado = localStorage.getItem('genero_seleccionado');
+
+    if (idEscuelaGuardada === null || !generoGuardado) {
+        alert('Selecciona tu escuela y sexo antes de enviar la encuesta.');
+        return;
+    }
+
+    const idEscuela = Number.parseInt(idEscuelaGuardada, 10);
+    const genero = generoGuardado;
+
+    if (!Number.isInteger(idEscuela) || !['M', 'F', 'O', 'X'].includes(genero)) {
+        alert('Los datos de escuela o sexo no son válidos. Vuelve a seleccionarlos.');
+        return;
+    }
 
     const payload = {
         id_encuesta: idEncuesta,
-        id_escuela: parseInt(idEscuela),
+        id_escuela: idEscuela,
         genero: genero,
         respuestas: {
             texto: respuestasGlobal.texto,
@@ -293,7 +382,6 @@ function enviar() {
         dibujos: respuestasGlobal.dibujo
     };
 
-    console.log('Enviando:', payload);
     btnSiguiente.disabled = true;
 
     fetch(window.BASE_URL + '/back-end/routes/encuestas/enviar-respuestas.php', {
@@ -301,7 +389,20 @@ function enviar() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(async response => {
+        let data;
+        try {
+            data = await response.json();
+        } catch (_) {
+            throw new Error('El servidor devolvió una respuesta inválida.');
+        }
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || 'No se pudo guardar la encuesta.');
+        }
+
+        return data;
+    })
     .then(data => {
         if (data.success) {
             alert('¡Encuesta enviada exitosamente! ¡Gracias por participar!');
@@ -309,16 +410,14 @@ function enviar() {
             // Limpieza de datos
             localStorage.removeItem('id_escuela_seleccionada');
             localStorage.removeItem('genero_seleccionado');
+            localStorage.removeItem('nivel_encuesta_seleccionado');
             
             window.location.href = window.BASE_URL + '/front-end/frames/inicio/inicio.php';
-        } else {
-            alert('Error: ' + (data.error || 'Desconocido'));
-            btnSiguiente.disabled = false;
         }
     })
-    .catch(e => {
-        console.error(e);
-        alert('Error de conexión.');
+    .catch(error => {
+        console.error('Error al enviar la encuesta:', error);
+        alert('No se pudo enviar la encuesta: ' + error.message);
         btnSiguiente.disabled = false;
     });
 }

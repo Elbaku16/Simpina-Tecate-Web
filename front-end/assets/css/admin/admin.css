@@ -761,3 +761,14 @@ input:focus {
         font-size: 1.4rem;
     }
 }
+.logout-form {
+  display: inline;
+  margin: 0;
+}
+
+.logout-form .btn-logout,
+.logout-form .mobile-btn-logout {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}

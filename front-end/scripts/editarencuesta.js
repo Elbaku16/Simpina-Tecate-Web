@@ -10,6 +10,8 @@ const API_GUARDAR = `${window.BASE_URL}/back-end/routes/encuestas/guardar.php`;
 
 // Estado
 let preguntas = [];
+let idEncuestaOrigen = 0;
+let versionOrigen = 0;
 const eliminadas = new Set();
 let snapshotEstado = null; // Para cancelar cambios
 
@@ -100,6 +102,10 @@ async function cargarPreguntas() {
         const res = await fetch(API_OBTENER);
         const data = await res.json();
 
+        if (!res.ok) throw new Error(data.error || 'No se pudo cargar la encuesta.');
+        idEncuestaOrigen = Number(data.id_encuesta || 0);
+        versionOrigen = Number(data.version || 0);
+
         preguntas = (data.preguntas || []).map(p => ({
             ...p,
             id_pregunta: p.id_pregunta || p.id || 0,
@@ -108,6 +114,7 @@ async function cargarPreguntas() {
             orden: p.orden || 0,
             icono: p.icono || null,
             archivoImagen: null, // Archivo JS puro
+            quitarImagen: false,
             previewUrl: null,    // Para visualización rápida
             opciones: Array.isArray(p.opciones)
                 ? p.opciones.map(op => ({
@@ -115,6 +122,7 @@ async function cargarPreguntas() {
                     texto: op.texto_opcion || op.texto || "",
                     icono: op.icono || null,
                     archivoImagen: null,
+                    quitarImagen: false,
                     previewUrl: null
                   }))
                 : []
@@ -300,7 +308,10 @@ function crearInputImagen(objData, uniqueId) {
     if (objData.previewUrl) {
         mostrarPreview(objData.previewUrl);
     } else if (objData.icono) {
-        mostrarPreview("/" + objData.icono);
+        const ruta = String(objData.icono).replace(/^\/+/, '');
+        if (/^uploads\/(?:preguntas|opciones)\/[A-Za-z0-9_.-]+\.(?:jpe?g|png|webp)$/i.test(ruta)) {
+            mostrarPreview((window.BASE_URL || "") + "/" + ruta);
+        }
     }
 
     // Change event
@@ -317,6 +328,7 @@ function crearInputImagen(objData, uniqueId) {
             // Guardamos el archivo (se comprimirá al guardar globalmente o aquí, 
             // pero para UI rápida usamos createObjectURL)
             objData.archivoImagen = original; 
+            objData.quitarImagen = false;
         }
     };
 
@@ -324,6 +336,7 @@ function crearInputImagen(objData, uniqueId) {
         objData.archivoImagen = null;
         objData.icono = null;
         objData.previewUrl = null;
+        objData.quitarImagen = true;
         input.value = "";
         imgPreview.style.display = "none";
         btnRemove.style.display = "none";
@@ -404,6 +417,9 @@ async function guardarCambios() {
         
         formData.append("nivel", NIVEL);
         formData.append("eliminadas", JSON.stringify(eliminadasArray));
+        formData.append("id_encuesta_origen", idEncuestaOrigen);
+        formData.append("version_origen", versionOrigen);
+        formData.append("csrf_token", window.SIMPINNA_CSRF || '');
 
         // Usamos un bucle for...of para poder usar await dentro (compresión)
         for (let i = 0; i < preguntas.length; i++) {
@@ -421,6 +437,7 @@ async function guardarCambios() {
             } else if (p.icono) {
                 formData.append(`preguntas[${i}][icono_actual]`, p.icono);
             }
+            if (p.quitarImagen) formData.append(`preguntas[${i}][eliminar_icono]`, '1');
 
             // Opciones
             if (p.opciones && p.opciones.length > 0) {
@@ -436,6 +453,7 @@ async function guardarCambios() {
                     } else if (op.icono) {
                         formData.append(`preguntas[${i}][opciones][${j}][icono_actual]`, op.icono);
                     }
+                    if (op.quitarImagen) formData.append(`preguntas[${i}][opciones][${j}][eliminar_icono]`, '1');
                 }
             }
         }
@@ -443,7 +461,7 @@ async function guardarCambios() {
         const res = await fetch(API_GUARDAR, { method: "POST", body: formData });
         const data = await res.json();
 
-        if (data.success) {
+        if (res.ok && data.success) {
             // Éxito
             alert("Cambios guardados correctamente");
             window.location.href = window.BASE_URL + "/front-end/frames/panel/panel-admin.php";
@@ -494,6 +512,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 orden: preguntas.length + 1,
                 icono: null,
                 archivoImagen: null,
+                quitarImagen: false,
                 previewUrl: null,
                 opciones: []
             });

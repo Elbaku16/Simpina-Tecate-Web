@@ -1,20 +1,26 @@
 import { setRespuesta } from '../utils/progreso.js';
+import { escapeHtml, safeEditorialAsset, safeNumericId } from '../utils/safe-render.js';
 export const respuestasRanking = {};
 
 export function plantillaRanking(p) {
+    const id = safeNumericId(p.id);
+    const icono = safeEditorialAsset(p.icono);
     return `
-        ${p.icono ? `<img src="/${p.icono}" class="img-pregunta">` : ""}
-        <h3>${p.texto}</h3>
+        ${icono ? `<img src="${icono}" class="img-pregunta" alt="">` : ""}
+        <h3>${escapeHtml(p.texto)}</h3>
 
-        <div class="ranking-container" id="rankingContainer_${p.id}">
-            ${p.opciones.map((op, i) => `
-                <div class="ranking-item" data-opcion-id="${op.id}" data-posicion="${i+1}">
+        <div class="ranking-container" id="rankingContainer_${id}">
+            ${p.opciones.map((op, i) => {
+                const opId = safeNumericId(op.id);
+                const opIcono = safeEditorialAsset(op.icono);
+                return `
+                <div class="ranking-item" data-opcion-id="${opId}" data-posicion="${i+1}">
                     
-                    ${op.icono ? `<img src="/${op.icono}" class="img-opcion-ranking">` : ""}
+                    ${opIcono ? `<img src="${opIcono}" class="img-opcion-ranking" alt="">` : ""}
                     
                     <span class="ranking-numero">${i+1}</span>
                     
-                    <span class="ranking-texto">${op.texto}</span>
+                    <span class="ranking-texto">${escapeHtml(op.texto)}</span>
 
                     <div class="ranking-actions">
                         <button type="button" class="btn-rank btn-up" title="Subir">▲</button>
@@ -22,7 +28,7 @@ export function plantillaRanking(p) {
                     </div>
 
                 </div>
-            `).join('')}
+            `;}).join('')}
         </div>
     `;
 }
@@ -124,7 +130,6 @@ function guardar(id, cont) {
     // Actualizar progreso
     setRespuesta(id, arr.length > 0);
     
-    // console.log(`[Ranking] GUARDADO DATOS ID ${id}:`, JSON.stringify(arr));
 }
 
 /* ==========================================================

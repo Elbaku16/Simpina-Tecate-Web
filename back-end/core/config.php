@@ -1,11 +1,8 @@
 <?php
 
+require_once __DIR__ . '/../../front-end/includes/config.php';
 
-
-define('BASE_URL', '/simpinna');
-
-
-define('BASE_PATH', $_SERVER['DOCUMENT_ROOT'] . BASE_URL);
+define('BASE_PATH', dirname(__DIR__, 2));
 
 
 function redirect($path)

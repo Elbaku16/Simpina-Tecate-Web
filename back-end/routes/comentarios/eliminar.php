@@ -7,6 +7,13 @@ $baseBackend = __DIR__ . '/../../';
 require_once $baseBackend . 'auth/verificar-sesion.php';
 requerir_admin();
 
+if (!tiene_permiso('modificar_comentarios')) {
+    http_response_code(403);
+    exit('Permiso denegado.');
+}
+
+requerir_post_csrf();
+
 require_once $baseBackend . 'controllers/ComentariosController.php';
 
 

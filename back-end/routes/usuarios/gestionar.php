@@ -36,6 +36,7 @@ try {
             break;
             
         case 'crear':
+            requerir_post_csrf(true);
             $usuario  = $_POST['usuario'] ?? '';
             $password = $_POST['password'] ?? '';
             $nombre   = $_POST['nombre'] ?? '';
@@ -45,8 +46,9 @@ try {
             break;
             
         case 'eliminar':
+            requerir_post_csrf(true);
             $id = (int)($_POST['id'] ?? 0);
-            $response = $controller->eliminar($id);
+            $response = $controller->eliminar($id, (int) ($_SESSION['uid'] ?? 0));
             break;
 
         default:
@@ -57,10 +59,11 @@ try {
     echo json_encode($response, JSON_UNESCAPED_UNICODE);
 
 } catch (Throwable $e) {
+    error_log('Error al gestionar usuarios: ' . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false, 
-        'error' => $e->getMessage()
+        'error' => 'No se pudo completar la operación.'
     ], JSON_UNESCAPED_UNICODE);
 }
 exit;

@@ -25,12 +25,17 @@ class EncuestasController
 
         $niveles = [
             'preescolar'   => 1,
-            'primaria'     => 4,
-            'secundaria'   => 5,
-            'preparatoria' => 6,
+            'primaria'     => 2,
+            'secundaria'   => 3,
+            'preparatoria' => 4,
         ];
 
-        $idEncuesta = $niveles[$nivel] ?? 4;
+        $idNivel = $niveles[$nivel] ?? null;
+        if ($idNivel === null) {
+            throw new InvalidArgumentException('Nivel de encuesta inválido');
+        }
+
+        $idEncuesta = $this->obtenerEncuestaActivaPorNivel($idNivel);
 
         return [
             'id_encuesta' => $idEncuesta,
@@ -42,7 +47,29 @@ class EncuestasController
     /* ==========================================================
        CREAR REGISTRO DE USUARIO ENCUESTA (Sesión)
     ========================================================== */
-    private function crearUsuarioEncuesta(int $idEncuesta, int $idEscuela): int
+    private function obtenerEncuestaActivaPorNivel(int $idNivel): int
+    {
+        $sql = "SELECT id_encuesta
+                FROM encuestas
+                WHERE id_nivel = ? AND estado = 'activa'
+                ORDER BY id_encuesta DESC
+                LIMIT 1";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('i', $idNivel);
+        $stmt->execute();
+        $stmt->bind_result($idEncuesta);
+        $encontrada = $stmt->fetch();
+        $stmt->close();
+
+        if (!$encontrada) {
+            throw new RuntimeException('No hay una encuesta activa para este nivel');
+        }
+
+        return (int)$idEncuesta;
+    }
+
+    private function crearUsuarioEncuesta(int $idEncuesta, ?int $idEscuela): int
     {
         $sql = "INSERT INTO encuestas_usuarios
                 (id_encuesta, id_escuela, fecha_inicio)
@@ -123,23 +150,32 @@ class EncuestasController
             throw new Exception('ID de encuesta inválido');
         }
 
-        $idEscuela = (int)($payload['id_escuela'] ?? 1);
+        $configuracion = $this->obtenerConfiguracionEncuesta($idEncuesta);
+        $idEscuela = $this->normalizarEscuela(
+            (int)($payload['id_escuela'] ?? 0),
+            $configuracion['id_nivel']
+        );
         
-        // 1. RECIBIR GÉNERO (Por defecto 'X' si no viene)
-        $genero = isset($payload['genero']) ? substr(trim($payload['genero']), 0, 1) : 'X';
-        if (!in_array($genero, ['M', 'F', 'X'])) {
-            $genero = 'X';
+        $genero = strtoupper(trim((string)($payload['genero'] ?? '')));
+        if (!in_array($genero, ['M', 'F', 'O', 'X'], true)) {
+            throw new InvalidArgumentException('El sexo seleccionado no es válido');
         }
-
-        // Crear la sesión
-        $idUsuarioEncuesta = $this->crearUsuarioEncuesta($idEncuesta, $idEscuela);
 
         $respuestas = $payload['respuestas'] ?? [];
         $dibujos    = $payload['dibujos']    ?? [];
 
+        if (!is_array($respuestas) || !is_array($dibujos)) {
+            throw new InvalidArgumentException('El formato de las respuestas no es válido');
+        }
+
+        $this->validarRespuestas($configuracion['preguntas'], $respuestas, $dibujos);
+
         $this->db->begin_transaction();
+        $dibujosGuardados = [];
 
         try {
+            // La sesión forma parte de la misma transacción que sus respuestas.
+            $idUsuarioEncuesta = $this->crearUsuarioEncuesta($idEncuesta, $idEscuela);
             $total = 0;
 
             /* ---------------- TEXTO ---------------- */
@@ -183,7 +219,7 @@ class EncuestasController
                             (int)$idPregunta,
                             $idEscuela,
                             (int)$opcion['id_opcion'],
-                            null,
+                            isset($opcion['texto_otro']) ? trim((string)$opcion['texto_otro']) : null,
                             $genero // Pasamos género
                         );
                         $total++;
@@ -200,12 +236,13 @@ class EncuestasController
                         // Nota: Ranking no lleva género en su tabla específica por ahora, 
                         // pero está vinculado por id_usuario_encuesta
                         $sql = "INSERT INTO respuestas_ranking
-                                (id_usuario_encuesta, id_pregunta, id_opcion, posicion)
-                                VALUES (?, ?, ?, ?)";
+                                (id_usuario_encuesta, id_encuesta, id_pregunta, id_opcion, posicion)
+                                VALUES (?, ?, ?, ?, ?)";
 
                         $stmt = $this->db->prepare($sql);
-                        $stmt->bind_param("iiii",
+                        $stmt->bind_param("iiiii",
                             $idUsuarioEncuesta,
+                            $idEncuesta,
                             $idPregunta,
                             $item['id_opcion'],
                             $item['posicion']
@@ -221,7 +258,7 @@ class EncuestasController
             /* ---------------- DIBUJOS ---------------- */
             if (!empty($dibujos)) {
                 foreach ($dibujos as $idPregunta => $base64) {
-                    $this->guardarDibujo(
+                    $rutaGuardada = $this->guardarDibujo(
                         $idUsuarioEncuesta,
                         $idEncuesta,
                         (int)$idPregunta,
@@ -229,6 +266,9 @@ class EncuestasController
                         $base64,
                         $genero // Pasamos género
                     );
+                    if ($rutaGuardada !== null) {
+                        $dibujosGuardados[] = $rutaGuardada;
+                    }
                     $total++;
                 }
             }
@@ -242,7 +282,179 @@ class EncuestasController
 
         } catch (Throwable $e) {
             $this->db->rollback();
+            foreach ($dibujosGuardados as $dibujo) {
+                try {
+                    DibujoHelper::eliminar($dibujo['driver'], $dibujo['key']);
+                } catch (Throwable $cleanupError) {
+                    error_log('No se pudo limpiar dibujo tras rollback: ' . $cleanupError->getMessage());
+                }
+            }
             throw $e;
+        }
+    }
+
+    private function obtenerConfiguracionEncuesta(int $idEncuesta): array
+    {
+        $sql = "SELECT e.id_nivel, e.estado, e.acepta_respuestas_hasta,
+                       (e.acepta_respuestas_hasta IS NOT NULL
+                        AND e.acepta_respuestas_hasta >= NOW()) AS en_gracia,
+                       p.id_pregunta, p.tipo_pregunta, o.id_opcion
+                FROM encuestas e
+                LEFT JOIN preguntas p ON p.id_encuesta = e.id_encuesta
+                LEFT JOIN opciones_respuesta o ON o.id_pregunta = p.id_pregunta
+                WHERE e.id_encuesta = ?";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('i', $idEncuesta);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $idNivel = null;
+        $estado = null;
+        $enGracia = false;
+        $preguntas = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $idNivel = (int)$row['id_nivel'];
+            $estado = $row['estado'];
+            $enGracia = (bool) $row['en_gracia'];
+
+            if ($row['id_pregunta'] === null) {
+                continue;
+            }
+
+            $idPregunta = (int)$row['id_pregunta'];
+            if (!isset($preguntas[$idPregunta])) {
+                $preguntas[$idPregunta] = [
+                    'tipo' => strtolower(trim((string)$row['tipo_pregunta'])),
+                    'opciones' => [],
+                ];
+            }
+
+            if ($row['id_opcion'] !== null) {
+                $preguntas[$idPregunta]['opciones'][(int)$row['id_opcion']] = true;
+            }
+        }
+
+        $stmt->close();
+
+        if ($idNivel === null) {
+            throw new InvalidArgumentException('La encuesta indicada no existe');
+        }
+        if ($estado !== 'activa' && !$enGracia) {
+            throw new InvalidArgumentException('La encuesta ya no está activa');
+        }
+
+        return [
+            'id_nivel' => $idNivel,
+            'preguntas' => $preguntas,
+        ];
+    }
+
+    private function normalizarEscuela(int $idEscuela, int $idNivel): ?int
+    {
+        // 0 representa “No estudio actualmente”. 9999 se acepta únicamente
+        // para que pestañas antiguas abiertas antes de esta corrección no fallen.
+        if ($idEscuela <= 0 || $idEscuela === 9999) {
+            return null;
+        }
+
+        $stmt = $this->db->prepare(
+            'SELECT id_nivel FROM escuelas WHERE id_escuela = ? LIMIT 1'
+        );
+        $stmt->bind_param('i', $idEscuela);
+        $stmt->execute();
+        $stmt->bind_result($nivelEscuela);
+        $existe = $stmt->fetch();
+        $stmt->close();
+
+        if (!$existe || (int)$nivelEscuela !== $idNivel) {
+            throw new InvalidArgumentException('La escuela seleccionada no pertenece al nivel de la encuesta');
+        }
+
+        return $idEscuela;
+    }
+
+    private function validarRespuestas(array $preguntas, array $respuestas, array $dibujos): void
+    {
+        $grupos = [
+            'texto' => ['texto'],
+            'opcion' => ['opcion'],
+            'multiple' => ['multiple'],
+            'ranking' => ['ranking'],
+        ];
+
+        foreach ($grupos as $grupo => $tiposPermitidos) {
+            $datosGrupo = $respuestas[$grupo] ?? [];
+            if (!is_array($datosGrupo)) {
+                throw new InvalidArgumentException("El grupo de respuestas '$grupo' no es válido");
+            }
+
+            foreach ($datosGrupo as $idPreguntaRaw => $valor) {
+                $idPregunta = (int)$idPreguntaRaw;
+                $this->validarTipoPregunta($preguntas, $idPregunta, $tiposPermitidos);
+
+                if ($grupo === 'texto' && !is_string($valor)) {
+                    throw new InvalidArgumentException('Una respuesta de texto tiene un formato inválido');
+                }
+
+                if ($grupo === 'opcion') {
+                    if (!is_array($valor) || !isset($valor['id_opcion'])) {
+                        throw new InvalidArgumentException('Una respuesta de opción tiene un formato inválido');
+                    }
+                    $this->validarOpcion($preguntas, $idPregunta, (int)$valor['id_opcion']);
+                    if (isset($valor['texto_otro']) && !is_string($valor['texto_otro'])) {
+                        throw new InvalidArgumentException('El texto de la opción "Otro" no es válido');
+                    }
+                }
+
+                if ($grupo === 'multiple' || $grupo === 'ranking') {
+                    if (!is_array($valor)) {
+                        throw new InvalidArgumentException('Una respuesta con varias opciones tiene un formato inválido');
+                    }
+                    foreach ($valor as $item) {
+                        if (!is_array($item) || !isset($item['id_opcion'])) {
+                            throw new InvalidArgumentException('Una opción seleccionada tiene un formato inválido');
+                        }
+                        $this->validarOpcion($preguntas, $idPregunta, (int)$item['id_opcion']);
+                        if (isset($item['texto_otro']) && !is_string($item['texto_otro'])) {
+                            throw new InvalidArgumentException('El texto de la opción "Otro" no es válido');
+                        }
+                        if ($grupo === 'ranking' && (!isset($item['posicion']) || (int)$item['posicion'] <= 0)) {
+                            throw new InvalidArgumentException('Una posición del ranking no es válida');
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach ($dibujos as $idPreguntaRaw => $base64) {
+            $idPregunta = (int)$idPreguntaRaw;
+            $this->validarTipoPregunta($preguntas, $idPregunta, ['dibujo']);
+            if (!is_string($base64)) {
+                throw new InvalidArgumentException('Un dibujo tiene un formato inválido');
+            }
+        }
+    }
+
+    private function validarTipoPregunta(
+        array $preguntas,
+        int $idPregunta,
+        array $tiposPermitidos
+    ): void {
+        if (!isset($preguntas[$idPregunta])) {
+            throw new InvalidArgumentException('Una pregunta no pertenece a la encuesta enviada');
+        }
+
+        if (!in_array($preguntas[$idPregunta]['tipo'], $tiposPermitidos, true)) {
+            throw new InvalidArgumentException('El tipo de una respuesta no coincide con su pregunta');
+        }
+    }
+
+    private function validarOpcion(array $preguntas, int $idPregunta, int $idOpcion): void
+    {
+        if (!isset($preguntas[$idPregunta]['opciones'][$idOpcion])) {
+            throw new InvalidArgumentException('Una opción no pertenece a la pregunta enviada');
         }
     }
 
@@ -254,7 +466,7 @@ class EncuestasController
         int $idUsuarioEncuesta,
         int $idEncuesta,
         int $idPregunta,
-        int $idEscuela,
+        ?int $idEscuela,
         string $texto,
         string $genero
     ): void {
@@ -281,7 +493,7 @@ class EncuestasController
         int $idUsuarioEncuesta,
         int $idEncuesta,
         int $idPregunta,
-        int $idEscuela,
+        ?int $idEscuela,
         int $idOpcion,
         ?string $textoOtro = null,
         string $genero = 'X'
@@ -310,11 +522,11 @@ class EncuestasController
         int $idUsuarioEncuesta,
         int $idEncuesta,
         int $idPregunta,
-        int $idEscuela,
+        ?int $idEscuela,
         string $base64,
         string $genero
-    ): void {
-        if (strlen($base64) < 50) return;
+    ): ?array {
+        if (strlen($base64) < 50) return null;
 
         // Agregamos campo 'genero'
         $sql = "INSERT INTO respuestas_usuario
@@ -336,12 +548,33 @@ class EncuestasController
         $stmt->close();
 
         // Guardar archivo físico
-        $ruta = DibujoHelper::guardar($base64, $idRespuesta);
+        try {
+            $guardado = DibujoHelper::guardar($base64, $idRespuesta);
 
-        $sql = "UPDATE respuestas_usuario SET dibujo_ruta=? WHERE id_respuesta_usuario=?";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bind_param("si", $ruta, $idRespuesta);
-        $stmt->execute();
-        $stmt->close();
+            $sql = "UPDATE respuestas_usuario
+                    SET dibujo_ruta=NULL,dibujo_storage=?,dibujo_objeto=?,dibujo_bytes=?
+                    WHERE id_respuesta_usuario=?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bind_param(
+                "ssii",
+                $guardado['driver'],
+                $guardado['key'],
+                $guardado['bytes'],
+                $idRespuesta
+            );
+            $stmt->execute();
+            $stmt->close();
+
+            return $guardado;
+        } catch (Throwable $e) {
+            if (isset($guardado)) {
+                try {
+                    DibujoHelper::eliminar($guardado['driver'], $guardado['key']);
+                } catch (Throwable $cleanupError) {
+                    error_log('No se pudo limpiar dibujo fallido: ' . $cleanupError->getMessage());
+                }
+            }
+            throw $e;
+        }
     }
 }

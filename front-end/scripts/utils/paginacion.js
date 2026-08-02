@@ -1,6 +1,4 @@
 // utils/paginacion.js
-console.log("CARGADO: paginacion.js", performance.now());
-
 export const PREGUNTAS_POR_PAGINA = 3;
 
 export function construirPaginas(lista) {

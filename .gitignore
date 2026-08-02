@@ -67,8 +67,31 @@ web_modules/
 
 # dotenv environment variable files
 .env
+
+# Respaldos, diagnósticos y archivos sensibles
+*.sql
+!back-end/database/schema.sql
+!back-end/database/seed-development.sql
+!back-end/database/migrations/*.sql
+*.bak
+*.backup
+*.old
+*.txt
+*.ini
+*.dist
+*.log
+back-end/routes/**/debug_*
+vendor/
 .env.*
 !.env.example
+
+# Datos locales, respuestas y metadatos de herramientas
+.DS_Store
+.claude/settings.local.json
+.git.zip
+.git (2).zip
+storage/drawings/
+uploads/dibujos/**/*.png
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

@@ -1,10 +1,13 @@
 import { setRespuesta } from '../utils/progreso.js';
+import { escapeHtml, safeEditorialAsset, safeNumericId } from '../utils/safe-render.js';
 
 export function plantillaTexto(p) {
+    const id = safeNumericId(p.id);
+    const icono = safeEditorialAsset(p.icono);
     return `
-        ${p.icono ? `<img src="/${p.icono}" class="img-pregunta">` : ""}
-        <h3>${p.texto}</h3>
-        <textarea id="texto_${p.id}" rows="5" placeholder="Escribe tu respuesta aquí..."></textarea>
+        ${icono ? `<img src="${icono}" class="img-pregunta" alt="">` : ""}
+        <h3>${escapeHtml(p.texto)}</h3>
+        <textarea id="texto_${id}" rows="5" placeholder="Escribe tu respuesta aquí..."></textarea>
     `;
 }
 

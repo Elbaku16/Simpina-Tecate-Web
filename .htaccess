@@ -1,4 +1,7 @@
-<Files .env>
-    Order allow,deny
-    Deny from all
-</Files>
+Options -Indexes
+RewriteEngine On
+RewriteRule ^(?:bin|storage|vendor|back-end/(?:auth|controllers|core|database|helpers|models|security|storage)|front-end/includes)(?:/|$) - [F,L,NC]
+
+<FilesMatch "(?i)(^\.env(?:\..*)?$|^(?:composer\.(?:json|lock)|README\.md)$|\.(?:sql|log|txt|bak|backup|old|ini|dist)$)">
+    Require all denied
+</FilesMatch>

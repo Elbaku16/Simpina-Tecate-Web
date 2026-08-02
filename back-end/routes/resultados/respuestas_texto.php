@@ -35,6 +35,8 @@ try {
                 exit;
             }
 
+            requerir_post_csrf(true);
+
             $idRespuesta = (int)($_POST['id_respuesta'] ?? 0);
             $respuesta = $controller->eliminar($idRespuesta);
             echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
@@ -45,9 +47,20 @@ try {
             break;
     }
 
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+} catch (Throwable $e) {
+    $esSolicitudInvalida = $e instanceof InvalidArgumentException;
+    http_response_code($esSolicitudInvalida ? 422 : 500);
+
+    if (!$esSolicitudInvalida) {
+        error_log('Error al consultar respuestas: ' . $e->getMessage());
+    }
+
+    echo json_encode([
+        'success' => false,
+        'error' => $esSolicitudInvalida
+            ? $e->getMessage()
+            : 'No se pudieron cargar las respuestas.'
+    ], JSON_UNESCAPED_UNICODE);
 }
 exit;
 ?>

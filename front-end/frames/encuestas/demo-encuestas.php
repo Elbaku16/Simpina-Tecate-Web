@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
-$nivel = $_GET['nivel'] ?? 'primaria';
+$nivel = strtolower(trim((string) ($_GET['nivel'] ?? 'primaria')));
+if (!in_array($nivel, ['preescolar', 'primaria', 'secundaria', 'preparatoria'], true)) {
+    http_response_code(404);
+    exit('Encuesta no encontrada');
+}
 $nivelTitulo = ucfirst($nivel);
 ?>
 <!DOCTYPE html>
@@ -43,11 +47,6 @@ $nivelTitulo = ucfirst($nivel);
       border-top: 4px solid #611232;
       border-radius: 50%;
       animation: spin 1s linear infinite;
-    }
-    input[id^="otro_"], 
-    textarea[id^="otro_"],
-    .input-otro { 
-        display: none !important; 
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
@@ -144,9 +143,9 @@ $nivelTitulo = ucfirst($nivel);
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="<?php echo JS_URL; ?>modal-escuela.js"></script>
-<script type="module" src="<?php echo JS_URL; ?>encuesta.js"></script>
-<script src="<?php echo JS_URL; ?>canvas/canvas-paint.mount.js"></script>
+<script src="<?php echo JS_URL; ?>modal-escuela.js?v=<?php echo filemtime(__DIR__ . '/../../scripts/modal-escuela.js'); ?>"></script>
+<script type="module" src="<?php echo JS_URL; ?>encuesta.js?v=<?php echo filemtime(__DIR__ . '/../../scripts/encuesta.js'); ?>"></script>
+<script src="<?php echo JS_URL; ?>canvas/canvas-paint.mount.js?v=<?php echo filemtime(__DIR__ . '/../../scripts/canvas/canvas-paint.mount.js'); ?>"></script>
 <script src="<?php echo JS_URL; ?>header-menu.js"></script>
 
 </body>

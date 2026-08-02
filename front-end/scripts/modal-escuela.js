@@ -13,6 +13,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!container) return;
     const nivelActual = container.dataset.nivel;
 
+    // Los datos de escuela solo son reutilizables dentro del mismo nivel.
+    // Esto también limpia selecciones antiguas que usaban el ID ficticio 9999.
+    const nivelGuardado = localStorage.getItem('nivel_encuesta_seleccionado');
+    const escuelaGuardada = localStorage.getItem('id_escuela_seleccionada');
+    if (nivelGuardado !== nivelActual || escuelaGuardada === '9999') {
+        localStorage.removeItem('id_escuela_seleccionada');
+        localStorage.removeItem('genero_seleccionado');
+        localStorage.removeItem('nivel_encuesta_seleccionado');
+    }
+
     // 2. Revisar si ya existen datos guardados
     if (localStorage.getItem('id_escuela_seleccionada') && localStorage.getItem('genero_seleccionado')) {
         modal.style.display = 'none';
@@ -33,11 +43,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (nivelObj) {
                     const lista = data.escuelasPorNivel[nivelObj.id_nivel] || [];
 
-                    const ID_NO_ESTUDIO = 9999; // EL MISMO QUE INSERTASTE EN BD
-
                     selectEscuela.innerHTML = `
                         <option value="">-- Selecciona tu escuela --</option>
-                        <option value="${ID_NO_ESTUDIO}">No estudio actualmente</option>
+                        <option value="0">No estudio actualmente</option>
                     `;
 
                     lista.forEach(esc => {
@@ -84,6 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         localStorage.setItem('id_escuela_seleccionada', selectEscuela.value);
         localStorage.setItem('genero_seleccionado', selectGenero.value);
+        localStorage.setItem('nivel_encuesta_seleccionado', nivelActual);
 
         modal.style.display = 'none';
 
@@ -99,6 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (confirm('¿Quieres cambiar tus datos (Escuela/Género)? Se reiniciará la encuesta.')) {
                 localStorage.removeItem('id_escuela_seleccionada');
                 localStorage.removeItem('genero_seleccionado');
+                localStorage.removeItem('nivel_encuesta_seleccionado');
                 window.location.reload();
             }
         });

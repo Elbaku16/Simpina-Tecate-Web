@@ -1,6 +1,4 @@
 // utils/renderer.js
-console.log("CARGADO: renderer.js", performance.now());
-
 import { setRespuesta } from './progreso.js';
 import { plantillaTexto } from '../components/pregunta-texto.js';
 import { plantillaOpcion } from '../components/pregunta-opcion.js';
@@ -45,35 +43,4 @@ export function renderPagina(indices, preguntas, contenedor) {
     });
 
     contenedor.appendChild(page);
-    page.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
-        const label = input.closest("label");
-        if (!label) return;
-
-        const texto = label.textContent.trim().toLowerCase();
-        const esOtro = texto.startsWith("otro") || texto.includes("otro:")|| texto.includes("otra");
-
-        if (!esOtro) return;
-
-        const idPregunta = input.name.replace("pregunta_", "");
-        const inputOtro = document.querySelector(`#otro_${idPregunta}`);
-        if (!inputOtro) return;
-
-        // Estado inicial
-        if (!input.checked) {
-            inputOtro.classList.add("oculto");
-            inputOtro.style.display = "none";
-        }
-
-        // Evento para mostrar/ocultar
-        input.addEventListener("change", () => {
-            if (input.checked) {
-                inputOtro.classList.remove("oculto");
-                inputOtro.style.display = "block";
-            } else if (input.type === "radio") {
-                inputOtro.classList.add("oculto");
-                inputOtro.style.display = "none";
-                inputOtro.value = "";
-            }
-        });
-    });
 }

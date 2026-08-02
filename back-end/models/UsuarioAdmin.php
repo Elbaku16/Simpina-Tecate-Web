@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../security/PasswordService.php';
+
 class UsuarioAdmin
 {
     private int $id;
@@ -9,14 +11,23 @@ class UsuarioAdmin
     private string $passwordHash;
     private string $nombre;
     private string $rol;
+    private bool $requiereCambioPassword;
 
-    private function __construct(int $id, string $usuario, string $passwordHash, string $nombre, string $rol)
+    private function __construct(
+        int $id,
+        string $usuario,
+        string $passwordHash,
+        string $nombre,
+        string $rol,
+        bool $requiereCambioPassword
+    )
     {
         $this->id = $id;
         $this->usuario = $usuario;
         $this->passwordHash = $passwordHash;
         $this->nombre = $nombre;
         $this->rol = $rol;
+        $this->requiereCambioPassword = $requiereCambioPassword;
     }
 
     /** Factory que crea entidad desde DB */
@@ -30,7 +41,8 @@ class UsuarioAdmin
             (string) ($row['nombre'] ?? 'Secretario Ejecutivo'), 
             
             // CAMBIO AQUÍ: El valor por defecto ahora es el nuevo rol
-            (string) ($row['rol'] ?? 'secretario_ejecutivo') 
+            (string) ($row['rol'] ?? 'secretario_ejecutivo'),
+            (bool) ($row['requiere_cambio_password'] ?? true)
         );
     }
 
@@ -54,7 +66,7 @@ class UsuarioAdmin
     /** Valida el password del usuario */
     public function verificarPassword(string $passwordPlano): bool
     {
-        return hash_equals($this->passwordHash, $passwordPlano);
+        return PasswordService::verificar($passwordPlano, $this->passwordHash);
     }
 
     /** Getters de la entidad */
@@ -62,4 +74,6 @@ class UsuarioAdmin
     public function getUsuario(): string { return $this->usuario; }
     public function getNombre(): string { return $this->nombre; }
     public function getRol(): string { return $this->rol; }
+    public function getPasswordHash(): string { return $this->passwordHash; }
+    public function requiereCambioPassword(): bool { return $this->requiereCambioPassword; }
 }

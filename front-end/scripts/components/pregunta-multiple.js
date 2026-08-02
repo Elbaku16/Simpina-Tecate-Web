@@ -1,18 +1,24 @@
 import { setRespuesta } from '../utils/progreso.js';
+import { escapeHtml, safeEditorialAsset, safeNumericId } from '../utils/safe-render.js';
 
 export function plantillaMultiple(p) {
+    const id = safeNumericId(p.id);
+    const icono = safeEditorialAsset(p.icono);
     return `
-        ${p.icono ? `<img src="/${p.icono}" class="img-pregunta">` : ""}
-        <h3>${p.texto}</h3>
+        ${icono ? `<img src="${icono}" class="img-pregunta" alt="">` : ""}
+        <h3>${escapeHtml(p.texto)}</h3>
         <div class="opciones">
-            ${p.opciones.map(op => `
+            ${p.opciones.map(op => {
+                const opId = safeNumericId(op.id);
+                const opIcono = safeEditorialAsset(op.icono);
+                return `
                 <label class="opcion-contenedor">
-                    <input type="checkbox" name="pregunta_${p.id}" value="${op.id}" data-texto="${op.texto}">
-                    ${op.icono ? `<img src="/${op.icono}" class="img-opcion">` : ""}
-                    ${op.texto ? `<span>${op.texto}</span>` : ""}
+                    <input type="checkbox" name="pregunta_${id}" value="${opId}" data-texto="${escapeHtml(op.texto)}">
+                    ${opIcono ? `<img src="${opIcono}" class="img-opcion" alt="">` : ""}
+                    ${op.texto ? `<span>${escapeHtml(op.texto)}</span>` : ""}
                 </label>
-            `).join('')}
-            <input type="text" class="input-otro oculto" id="otro_${p.id}" placeholder="Especifica tu respuesta...">
+            `;}).join('')}
+            <input type="text" class="input-otro oculto" id="otro_${id}" placeholder="Especifica tu respuesta...">
         </div>
     `;
 }

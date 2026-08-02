@@ -1,471 +1,258 @@
 <?php
 declare(strict_types=1);
 
-class Resultados
+final class Resultados
 {
-    /**
-     * Mapea nombre de nivel → id_nivel
-     */
     public static function obtenerIdNivel(array $map, string $nivelNombre): ?int
     {
-        $nivelNombre = strtolower(trim($nivelNombre));
-        return $map[$nivelNombre] ?? null;
+        return $map[strtolower(trim($nivelNombre))] ?? null;
     }
 
-    /**
-     * Obtiene el id_encuesta asociado a un nivel (id_nivel)
-     */
     public static function obtenerEncuestaId(mysqli $db, int $nivelId): ?int
     {
-        $sql = "SELECT id_encuesta
-                FROM encuestas
-                WHERE id_nivel = ?
-                ORDER BY id_encuesta
-                LIMIT 1";
-
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error al preparar consulta de encuesta: " . $db->error);
-        }
-
-        $stmt->bind_param("i", $nivelId);
+        $stmt = $db->prepare(
+            "SELECT id_encuesta FROM encuestas
+             WHERE id_nivel=? AND estado='activa'
+             ORDER BY version DESC,id_encuesta DESC LIMIT 1"
+        );
+        $stmt->bind_param('i', $nivelId);
         $stmt->execute();
-        $stmt->bind_result($id);
-        $stmt->fetch();
+        $id = $stmt->get_result()->fetch_column();
         $stmt->close();
-
-        return $id ? (int)$id : null;
+        return $id ? (int) $id : null;
     }
 
-    /**
-     * Obtiene las escuelas de un nivel
-     */
     public static function obtenerEscuelasPorNivel(mysqli $db, int $nivelId): array
     {
-        $sql = "SELECT id_escuela, nombre_escuela
-                FROM escuelas
-                WHERE id_nivel = ?
-                ORDER BY nombre_escuela";
-
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error al preparar consulta de escuelas: " . $db->error);
-        }
-
-        $stmt->bind_param("i", $nivelId);
+        $stmt = $db->prepare(
+            'SELECT id_escuela,nombre_escuela FROM escuelas WHERE id_nivel=? ORDER BY nombre_escuela'
+        );
+        $stmt->bind_param('i', $nivelId);
         $stmt->execute();
-
-        $res = $stmt->get_result();
-        $out = [];
-
-        while ($row = $res->fetch_assoc()) {
-            $out[] = [
-                'id'     => (int)$row['id_escuela'],
-                'nombre' => $row['nombre_escuela']
-            ];
+        $result = $stmt->get_result();
+        $salida = [];
+        while ($row = $result->fetch_assoc()) {
+            $salida[] = ['id' => (int) $row['id_escuela'], 'nombre' => $row['nombre_escuela']];
         }
-
         $stmt->close();
-        return $out;
+        return $salida;
     }
 
-    /**
-     * Preguntas de una encuesta
-     */
-    public static function obtenerPreguntas(mysqli $db, int $encuestaId): array
+    /** Devuelve la definición más reciente y conserva preguntas retiradas con historia. */
+    public static function obtenerPreguntasAcumuladas(mysqli $db, int $nivelId): array
     {
-        $sql = "SELECT 
-                    id_pregunta,
-                    id_encuesta,
-                    texto_pregunta,
-                    COALESCE(tipo_pregunta, 'opcion') AS tipo_pregunta,
-                    COALESCE(orden, id_pregunta)      AS orden
-                FROM preguntas
-                WHERE id_encuesta = ?
-                ORDER BY orden ASC";
-
+        $sql = "SELECT p.id_pregunta,p.id_encuesta,p.clave_logica,p.texto_pregunta,
+                       COALESCE(p.tipo_pregunta,'opcion') AS tipo_pregunta,
+                       COALESCE(p.orden,p.id_pregunta) AS orden,
+                       EXISTS(
+                         SELECT 1 FROM preguntas pa JOIN encuestas ea ON ea.id_encuesta=pa.id_encuesta
+                         WHERE pa.clave_logica=p.clave_logica AND ea.estado='activa'
+                       ) AS vigente
+                FROM preguntas p
+                JOIN encuestas e ON e.id_encuesta=p.id_encuesta
+                WHERE e.id_nivel=?
+                  AND NOT EXISTS (
+                    SELECT 1 FROM preguntas pn JOIN encuestas en ON en.id_encuesta=pn.id_encuesta
+                    WHERE pn.clave_logica=p.clave_logica AND en.id_nivel=e.id_nivel
+                      AND (en.version>e.version OR (en.version=e.version AND pn.id_pregunta>p.id_pregunta))
+                  )
+                ORDER BY vigente DESC,orden,id_pregunta";
         $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error al preparar consulta de preguntas: " . $db->error);
-        }
-
-        $stmt->bind_param("i", $encuestaId);
+        $stmt->bind_param('i', $nivelId);
         $stmt->execute();
-
-        $result    = $stmt->get_result();
-        $preguntas = [];
-
-        while ($p = $result->fetch_assoc()) {
-            $p['id_pregunta']   = (int)$p['id_pregunta'];
-            $p['id_encuesta']   = (int)$p['id_encuesta'];
-            $p['tipo_pregunta'] = strtolower(trim((string)$p['tipo_pregunta']));
-            $p['orden']         = (int)$p['orden'];
-            $preguntas[]        = $p;
+        $result = $stmt->get_result();
+        $salida = [];
+        while ($row = $result->fetch_assoc()) {
+            $row['id_pregunta'] = (int) $row['id_pregunta'];
+            $row['id_encuesta'] = (int) $row['id_encuesta'];
+            $row['orden'] = (int) $row['orden'];
+            $row['tipo_pregunta'] = strtolower(trim((string) $row['tipo_pregunta']));
+            $row['vigente'] = (bool) $row['vigente'];
+            $salida[] = $row;
         }
-
         $stmt->close();
-        return $preguntas;
+        return $salida;
     }
 
-    /**
-     * Calcula estadísticas combinadas:
-     *
-     * @param int $escuelaFiltro id_escuela (0 = todas)
-     * @param string $generoFiltro 'M', 'F', 'O', 'X', o '' (todos)
-     * @param ?array $cicloRango [inicio_anio, fin_anio] o null (todos)
-     */
-    public static function obtenerEstadisticasMixta(
+    /** @return array{opciones:array<int,array<int,array{texto:string,total:int,promedio:float}>>,total:int} */
+    public static function obtenerOpcionesAcumuladas(
         mysqli $db,
+        int $nivelId,
         array $preguntas,
-        int $escuelaFiltro = 0,
-        string $generoFiltro = '', 
-        ?array $cicloRango = null
+        int $escuelaFiltro,
+        string $generoFiltro,
+        ?array $cicloRango
     ): array {
-        if (empty($preguntas)) {
-            return [];
+        $preguntaPorClave = [];
+        foreach ($preguntas as $pregunta) {
+            $preguntaPorClave[$pregunta['clave_logica']] = (int) $pregunta['id_pregunta'];
         }
 
-        $idsOpciones = []; // opcion, multiple
-        $idsRanking  = []; // ranking
-
-        foreach ($preguntas as $p) {
-            $tipo = strtolower(trim($p['tipo_pregunta'] ?? ''));
-            $pid  = (int)$p['id_pregunta'];
-
-            if (in_array($tipo, ['opcion', 'multiple'], true)) {
-                $idsOpciones[] = $pid;
-            } elseif ($tipo === 'ranking') {
-                $idsRanking[] = $pid;
-            }
-        }
-
-        $estadisticas = [];
-
-        // 1) Estadísticas de opcion / multiple (respuestas_usuario)
-        if (!empty($idsOpciones)) {
-            $statsOpc = self::obtenerEstadisticasOpciones($db, $idsOpciones, $escuelaFiltro, $generoFiltro, $cicloRango);
-            $estadisticas = $statsOpc;
-        }
-
-        // 2) Estadísticas de ranking (respuestas_ranking)
-        if (!empty($idsRanking)) {
-            // El ranking ahora devuelve promedio y total
-            $statsRank = self::obtenerEstadisticasRanking($db, $idsRanking, $escuelaFiltro, $generoFiltro, $cicloRango);
-
-            foreach ($statsRank as $pid => $porOpcion) {
-                if (!isset($estadisticas[$pid])) {
-                    $estadisticas[$pid] = [];
-                }
-                foreach ($porOpcion as $oid => $data) {
-                    // Almacena el total de votos (para pie chart) y el promedio (para barra)
-                    $estadisticas[$pid][$oid] = [
-                        'total'    => $data['total_respuestas'],
-                        'promedio' => $data['promedio_posicion'] 
-                    ];
-                }
-            }
-        }
-
-        return $estadisticas;
-    }
-
-    /**
-     * Estadísticas para preguntas tipo opcion / multiple
-     * Usa campos de filtro nuevos (escuela, genero, ciclo)
-     */
-    public static function obtenerEstadisticasOpciones(
-        mysqli $db,
-        array $idsPreguntas,
-        int $escuelaFiltro = 0,
-        string $generoFiltro = '', 
-        ?array $cicloRango = null
-    ): array {
-        if (empty($idsPreguntas)) {
-            return [];
-        }
-
-        $placeholders = implode(',', array_fill(0, count($idsPreguntas), '?'));
-        $types        = str_repeat('i', count($idsPreguntas));
-        $params       = $idsPreguntas;
-
-        $sql = "SELECT 
-                    r.id_pregunta,
-                    r.id_opcion,
-                    COUNT(*) AS total_respuestas
-                FROM respuestas_usuario r
-                WHERE r.id_pregunta IN ($placeholders)
-                  AND r.id_opcion IS NOT NULL";
-
-        // Aplica filtro de escuela
-        if ($escuelaFiltro > 0) {
-            $sql     .= " AND r.id_escuela = ?";
-            $types   .= 'i';
-            $params[] = $escuelaFiltro;
-        }
-
-        // Aplica filtro de género
-        if (!empty($generoFiltro)) {
-            $sql     .= " AND r.genero = ?";
-            $types   .= 's';
-            $params[] = $generoFiltro;
-        }
-        
-        // Aplica filtro de ciclo (usando fecha_respuesta)
-        // Aplica filtro de ciclo (CORREGIDO: Rango de fechas exacto)
-        if ($cicloRango !== null && count($cicloRango) === 2) {
-            $inicio = $cicloRango[0]; // Ej: 2023
-            $fin    = $cicloRango[1]; // Ej: 2024
-
-            // Definimos el ciclo: 1 Ago del año inicio -> 31 Jul del año fin
-            $fechaInicio = "$inicio-08-01 00:00:00";
-            $fechaFin    = "$fin-07-31 23:59:59";
-
-            $sql      .= " AND r.fecha_respuesta BETWEEN ? AND ?";
-            $types    .= 'ss'; // 'ss' porque ahora enviamos strings de fecha
-            $params[]  = $fechaInicio; 
-            $params[]  = $fechaFin;
-        }
-
-        $sql .= " GROUP BY r.id_pregunta, r.id_opcion";
-
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error al preparar consulta de estadísticas (opciones): " . $db->error);
-        }
-
-        $stmt->bind_param($types, ...$params);
+        $sqlOpciones = "SELECT o.id_opcion,o.clave_logica,o.texto_opcion,p.clave_logica AS clave_pregunta
+                        FROM opciones_respuesta o
+                        JOIN preguntas p ON p.id_pregunta=o.id_pregunta
+                        JOIN encuestas e ON e.id_encuesta=p.id_encuesta
+                        WHERE e.id_nivel=?
+                          AND NOT EXISTS (
+                            SELECT 1 FROM opciones_respuesta onueva
+                            JOIN preguntas pn ON pn.id_pregunta=onueva.id_pregunta
+                            JOIN encuestas en ON en.id_encuesta=pn.id_encuesta
+                            WHERE onueva.clave_logica=o.clave_logica AND en.id_nivel=e.id_nivel
+                              AND (en.version>e.version OR (en.version=e.version AND onueva.id_opcion>o.id_opcion))
+                          )
+                        ORDER BY p.orden,o.valor,o.id_opcion";
+        $stmt = $db->prepare($sqlOpciones);
+        $stmt->bind_param('i', $nivelId);
         $stmt->execute();
-
-        $res = $stmt->get_result();
-        $out = [];
-
-        while ($row = $res->fetch_assoc()) {
-            $pid   = (int)$row['id_pregunta'];
-            $oid   = (int)$row['id_opcion'];
-            $total = (int)$row['total_respuestas'];
-
-            if (!isset($out[$pid])) {
-                $out[$pid] = [];
-            }
-            $out[$pid][$oid] = $total;
-        }
-
-        $stmt->close();
-        return $out;
-    }
-
-
-    /**
-     * Obtiene las opciones de cada pregunta + asigna el total de respuestas y promedio
-     */
-    public static function obtenerOpciones(
-        mysqli $db,
-        array $idsPreguntas,
-        array $estadisticas
-    ): array {
-        if (empty($idsPreguntas)) {
-            return [];
-        }
-
-        $placeholders = implode(',', array_fill(0, count($idsPreguntas), '?'));
-        $types        = str_repeat('i', count($idsPreguntas));
-
-        $sql = "SELECT 
-                    o.id_opcion,
-                    o.id_pregunta,
-                    o.texto_opcion,
-                    o.icono,
-                    o.valor,
-                    p.tipo_pregunta
-                FROM opciones_respuesta o
-                INNER JOIN preguntas p ON o.id_pregunta = p.id_pregunta
-                WHERE o.id_pregunta IN ($placeholders)
-                ORDER BY o.id_pregunta, o.id_opcion";
-
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error al preparar consulta de opciones: " . $db->error);
-        }
-
-        $stmt->bind_param($types, ...$idsPreguntas);
-        $stmt->execute();
-
-        $res = $stmt->get_result();
-        $out = [];
-
-        while ($row = $res->fetch_assoc()) {
-            $pid = (int)$row['id_pregunta'];
-            $oid = (int)$row['id_opcion'];
-            $tipo = strtolower(trim($row['tipo_pregunta']));
-
-            $total = 0;
-            $promedio = null;
-
-            if (isset($estadisticas[$pid][$oid])) {
-                $data = $estadisticas[$pid][$oid];
-                if ($tipo === 'ranking') {
-                    // Ranking: la estadística es un array ['total' => int, 'promedio' => float]
-                    $total = $data['total'] ?? 0;
-                    $promedio = $data['promedio'] ?? null;
-                } else {
-                    // Opción/Múltiple: la estadística es solo el total (int)
-                    $total = $data;
-                }
-            }
-
-            if (!isset($out[$pid])) {
-                $out[$pid] = [];
-            }
-
-            $out[$pid][] = [
-                'id_opcion' => $oid,
-                'texto'     => $row['texto_opcion'],
-                'icono'     => $row['icono'],
-                'valor'     => isset($row['valor']) ? (int)$row['valor'] : null,
-                'total'     => $total,
-                'promedio'  => $promedio // Nuevo campo para Ranking
+        $result = $stmt->get_result();
+        $opcionPorClave = [];
+        $salida = [];
+        while ($row = $result->fetch_assoc()) {
+            $clavePregunta = $row['clave_pregunta'];
+            if (!isset($preguntaPorClave[$clavePregunta])) continue;
+            $pid = $preguntaPorClave[$clavePregunta];
+            $oid = (int) $row['id_opcion'];
+            $opcionPorClave[$row['clave_logica']] = [$pid, $oid];
+            $salida[$pid][$oid] = [
+                'texto' => $row['texto_opcion'],
+                'total' => 0,
+                'promedio' => 0.0,
             ];
         }
-
         $stmt->close();
-        return $out;
-    }
-    public static function obtenerEstadisticasRanking(
-        mysqli $db,
-        array $idsPreguntas,
-        int $escuelaFiltro = 0,
-        string $generoFiltro = '', 
-        ?array $cicloRango = null
-    ): array {
-        if (empty($idsPreguntas)) {
-            return [];
-        }
 
-        $placeholders = implode(',', array_fill(0, count($idsPreguntas), '?'));
-        $types        = str_repeat('i', count($idsPreguntas));
-        $params       = $idsPreguntas;
+        [$whereRu, $typesRu, $paramsRu] = self::filtros(
+            'ru.id_escuela', 'ru.genero', 'ru.fecha_respuesta', $escuelaFiltro, $generoFiltro, $cicloRango
+        );
+        $sql = "SELECT p.clave_logica AS clave_pregunta,o.clave_logica AS clave_opcion,COUNT(*) AS total
+                FROM respuestas_usuario ru
+                JOIN preguntas p ON p.id_pregunta=ru.id_pregunta
+                JOIN encuestas e ON e.id_encuesta=p.id_encuesta
+                JOIN opciones_respuesta o ON o.id_opcion=ru.id_opcion AND o.id_pregunta=ru.id_pregunta
+                WHERE e.id_nivel=? AND ru.id_opcion IS NOT NULL {$whereRu}
+                GROUP BY p.clave_logica,o.clave_logica";
+        self::aplicarConteos($db, $sql, 'i' . $typesRu, array_merge([$nivelId], $paramsRu), $opcionPorClave, $salida);
 
-        // Utilizamos COALESCE para que AVG devuelva NULL en lugar de 0 si no hay resultados, 
-        // y solo contamos r.id_opcion.
-        $sql = "SELECT 
-                    r.id_pregunta,
-                    r.id_opcion,
-                    COUNT(r.id_opcion) AS total_respuestas,
-                    COALESCE(AVG(r.posicion), 0) AS promedio_posicion
-                FROM respuestas_ranking r
-                
-                /*
-                 * Hacemos LEFT JOIN con respuestas_usuario (ru) para obtener el género,
-                 * que es el filtro principal que podría causar fallos si la unión fuera INNER
-                 * y no existieran respuestas RU para ese EU.
-                 */
-                LEFT JOIN respuestas_usuario ru ON r.id_usuario_encuesta = ru.id_usuario_encuesta
-                
-                WHERE r.id_pregunta IN ($placeholders)";
-
-        // Aplica filtro de escuela (usando respuestas_usuario si posible, o eu si fuera necesario)
-        if ($escuelaFiltro > 0) {
-            $sql     .= " AND ru.id_escuela = ?"; // Usamos ru.id_escuela si el id está en esa tabla
-            $types   .= 'i';
-            $params[] = $escuelaFiltro;
-        }
-
-        // Aplica filtro de género (usando respuestas_usuario)
-        if (!empty($generoFiltro)) {
-            $sql     .= " AND ru.genero = ?"; 
-            $types   .= 's';
-            $params[] = $generoFiltro;
-        }
-
-        // Aplica filtro de ciclo (usando fecha_respuesta en respuestas_usuario)
-        // Aplica filtro de ciclo (CORREGIDO: Rango de fechas exacto)
-        if ($cicloRango !== null && count($cicloRango) === 2) {
-            $inicio = $cicloRango[0];
-            $fin    = $cicloRango[1];
-
-            $fechaInicio = "$inicio-08-01 00:00:00";
-            $fechaFin    = "$fin-07-31 23:59:59";
-
-            $sql      .= " AND ru.fecha_respuesta BETWEEN ? AND ?";
-            $types    .= 'ss';
-            $params[]  = $fechaInicio; 
-            $params[]  = $fechaFin;
-        }
-
-
-        $sql .= " GROUP BY r.id_pregunta, r.id_opcion";
-
-// ... (Resto de la función sin cambios)
+        [$whereRr, $typesRr, $paramsRr] = self::filtros(
+            'eu.id_escuela', 'meta.genero', 'rr.fecha_respuesta', $escuelaFiltro, $generoFiltro, $cicloRango
+        );
+        $sql = "SELECT p.clave_logica AS clave_pregunta,o.clave_logica AS clave_opcion,
+                       COUNT(*) AS total,AVG(rr.posicion) AS promedio
+                FROM respuestas_ranking rr
+                JOIN preguntas p ON p.id_pregunta=rr.id_pregunta
+                JOIN encuestas e ON e.id_encuesta=p.id_encuesta
+                JOIN opciones_respuesta o ON o.id_opcion=rr.id_opcion AND o.id_pregunta=rr.id_pregunta
+                JOIN encuestas_usuarios eu ON eu.id_usuario_encuesta=rr.id_usuario_encuesta
+                LEFT JOIN (
+                    SELECT id_usuario_encuesta,MAX(genero) AS genero
+                    FROM respuestas_usuario GROUP BY id_usuario_encuesta
+                ) meta ON meta.id_usuario_encuesta=rr.id_usuario_encuesta
+                WHERE e.id_nivel=? {$whereRr}
+                GROUP BY p.clave_logica,o.clave_logica";
         $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error al preparar consulta de estadísticas (ranking): " . $db->error);
-        }
-
-        $stmt->bind_param($types, ...$params);
+        self::bind($stmt, 'i' . $typesRr, array_merge([$nivelId], $paramsRr));
         $stmt->execute();
-
-        $res = $stmt->get_result();
-        $out = [];
-
-        while ($row = $res->fetch_assoc()) {
-            $pid   = (int)$row['id_pregunta'];
-            $oid   = (int)$row['id_opcion'];
-
-            if (!isset($out[$pid])) {
-                $out[$pid] = [];
-            }
-            // Almacenamos un array con el total y el promedio
-            $out[$pid][$oid] = [
-                'total'    => (int)$row['total_respuestas'],
-                // El COALESCE en SQL asegura que sea 0.0 si no hay votos, pero la BD lo devuelve como string/float.
-                'promedio_posicion'   => (float)$row['promedio_posicion'] 
-            ];
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            if (!isset($opcionPorClave[$row['clave_opcion']])) continue;
+            [$pid, $oid] = $opcionPorClave[$row['clave_opcion']];
+            $salida[$pid][$oid]['total'] = (int) $row['total'];
+            $salida[$pid][$oid]['promedio'] = (float) $row['promedio'];
         }
-
         $stmt->close();
-        return $out;
+
+        $normalizada = [];
+        $maximo = 0;
+        foreach ($salida as $pid => $opciones) {
+            $suma = 0;
+            foreach ($opciones as $opcion) {
+                $normalizada[$pid][] = $opcion;
+                $suma += $opcion['total'];
+            }
+            $maximo = max($maximo, $suma);
+        }
+        return ['opciones' => $normalizada, 'total' => $maximo];
     }
 
-    /**
-     * Obtiene solo el texto de las opciones por pregunta
-     * Retorna: [id_pregunta => [id_opcion => texto_opcion, ...], ...]
-     */
-    public static function obtenerOpcionesPreguntas(mysqli $db, array $idsPreguntas): array
+    public static function obtenerCiclos(mysqli $db, int $nivelId): array
     {
-        if (empty($idsPreguntas)) {
-            return [];
-        }
-
-        $placeholders = implode(',', array_fill(0, count($idsPreguntas), '?'));
-        $types = str_repeat('i', count($idsPreguntas));
-
-        $sql = "SELECT id_opcion, id_pregunta, texto_opcion
-                FROM opciones_respuesta
-                WHERE id_pregunta IN ($placeholders)
-                ORDER BY id_pregunta, id_opcion";
-
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error al preparar consulta de opciones: " . $db->error);
-        }
-
-        $stmt->bind_param($types, ...$idsPreguntas);
+        $stmt = $db->prepare(
+            'SELECT DISTINCT YEAR(ru.fecha_respuesta) anio,MONTH(ru.fecha_respuesta) mes
+             FROM respuestas_usuario ru JOIN encuestas e ON e.id_encuesta=ru.id_encuesta
+             WHERE e.id_nivel=? ORDER BY anio DESC,mes DESC'
+        );
+        $stmt->bind_param('i', $nivelId);
         $stmt->execute();
-
-        $res = $stmt->get_result();
-        $out = [];
-
-        while ($row = $res->fetch_assoc()) {
-            $pid = (int)$row['id_pregunta'];
-            $oid = (int)$row['id_opcion'];
-            
-            if (!isset($out[$pid])) {
-                $out[$pid] = [];
-            }
-            $out[$pid][$oid] = $row['texto_opcion'];
+        $result = $stmt->get_result();
+        $unicos = [];
+        while ($row = $result->fetch_assoc()) {
+            $anio = (int) $row['anio'];
+            $inicio = (int) $row['mes'] >= 8 ? $anio : $anio - 1;
+            $unicos[$inicio] = ['inicio' => $inicio, 'fin' => $inicio + 1, 'label' => "$inicio - " . ($inicio + 1)];
         }
-
         $stmt->close();
-        return $out;
+        krsort($unicos);
+        return array_values($unicos);
+    }
+
+    private static function aplicarConteos(
+        mysqli $db,
+        string $sql,
+        string $types,
+        array $params,
+        array $opcionPorClave,
+        array &$salida
+    ): void {
+        $stmt = $db->prepare($sql);
+        self::bind($stmt, $types, $params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            if (!isset($opcionPorClave[$row['clave_opcion']])) continue;
+            [$pid, $oid] = $opcionPorClave[$row['clave_opcion']];
+            $salida[$pid][$oid]['total'] = (int) $row['total'];
+        }
+        $stmt->close();
+    }
+
+    /** @return array{0:string,1:string,2:array} */
+    private static function filtros(
+        string $campoEscuela,
+        string $campoGenero,
+        string $campoFecha,
+        int $escuela,
+        string $genero,
+        ?array $ciclo
+    ): array {
+        $sql = '';
+        $types = '';
+        $params = [];
+        if ($escuela > 0) {
+            $sql .= " AND {$campoEscuela}=?";
+            $types .= 'i';
+            $params[] = $escuela;
+        } elseif ($escuela < 0) {
+            $sql .= " AND {$campoEscuela} IS NULL";
+        }
+        if ($genero !== '') {
+            $sql .= " AND {$campoGenero}=?";
+            $types .= 's';
+            $params[] = $genero;
+        }
+        if ($ciclo !== null) {
+            $sql .= " AND {$campoFecha} BETWEEN ? AND ?";
+            $types .= 'ss';
+            $params[] = $ciclo[0] . '-08-01 00:00:00';
+            $params[] = $ciclo[1] . '-07-31 23:59:59';
+        }
+        return [$sql, $types, $params];
+    }
+
+    private static function bind(mysqli_stmt $stmt, string $types, array $params): void
+    {
+        if ($types === '') return;
+        $refs = [];
+        foreach ($params as $i => $_) $refs[$i] = &$params[$i];
+        $stmt->bind_param($types, ...$refs);
     }
 }

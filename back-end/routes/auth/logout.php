@@ -8,6 +8,9 @@ require_once $baseBackend . 'core/bootstrap_session.php';
 require_once $baseBackend . 'controllers/AuthController.php';
 require_once __DIR__ . '/../../../front-end/includes/config.php';
 
+requerir_admin();
+requerir_post_csrf();
+
 
 try {
     $controller = new AuthController();

@@ -40,14 +40,24 @@ try {
     echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
 
 } catch (Throwable $e) {
-    // Si la excepción tiene código HTTP (como 405), lo usamos
     $code = $e->getCode();
-    http_response_code(($code >= 400 && $code < 600) ? $code : 500);
+    if ($e instanceof InvalidArgumentException) {
+        $httpCode = 422;
+        $mensaje = $e->getMessage();
+    } elseif ($code >= 400 && $code < 600) {
+        $httpCode = $code;
+        $mensaje = $e->getMessage();
+    } else {
+        $httpCode = 500;
+        $mensaje = 'No se pudo guardar la encuesta. Intenta de nuevo.';
+        error_log('Error al enviar encuesta: ' . $e->getMessage());
+    }
+
+    http_response_code($httpCode);
 
     echo json_encode([
         'success' => false,
-        'error'   => 'Error interno',
-        'detalle' => $e->getMessage()
+        'error'   => $mensaje
     ], JSON_UNESCAPED_UNICODE);
 }
 exit;

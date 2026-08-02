@@ -1,13 +1,13 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set('display_errors', '0');
+ini_set('display_startup_errors', '0');
 error_reporting(E_ALL);
 
 
 require_once __DIR__ . '/../../../back-end/auth/verificar-sesion.php';
 require_once __DIR__ . '/../../includes/config.php';
 
-if (usuario_autenticado() && rol_es('admin')) {
+if (usuario_autenticado() && tiene_permiso('ver_panel')) {
     header('Location: ' . FRAMES_URL . 'panel/panel-admin.php');
     exit;
 }
@@ -18,7 +18,9 @@ try {
     $auth = new AuthController();
     $csrf_token = $auth->generarTokenCSRF('login_admin');
 } catch (Exception $e) {
-    die("Error al iniciar el sistema de autenticación: " . $e->getMessage());
+    error_log('Error al iniciar autenticación: ' . $e->getMessage());
+    http_response_code(500);
+    exit('No se pudo iniciar el sistema de autenticación.');
 }
 
 $mensaje = $_GET['m'] ?? '';

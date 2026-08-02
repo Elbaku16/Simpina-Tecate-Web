@@ -1,10 +1,22 @@
 <?php
 if (defined('BASE_URL')) return;
 
-$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$isLocalhost = (strpos($host, 'localhost') !== false || $host === '127.0.0.1');
+require_once __DIR__ . '/../../back-end/core/env_loader.php';
 
-define('BASE_URL',    $isLocalhost ? '' : '/simpinna');
+$envFile = __DIR__ . '/../../.env';
+if (is_file($envFile)) {
+    cargarEnv($envFile);
+}
+
+$httpHost = strtolower((string) ($_SERVER['HTTP_HOST'] ?? 'localhost'));
+$host = parse_url('http://' . $httpHost, PHP_URL_HOST) ?: $httpHost;
+$isLocalhost = in_array($host, ['localhost', '127.0.0.1', '::1'], true);
+$configuredBaseUrl = getenv('APP_BASE_URL');
+$baseUrl = $configuredBaseUrl !== false
+    ? rtrim((string) $configuredBaseUrl, '/')
+    : ($isLocalhost ? '' : '/simpinna');
+
+define('BASE_URL',    $baseUrl);
 define('ASSETS_URL',  BASE_URL . '/front-end/assets/');
 define('CSS_URL',     ASSETS_URL . 'css/');
 define('IMG_URL',     ASSETS_URL . 'img/');
