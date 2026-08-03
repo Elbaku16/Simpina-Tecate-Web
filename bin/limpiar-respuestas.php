@@ -65,6 +65,15 @@ foreach (A_CONSERVAR as $tabla) {
     printf("  %6d  %s\n", $conservarAntes[$tabla], $tabla);
 }
 
+$conDibujo = (int) $db->query(
+    'SELECT COUNT(*) FROM respuestas_usuario
+     WHERE dibujo_storage IS NOT NULL AND dibujo_objeto IS NOT NULL'
+)->fetch_column();
+if ($conDibujo > 0) {
+    echo "\nDIBUJOS EN ALMACENAMIENTO EXTERNO:\n";
+    echo "  {$conDibujo} objeto(s) se encolaran para borrarse tras vaciar las respuestas.\n";
+}
+
 if (!$confirmado) {
     echo "\n";
     echo "Nada se ha borrado. Para ejecutar el borrado de {$totalBorrar} fila(s):\n";
@@ -75,6 +84,19 @@ if (!$confirmado) {
 echo "\nBorrando...\n";
 $db->begin_transaction();
 try {
+    // Los dibujos viven fuera de la base (R2 o disco). Si solo borraramos las
+    // filas, los objetos quedarian huerfanos ocupando espacio para siempre, asi
+    // que se encolan para que bin/process-storage-delete-queue.php los elimine.
+    $db->query(
+        'INSERT INTO storage_delete_queue (driver, object_key)
+         SELECT dibujo_storage, dibujo_objeto FROM respuestas_usuario
+         WHERE dibujo_storage IS NOT NULL AND dibujo_objeto IS NOT NULL'
+    );
+    $encolados = $db->affected_rows;
+    if ($encolados > 0) {
+        printf("  %d dibujo(s) encolado(s) para borrarse del almacenamiento\n", $encolados);
+    }
+
     foreach (A_BORRAR as $tabla) {
         $db->query("DELETE FROM `{$tabla}`");
         printf("  %s: %d fila(s) eliminada(s)\n", $tabla, $db->affected_rows);
@@ -119,3 +141,7 @@ if ($errores > 0) {
 }
 
 echo "\nListo. La encuesta quedó lista para recibir respuestas nuevas.\n";
+if ($conDibujo > 0) {
+    echo "Falta liberar {$conDibujo} dibujo(s) del almacenamiento:\n";
+    echo "  php bin/process-storage-delete-queue.php\n";
+}
