@@ -27,10 +27,42 @@ if (pathinfo($archivo, PATHINFO_EXTENSION) !== 'sql') {
     exit(1);
 }
 
+/**
+ * Ubica el binario de mysqldump. Se prefiere MYSQLDUMP_BIN si está definido;
+ * si no, se prueba el PATH y las rutas habituales de XAMPP en Windows, donde
+ * mysql/bin no suele estar en el PATH del sistema.
+ */
+function ubicarMysqldump(): string
+{
+    $configurado = trim((string) getenv('MYSQLDUMP_BIN'));
+    if ($configurado !== '' && is_file($configurado)) {
+        return $configurado;
+    }
+
+    $enWindows = DIRECTORY_SEPARATOR === '\\';
+    $candidatos = $enWindows
+        ? ['C:\\xampp\\mysql\\bin\\mysqldump.exe', 'C:\\wamp64\\bin\\mysql\\mysql8.0.31\\bin\\mysqldump.exe']
+        : ['/usr/bin/mysqldump', '/usr/local/bin/mysqldump', '/opt/homebrew/bin/mysqldump'];
+    foreach ($candidatos as $ruta) {
+        if (is_file($ruta)) {
+            return $ruta;
+        }
+    }
+
+    // Última opción: confiar en el PATH.
+    return $enWindows ? 'mysqldump.exe' : 'mysqldump';
+}
+
+$binario = ubicarMysqldump();
+
+// --set-gtid-purged solo existe en MySQL; MariaDB aborta si se le pasa.
+$version = (string) @shell_exec(escapeshellarg($binario) . ' --version 2>&1');
+$esMariaDB = stripos($version, 'mariadb') !== false;
+
 $entorno = getenv();
 $entorno['MYSQL_PWD'] = (string) getenv('DB_PASS');
-$comando = [
-    'mysqldump',
+$comando = array_values(array_filter([
+    $binario,
     '--no-defaults',
     '--host=' . (string) getenv('DB_HOST'),
     '--user=' . (string) getenv('DB_USER'),
@@ -38,14 +70,17 @@ $comando = [
     '--single-transaction',
     '--skip-lock-tables',
     '--no-tablespaces',
-    '--set-gtid-purged=OFF',
+    $esMariaDB ? null : '--set-gtid-purged=OFF',
+    '--routines',
     '--triggers',
     '--result-file=' . $archivo,
     (string) getenv('DB_NAME'),
-];
+], static fn($arg) => $arg !== null));
 
+// El dispositivo nulo cambia de nombre según el sistema operativo.
+$dispositivoNulo = DIRECTORY_SEPARATOR === '\\' ? 'NUL' : '/dev/null';
 $descriptores = [
-    0 => ['file', '/dev/null', 'r'],
+    0 => ['file', $dispositivoNulo, 'r'],
     1 => ['pipe', 'w'],
     2 => ['pipe', 'w'],
 ];
